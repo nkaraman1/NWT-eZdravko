@@ -92,6 +92,22 @@ public class User {
         this.broj_knjizice = broj_knjizice;
     }
 
+    public User() {
+        this.ID = null;
+        this.ime = null;
+        this.prezime = null;
+        this.datum_rodjenja = null;
+        this.spol = null;
+        this.broj_telefona = null;
+        this.email = null;
+        this.password = null;
+        this.adresa_stanovanja = null;
+        this.slika = null;
+        this.rola = null;
+        this.UID = null;
+        this.broj_knjizice = null;
+    }
+
     public Long getID() {
         return ID;
     }

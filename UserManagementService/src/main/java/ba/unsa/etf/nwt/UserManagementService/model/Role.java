@@ -12,6 +12,11 @@ public class Role {
     @Column
     private String naziv_role;
 
+    public Role() {
+        this.ID = null;
+        this.naziv_role = null;
+    }
+
     public Role(Long ID, String naziv_role) {
         this.ID = ID;
         this.naziv_role = naziv_role;
