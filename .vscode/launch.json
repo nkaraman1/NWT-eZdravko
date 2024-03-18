@@ -9,6 +9,16 @@
       "projectName": "demo",
       "args": "",
       "envFile": "${workspaceFolder}/.env"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-UserManagementServiceApplication<UserManagementService>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "ba.unsa.etf.nwt.UserManagementService.UserManagementServiceApplication",
+      "projectName": "UserManagementService",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
     }
   ]
 }
