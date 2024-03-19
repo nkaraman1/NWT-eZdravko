@@ -10,8 +10,9 @@ import ba.unsa.etf.nwt.UserManagementService.model.User;
 public class Question {
     @Id
     private Long ID;
-    // @ManyToOne
+    // @ManyToOne(targetEntity = ba.unsa.etf.nwt.UserManagementService.model.User.class)
     // @JoinColumn(name = "user_uid", referencedColumnName = "UID")
+    // private User user_uid;
     @Column
     private String user_uid;
     @Column
