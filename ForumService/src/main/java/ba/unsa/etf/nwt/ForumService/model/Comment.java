@@ -30,6 +30,14 @@ public class Comment {
         this.anonimnost = anonimnost;
     }
 
+    public Comment() {
+        this.ID = null;
+        this.pitanje = null;
+        this.user_uid = null;
+        this.sadrzaj = null;
+        this.anonimnost = null;
+    }
+
     public Long getID() {
         return ID;
     }
