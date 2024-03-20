@@ -13,24 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @SpringBootApplication
-@RestController
 public class UserManagementServiceApplication {
-	@Autowired
-	private UserRepository userRepository;
-	@Autowired
-	private RoleRepository roleRepository;
 	public static void main(String[] args) throws Exception {
 
 		SpringApplication.run(UserManagementServiceApplication.class, args);
-	}
-
-	@GetMapping(value="/users")
-	public List<User> getUsers() {
-		return userRepository.findAll();
-	}
-
-	@GetMapping(value="/roles")
-	public List<Role> getRoles() {
-		return roleRepository.findAll();
 	}
 }
