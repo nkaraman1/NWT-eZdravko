@@ -17,7 +17,7 @@ public class NotificationController {
         this.notificationsRepository = notificationsRepository;
     }
 
-    @GetMapping(value="/questions")
+    @GetMapping(value="/notifications")
     public List<Notification> getQuestions() {
         List<Notification> notifications = notificationsRepository.findAll();
         if (notifications.isEmpty()) {
