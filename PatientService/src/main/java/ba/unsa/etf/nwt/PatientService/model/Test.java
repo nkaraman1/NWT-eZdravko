@@ -10,18 +10,12 @@ public class Test {
     @Id
     private Long ID;
 
-    // @ManyToOne
-    // @JoinColumn(name = "pacijent_uid", referencedColumnName = "UID")
     @Column
     private String pacijent_uid;
 
-    // @ManyToOne
-    // @JoinColumn(name = "laborant_uid", referencedColumnName = "UID")
     @Column
     private String laborant_uid;
 
-    // @ManyToOne
-    // @JoinColumn(name = "doktor_uid", referencedColumnName = "UID")
     @Column
     private String doktor_uid;
 
