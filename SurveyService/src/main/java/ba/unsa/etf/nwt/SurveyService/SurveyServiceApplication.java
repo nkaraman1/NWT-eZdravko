@@ -11,6 +11,7 @@ import ba.unsa.etf.nwt.SurveyService.repositories.SurveyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -18,42 +19,9 @@ import java.util.Collections;
 import java.util.List;
 
 @SpringBootApplication
+@ComponentScan(basePackages = {"ba.unsa.etf.nwt.SurveyService"})
 public class SurveyServiceApplication {
-
-	@Autowired
-	private SurveyRepository surveyRepository;
-	@Autowired
-	private SurveyQuestionRepository surveyQuestionRepository;
-	@Autowired
-	private AnswerOptionsRepository answerOptionsRepository;
-	@Autowired
-	private SurveyAnswerRepository surveyAnswerRepository;
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SurveyServiceApplication.class, args);
-	}
-
-	@GetMapping(value="/surveys")
-	public @ResponseBody List<Survey> getSurveys(){
-		List<Survey> surveys = surveyRepository.findAll();
-		if (surveys.isEmpty()) {
-			// If no surveys found, return an empty list instead of null
-			return Collections.emptyList();
-		}
-		return surveys;
-	}
-
-	@GetMapping(value="/surveyquestions")
-	public List<SurveyQuestion> getSurveyQuestions() {
-		return surveyQuestionRepository.findAll();
-	}
-
-	@GetMapping(value="/answeroptions")
-	public List<AnswerOptions> getAnswerOptions() {
-		return answerOptionsRepository.findAll();
-	}
-
-	@GetMapping(value="/surveyanswers")
-	public List<SurveyAnswer> getSurveyAnswers() {
-		return surveyAnswerRepository.findAll();
 	}
 }
