@@ -1,6 +1,7 @@
 package ba.unsa.etf.nwt.PatientService.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -10,24 +11,45 @@ import java.time.LocalDate;
 @Table(name = "dnevnik_unosi")
 public class DiaryEntry {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long ID;
-    // @ManyToOne
-    // @JoinColumn(name = "user_uid", referencedColumnName = "UID")
+
     @Column
+    @NotBlank(message = "UID korisnika je obavezan.")
     private String user_uid;
+
     @Column
+    @PastOrPresent
     private LocalDate datum;
+
     @Column
+    @DecimalMin(value = "0", message = "Visina ne smije biti ispod 0.")
+    @DecimalMax(value = "300", message = "Visina ne smije biti iznad 300.")
     private Double visina;
+
     @Column
+    @DecimalMin(value = "0", message = "Težina ne smije biti ispod 0.")
+    @DecimalMax(value = "300", message = "Težina ne smije biti iznad 700.")
     private Double tezina;
+
     @Column
+    @DecimalMin(value = "10", message = "BMI ne smije biti ispod 10.")
+    @DecimalMax(value = "70", message = "BMI ne smije biti iznad 70.")
     private Double bmi;
+
     @Column
+    @Min(value = 0, message = "Puls ne smije biti ispod 0.")
+    @Max(value = 300, message = "Puls ne smije biti iznad 300.")
     private Integer puls;
+
     @Column
+    @DecimalMin(value = "0", message = "Unos vode ne smije biti ispod 0.")
+    @DecimalMax(value = "30", message = "Unos vode ne smije biti iznad 30.")
     private Double unos_vode;
+
     @Column
+    @Min(value = 0, message = "Broj koraka ne smije biti ispod 0.")
+    @Max(value = 100000, message = "Broj koraka ne smije biti iznad 100 000.")
     private Integer broj_koraka;
 
     public DiaryEntry() {

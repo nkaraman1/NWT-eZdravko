@@ -1,29 +1,38 @@
 package ba.unsa.etf.nwt.PatientService.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+import java.time.LocalDate;
 
 @Entity
 @Data
 @Table(name = "Uputnice")
 public class Referral {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long ID;
 
     @ManyToOne
     @JoinColumn(name = "pregled_id", referencedColumnName = "ID")
+    @NotBlank(message = "ID pregleda je obavezan.")
     private Examination pregled;
 
-    // @ManyToOne
-    // @JoinColumn(name = "specijalista_uid", referencedColumnName = "UID")
     @Column
+    @NotBlank(message = "UID specijaliste je obavezan.")
     private String specijalista_uid;
 
     @Column
+    @Size(min = 10, max = 1000, message
+            = "Komentar mora imati između 10 i 1000 karaktera.")
     private String komentar;
 
     @Column
-    private String trajanje;
+    @Future(message = "Datum isteka mora biti u budućnosti.")
+    private LocalDate datum_isteka;
 
 
     public Referral() {
@@ -31,15 +40,15 @@ public class Referral {
         this.pregled = null;
         this.specijalista_uid = null;
         this.komentar = null;
-        this.trajanje = null;
+        this.datum_isteka = null;
     }
 
-    public Referral(Long ID, Examination pregled, String specijalista_uid, String komentar, String trajanje) {
+    public Referral(Long ID, Examination pregled, String specijalista_uid, String komentar, LocalDate datum_isteka) {
         this.ID = ID;
         this.pregled = pregled;
         this.specijalista_uid = specijalista_uid;
         this.komentar = komentar;
-        this.trajanje = trajanje;
+        this.datum_isteka = datum_isteka;
     }
 
     public Long getID() {
@@ -74,11 +83,11 @@ public class Referral {
         this.komentar = komentar;
     }
 
-    public String getTrajanje() {
-        return trajanje;
+    public LocalDate getDatum_isteka() {
+        return datum_isteka;
     }
 
-    public void setTrajanje(String trajanje) {
-        this.trajanje = trajanje;
+    public void setDatum_isteka(LocalDate datum_isteka) {
+        this.datum_isteka = datum_isteka;
     }
 }

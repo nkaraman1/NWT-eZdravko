@@ -1,29 +1,39 @@
 package ba.unsa.etf.nwt.PatientService.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
 @Table(name = "Pregledi")
 public class Examination {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long ID;
-    // @ManyToOne
-    // @JoinColumn(name = "pacijent_uid", referencedColumnName = "UID")
+
     @Column
+    @NotBlank(message = "UID pacijenta je obavezan.")
     private String pacijent_uid;
-    // @ManyToOne
-    // @JoinColumn(name = "doktor_uid", referencedColumnName = "UID")
+
     @Column
+    @NotBlank(message = "UID doktora je obavezan.")
     private String doktor_uid;
+
     @Column
+    @Size(min = 10, max = 1000, message
+            = "Dijagnoza mora imati između 10 i 1000 karaktera.")
     private String dijagnoza;
+
     @Column
-    //private LocalDate termin_pregleda;
-    private String termin_pregleda;
+    @NotBlank(message = "Termin pregleda je obavezan.")
+    @PastOrPresent(message = "Termin pregleda ne može biti u budućnosti.")
+    private LocalDateTime termin_pregleda;
 
     public Examination() {
         //this.ID = null;
@@ -33,7 +43,7 @@ public class Examination {
         this.termin_pregleda = null;
     }
 
-    public Examination(Long ID, String pacijent_uid, String doktor_uid, String dijagnoza, String termin_pregleda) {
+    public Examination(Long ID, String pacijent_uid, String doktor_uid, String dijagnoza, LocalDateTime termin_pregleda) {
         this.ID = ID;
         this.pacijent_uid = pacijent_uid;
         this.doktor_uid = doktor_uid;
@@ -73,11 +83,11 @@ public class Examination {
         this.dijagnoza = dijagnoza;
     }
 
-    public String getTermin_pregleda() {
+    public LocalDateTime getTermin_pregleda() {
         return termin_pregleda;
     }
 
-    public void setTermin_pregleda(String termin_pregleda) {
+    public void setTermin_pregleda(LocalDateTime termin_pregleda) {
         this.termin_pregleda = termin_pregleda;
     }
 }

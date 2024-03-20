@@ -1,33 +1,49 @@
 package ba.unsa.etf.nwt.PatientService.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Data
 @Table(name = "Nalazi")
 public class Test {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long ID;
 
     @Column
+    @NotBlank(message = "UID pacijenta je obavezan.")
     private String pacijent_uid;
 
     @Column
+    @NotBlank(message = "UID laboranta je obavezan.")
     private String laborant_uid;
 
     @Column
+    //nije obavezan jer nema doktr_uid vrijednost sve dok doktor ne uzme nalaz da doda dijagnozu
     private String doktor_uid;
 
     @ManyToOne
     @JoinColumn(name = "tip_nalaza_id", referencedColumnName = "ID")
+    @NotBlank(message = "ID tipa nalaza je obavezan.")
     private TestType tip_nalaza_id;
 
     @Column
+    @NotBlank(message = "Dijagnoza je obavezna.")
     private String dijagnoza;
 
     @Column
-    private String vrijeme_pregleda;
+    @PastOrPresent(message = "Vrijeme pregleda ne može biti u budućnosti.")
+    private LocalDateTime vrijeme_pregleda;
+
+    @Column
+    @PastOrPresent(message = "Vrijeme dijagnoze ne može biti u budućnosti.")
+    private LocalDateTime vrijeme_dijagnoze;
 
     public Test() {
         //this.ID = null;
@@ -35,11 +51,12 @@ public class Test {
         this.laborant_uid = null;
         this.doktor_uid = null;
         this.tip_nalaza_id = null;
-        this.dijagnoza = null;
+        this.dijagnoza = "/";
         this.vrijeme_pregleda = null;
+        this.vrijeme_dijagnoze = null;
     }
 
-    public Test(Long ID, String pacijent_uid, String laborant_uid, String doktor_uid, TestType tip_nalaza_id, String dijagnoza, String vrijeme_pregleda) {
+    public Test(Long ID, String pacijent_uid, String laborant_uid, String doktor_uid, TestType tip_nalaza_id, String dijagnoza, LocalDateTime vrijeme_pregleda, LocalDateTime vrijeme_dijagnoze) {
         this.ID = ID;
         this.pacijent_uid = pacijent_uid;
         this.laborant_uid = laborant_uid;
@@ -47,6 +64,7 @@ public class Test {
         this.tip_nalaza_id = tip_nalaza_id;
         this.dijagnoza = dijagnoza;
         this.vrijeme_pregleda = vrijeme_pregleda;
+        this.vrijeme_dijagnoze = vrijeme_dijagnoze;
     }
 
     public Long getID() {
@@ -97,11 +115,19 @@ public class Test {
         this.dijagnoza = dijagnoza;
     }
 
-    public String getVrijeme_pregleda() {
+    public LocalDateTime getVrijeme_pregleda() {
         return vrijeme_pregleda;
     }
 
-    public void setVrijeme_pregleda(String vrijeme_pregleda) {
+    public void setVrijeme_pregleda(LocalDateTime vrijeme_pregleda) {
         this.vrijeme_pregleda = vrijeme_pregleda;
+    }
+
+    public LocalDateTime getVrijeme_dijagnoze() {
+        return vrijeme_dijagnoze;
+    }
+
+    public void setVrijeme_dijagnoze(LocalDateTime vrijeme_dijagnoze) {
+        this.vrijeme_dijagnoze = vrijeme_dijagnoze;
     }
 }

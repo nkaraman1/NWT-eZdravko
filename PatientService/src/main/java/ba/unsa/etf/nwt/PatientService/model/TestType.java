@@ -1,9 +1,7 @@
 package ba.unsa.etf.nwt.PatientService.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Entity
@@ -11,9 +9,11 @@ import lombok.Data;
 @Table(name = "tip_nalaza")
 public class TestType {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long ID;
 
     @Column
+    @NotBlank(message = "Naziv je obavezan.")
     private String naziv;
 
     public TestType() {

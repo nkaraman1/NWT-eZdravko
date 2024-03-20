@@ -1,6 +1,9 @@
 package ba.unsa.etf.nwt.PatientService.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
 @Entity
@@ -8,15 +11,19 @@ import lombok.Data;
 @Table(name = "Stavke")
 public class TestItem {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long ID;
 
     @Column
+    @NotBlank(message = "Naziv stavke je obavezan.")
     private String naziv;
 
     @Column
+    @PositiveOrZero(message = "Referentni minimum ne smije biti negativan.")
     private Double ref_min;
 
     @Column
+    @PositiveOrZero(message = "Referentni maksimum ne smije biti negativan.")
     private Double ref_max;
 
     @Column
@@ -27,6 +34,7 @@ public class TestItem {
 
     @ManyToOne
     @JoinColumn(name = "tip_nalaza_id", referencedColumnName = "ID")
+    @NotBlank(message = "ID tipa nalaza je obavezan.")
     private TestType tip_nalaza_id;
 
     public TestItem() {
