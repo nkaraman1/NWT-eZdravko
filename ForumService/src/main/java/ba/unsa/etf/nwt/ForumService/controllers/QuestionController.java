@@ -1,14 +1,16 @@
 package ba.unsa.etf.nwt.ForumService.controllers;
 
+import ba.unsa.etf.nwt.ForumService.DTO.QuestionDTO;
 import ba.unsa.etf.nwt.ForumService.model.Comment;
 import ba.unsa.etf.nwt.ForumService.model.Question;
 import ba.unsa.etf.nwt.ForumService.repositories.QuestionRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -17,9 +19,11 @@ import java.util.List;
 public class QuestionController {
 
     private final QuestionRepository questionRepository;
+    private final Validator validator;
 
-    public QuestionController(QuestionRepository questionRepository) {
+    public QuestionController(QuestionRepository questionRepository, Validator validator) {
         this.questionRepository = questionRepository;
+        this.validator = validator;
     }
 
     @GetMapping(value="/questions")
@@ -32,8 +36,27 @@ public class QuestionController {
     }
 
     @PostMapping(value="/questions")
-    public ResponseEntity<Question> createQuestion(@RequestBody Question question) {
+    public ResponseEntity<Question> createQuestion(@RequestBody QuestionDTO questionDTO) {
+        Errors errors = new BeanPropertyBindingResult(questionDTO, "questionDTO");
+        validator.validate(questionDTO, errors);
+
+        if (errors.hasErrors()) {
+            StringBuilder errorMessage = new StringBuilder();
+            errors.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()));
+            throw new RuntimeException(errorMessage.toString());
+        }
+        Question question = new Question();
+        question.setUser_uid(questionDTO.getUserUid());
+        question.setNaslov(questionDTO.getNaslov());
+        question.setSadrzaj(questionDTO.getSadrzaj());
+        question.setAnonimnost(question.getAnonimnost());
+
         Question savedQuestion = questionRepository.save(question);
         return new ResponseEntity<>(savedQuestion, HttpStatus.CREATED);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }

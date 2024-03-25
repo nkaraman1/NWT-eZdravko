@@ -1,16 +1,17 @@
 package ba.unsa.etf.nwt.ForumService.controllers;
 
 import ba.unsa.etf.nwt.ForumService.DTO.CommentDTO;
+import ba.unsa.etf.nwt.ForumService.exceptions.InvalidQuestionIdException;
 import ba.unsa.etf.nwt.ForumService.model.Comment;
 import ba.unsa.etf.nwt.ForumService.model.Question;
 import ba.unsa.etf.nwt.ForumService.repositories.CommentRepository;
 import ba.unsa.etf.nwt.ForumService.repositories.QuestionRepository;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.Validator;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,11 +21,13 @@ public class CommentController {
 
     private final CommentRepository commentRepository;
     private final QuestionRepository questionRepository;
+    private final Validator validator;
 
 
-    public CommentController(CommentRepository commentRepository, QuestionRepository questionRepository) {
+    public CommentController(CommentRepository commentRepository, QuestionRepository questionRepository, Validator validator) {
         this.commentRepository = commentRepository;
         this.questionRepository = questionRepository;
+        this.validator = validator;
     }
 
     @GetMapping(value="/comments")
@@ -38,20 +41,37 @@ public class CommentController {
 
     @PostMapping(value="/comments")
     public ResponseEntity<Comment> createComment(@RequestBody CommentDTO commentDTO) {
-        Question question = questionRepository.findById(Math.toIntExact(commentDTO.getQuestionId())).orElse(null);
-        if (question == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND); // Or handle the error appropriately
+        Errors errors = new BeanPropertyBindingResult(commentDTO, "commentDTO");
+        validator.validate(commentDTO, errors);
+
+        if (errors.hasErrors()) {
+            StringBuilder errorMessage = new StringBuilder();
+            errors.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()));
+            throw new RuntimeException(errorMessage.toString());
         }
 
-        // Create a new Comment object with the retrieved Question object
+        Question question = questionRepository.findById(Math.toIntExact(commentDTO.getQuestionId())).orElse(null);
+        if (question == null) {
+            throw new InvalidQuestionIdException("Nepostojeći question ID: " + commentDTO.getQuestionId());
+        }
+
         Comment comment = new Comment();
         comment.setPitanje(question);
         comment.setUser_uid(commentDTO.getUserUid());
         comment.setSadrzaj(commentDTO.getSadrzaj());
         comment.setAnonimnost(commentDTO.getAnonimnost());
 
-        // Save the new Comment object
         Comment savedComment = commentRepository.save(comment);
         return new ResponseEntity<>(savedComment, HttpStatus.CREATED);
+    }
+
+    @ExceptionHandler(InvalidQuestionIdException.class)
+    public ResponseEntity<String> handleInvalidQuestionIdException(InvalidQuestionIdException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }
