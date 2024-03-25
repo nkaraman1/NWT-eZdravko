@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import ba.unsa.etf.nwt.UserManagementService.model.User;
 
+import java.util.List;
+
 @Entity
 @Data
 @Table(name = "Pitanja")
@@ -20,6 +22,9 @@ public class Question {
     private String sadrzaj;
     @Column
     private Integer anonimnost;
+
+    @OneToMany(mappedBy = "pitanje", cascade = CascadeType.ALL)
+    private List<Comment> comments;
 
 
     public Question(Long ID, String user_uid, String naslov, String sadrzaj, Integer anonimnost) {
