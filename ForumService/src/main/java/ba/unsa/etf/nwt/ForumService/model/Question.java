@@ -9,10 +9,9 @@ import ba.unsa.etf.nwt.UserManagementService.model.User;
 @Table(name = "Pitanja")
 public class Question {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
-    // @ManyToOne(targetEntity = ba.unsa.etf.nwt.UserManagementService.model.User.class)
-    // @JoinColumn(name = "user_uid", referencedColumnName = "UID")
-    // private User user_uid;
+
     @Column
     private String user_uid;
     @Column
@@ -23,20 +22,18 @@ public class Question {
     private Integer anonimnost;
 
 
-    public Question(Long ID, String UID_Korisnik, String naslov, String sadrzaj, Integer anonimnost) {
-        this.ID = ID;
-        this.user_uid = UID_Korisnik;
+    public Question(Long ID, String user_uid, String naslov, String sadrzaj, Integer anonimnost) {
+        this.user_uid = user_uid;
         this.naslov = naslov;
         this.sadrzaj = sadrzaj;
         this.anonimnost = anonimnost;
     }
 
     public Question() {
-        this.ID = null;
-        this.user_uid = null;
-        naslov = null;
-        sadrzaj = null;
-        anonimnost = null;
+        this.user_uid = "";
+        this.naslov = "";
+        this.sadrzaj = "";
+        this.anonimnost = 0;
     }
 
     public Long getID() {
@@ -51,8 +48,8 @@ public class Question {
         return user_uid;
     }
 
-    public void setUser_uid(String UID_Korisnik) {
-        this.user_uid = UID_Korisnik;
+    public void setUser_uid(String user_uid) {
+        this.user_uid = user_uid;
     }
 
     public String getNaslov() {

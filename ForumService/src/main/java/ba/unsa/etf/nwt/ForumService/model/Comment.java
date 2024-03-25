@@ -9,6 +9,7 @@ import ba.unsa.etf.nwt.UserManagementService.model.User;
 @Table(name = "Komentari")
 public class Comment {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
     @ManyToOne
     @JoinColumn(name = "question_id", referencedColumnName = "ID")
@@ -31,11 +32,6 @@ public class Comment {
     }
 
     public Comment() {
-        this.ID = null;
-        this.pitanje = null;
-        this.user_uid = null;
-        this.sadrzaj = null;
-        this.anonimnost = null;
     }
 
     public Long getID() {
