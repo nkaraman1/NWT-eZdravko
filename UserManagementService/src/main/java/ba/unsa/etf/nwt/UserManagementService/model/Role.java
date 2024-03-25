@@ -8,22 +8,23 @@ import lombok.Data;
 @Table(name = "Role")
 public class Role {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
     @Column
-    private String naziv_role;
+    private String nazivRole;
 
     public Role() {
         this.ID = null;
-        this.naziv_role = null;
+        this.nazivRole = null;
     }
 
-    public Role(Long ID, String naziv_role) {
+    public Role(Long ID, String nazivRole) {
         this.ID = ID;
-        this.naziv_role = naziv_role;
+        this.nazivRole = nazivRole;
     }
 
-    public Role(String naziv_role) {
-        this.naziv_role = naziv_role;
+    public Role(String nazivRole) {
+        this.nazivRole = nazivRole;
     }
 
     public Long getID() {
@@ -34,16 +35,16 @@ public class Role {
         this.ID = ID;
     }
 
-    public String getNaziv_role() {
-        return naziv_role;
+    public String getnazivRole() {
+        return nazivRole;
     }
 
-    public void setNaziv_role(String naziv_role) {
-        this.naziv_role = naziv_role;
+    public void setnazivRole(String nazivRole) {
+        this.nazivRole = nazivRole;
     }
 
     @Override
     public String toString() {
-        return naziv_role;
+        return nazivRole;
     }
 }
