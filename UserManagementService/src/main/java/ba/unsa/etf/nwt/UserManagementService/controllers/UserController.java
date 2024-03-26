@@ -64,7 +64,7 @@ public class UserController {
     public ResponseEntity<?> getUserByImePrezime(@PathVariable String ime, @PathVariable String prezime) {
         List<User> user = userRepository.findByImeAndPrezime(ime, prezime);
         if (user.isEmpty()) {
-            return new ResponseEntity<>(new ErrorMsg("Nije pronadjen nijedan korisnik sa tim parametrima!"), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(List.of(), HttpStatus.OK);
         }
         else {
             return new ResponseEntity<>(user, HttpStatus.OK);
