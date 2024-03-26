@@ -4,11 +4,14 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.regex.Pattern;
+
 @Entity
 @Data
 @Table(name = "Korisnici")
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
     @Column
     private String ime;
@@ -48,8 +51,8 @@ public class User {
                 String slika,
                 Role rola,
                 String UID,
-                String broj_knjizice) {
-        
+                String broj_knjizice) throws Exception {
+
         this.ID = ID;
         this.ime = ime;
         this.prezime = prezime;
@@ -76,8 +79,8 @@ public class User {
                 String slika,
                 Role rola,
                 String UID,
-                String broj_knjizice) {
-        
+                String broj_knjizice) throws Exception {
+
         this.ime = ime;
         this.prezime = prezime;
         this.datum_rodjenja = datum_rodjenja;
@@ -93,19 +96,6 @@ public class User {
     }
 
     public User() {
-        this.ID = null;
-        this.ime = null;
-        this.prezime = null;
-        this.datum_rodjenja = null;
-        this.spol = null;
-        this.broj_telefona = null;
-        this.email = null;
-        this.password = null;
-        this.adresa_stanovanja = null;
-        this.slika = null;
-        this.rola = null;
-        this.UID = null;
-        this.broj_knjizice = null;
     }
 
     public Long getID() {
@@ -136,7 +126,7 @@ public class User {
         return datum_rodjenja;
     }
 
-    public void setDatum_rodjenja(LocalDate datum_rodjenja) {
+    public void setDatum_rodjenja(LocalDate datum_rodjenja) throws Exception {
         this.datum_rodjenja = datum_rodjenja;
     }
 
@@ -152,7 +142,7 @@ public class User {
         return broj_telefona;
     }
 
-    public void setBroj_telefona(String broj_telefona) {
+    public void setBroj_telefona(String broj_telefona) throws Exception {
         this.broj_telefona = broj_telefona;
     }
 
@@ -160,7 +150,7 @@ public class User {
         return email;
     }
 
-    public void setEmail(String email) {
+    public void setEmail(String email) throws Exception {
         this.email = email;
     }
 
@@ -168,7 +158,7 @@ public class User {
         return password;
     }
 
-    public void setPassword(String password) {
+    public void setPassword(String password) throws Exception {
         this.password = password;
     }
 
