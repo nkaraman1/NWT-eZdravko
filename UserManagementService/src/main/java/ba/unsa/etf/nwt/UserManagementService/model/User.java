@@ -51,7 +51,7 @@ public class User {
                 String slika,
                 Role rola,
                 String UID,
-                String broj_knjizice) throws Exception {
+                String broj_knjizice) {
 
         this.ID = ID;
         this.ime = ime;
