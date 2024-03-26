@@ -1,46 +1,21 @@
-package ba.unsa.etf.nwt.NewsService.model;
+package ba.unsa.etf.nwt.NewsService.DTO;
 
-import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.persistence.Column;
 
-@Entity
-@Data
-@Table(name = "Novosti")
-public class News {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ID;
-    @Column
+public class NewsDTO {
     private String naslov;
-    @Column
     private String sadrzaj;
-    @Column
     private String slika;
-    @Column
     private String user_uid;
 
-    public News(Long ID, String naslov, String sadrzaj, String slika, String user_uid) {
-        this.ID = ID;
+    public NewsDTO(String naslov, String sadrzaj, String slika, String user_uid) {
         this.naslov = naslov;
         this.sadrzaj = sadrzaj;
         this.slika = slika;
         this.user_uid = user_uid;
     }
 
-    public News() {
-        this.ID = null;
-        this.naslov = null;
-        this.sadrzaj = null;
-        this.slika = null;
-        this.user_uid = null;
-    }
-
-    public Long getID() {
-        return ID;
-    }
-
-    public void setID(Long ID) {
-        this.ID = ID;
+    public NewsDTO() {
     }
 
     public String getNaslov() {

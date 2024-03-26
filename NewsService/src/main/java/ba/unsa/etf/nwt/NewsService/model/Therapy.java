@@ -5,8 +5,9 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "ProduzenjeTerapije")
-public class Terapy {
+public class Therapy {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
     @Column
     private String lijek;
@@ -14,16 +15,12 @@ public class Terapy {
     private String napomena;
     @Column
     private Integer kolicina;
-    //@ManyToOne
-    //@JoinColumn(name = "pacijent_uid", referencedColumnName = "UID")
     @Column
     private String pacijent_uid;
-    //@ManyToOne
-    //@JoinColumn(name = "doktor_uid", referencedColumnName = "UID")
     @Column
     private String doktor_uid;
 
-    public Terapy(Long ID, String lijek, String napomena, Integer kolicina, String pacijent_uid, String doktor_uid) {
+    public Therapy(Long ID, String lijek, String napomena, Integer kolicina, String pacijent_uid, String doktor_uid) {
         this.ID = ID;
         this.lijek = lijek;
         this.napomena = napomena;
@@ -32,7 +29,7 @@ public class Terapy {
         this.doktor_uid = doktor_uid;
     }
 
-    public Terapy() {
+    public Therapy() {
         this.ID = null;
         this.lijek = null;
         this.napomena = null;

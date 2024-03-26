@@ -1,42 +1,19 @@
-package ba.unsa.etf.nwt.NewsService.model;
+package ba.unsa.etf.nwt.NewsService.DTO;
 
-import jakarta.persistence.*;
-import lombok.Data;
+import jakarta.persistence.Column;
 
-@Entity
-@Data
-@Table(name = "Notifikacije")
-public class Notification {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ID;
-    @Column
+public class NotificationDTO {
     private String tip_notifikacije;
-    @Column
     private String sadrzaj;
-    @Column
     private String user_uid;
 
-    public Notification(Long ID, String tip_notifikacije, String sadrzaj, String user_uid) {
-        this.ID = ID;
+    public NotificationDTO(String tip_notifikacije, String sadrzaj, String user_uid) {
         this.tip_notifikacije = tip_notifikacije;
         this.sadrzaj = sadrzaj;
         this.user_uid = user_uid;
     }
 
-    public Notification() {
-        this.ID = null;
-        this.tip_notifikacije = null;
-        this.sadrzaj = null;
-        this.user_uid = null;
-    }
-
-    public Long getID() {
-        return ID;
-    }
-
-    public void setID(Long ID) {
-        this.ID = ID;
+    public NotificationDTO() {
     }
 
     public String getTip_notifikacije() {
