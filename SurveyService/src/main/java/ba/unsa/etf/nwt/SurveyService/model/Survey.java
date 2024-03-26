@@ -17,9 +17,9 @@ public class Survey {
     @Column
     private String opis;
     @Column
-    private Boolean status;
+    private Integer status;
 
-    public Survey(Long ID, String UID_korisnika, String naslov, String opis, Boolean status) {
+    public Survey(Long ID, String UID_korisnika, String naslov, String opis, Integer status) {
         this.ID = ID;
         this.user_uid = UID_korisnika;
         this.naslov = naslov;
@@ -67,11 +67,11 @@ public class Survey {
         this.opis = opis;
     }
 
-    public Boolean getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(Boolean status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 
