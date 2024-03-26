@@ -8,6 +8,7 @@ import lombok.Data;
 @Table(name = "AnketePitanja")
 public class SurveyQuestion {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
     @ManyToOne
     @JoinColumn(name = "survey_id", referencedColumnName = "ID")

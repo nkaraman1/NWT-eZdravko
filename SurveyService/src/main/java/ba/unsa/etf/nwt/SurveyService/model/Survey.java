@@ -8,6 +8,7 @@ import lombok.Data;
 @Table(name = "Ankete")
 public class Survey {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
     @Column
     private String user_uid;

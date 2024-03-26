@@ -8,6 +8,7 @@ import lombok.Data;
 @Table(name = "AnketaOdgovori")
 public class SurveyAnswer {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
     @OneToOne
     @JoinColumn(name = "answer_id", referencedColumnName = "ID")
