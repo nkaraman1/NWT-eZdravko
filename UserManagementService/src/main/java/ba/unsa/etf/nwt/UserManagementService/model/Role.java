@@ -35,11 +35,11 @@ public class Role {
         this.ID = ID;
     }
 
-    public String getnazivRole() {
+    public String getNazivRole() {
         return nazivRole;
     }
 
-    public void setnazivRole(String nazivRole) {
+    public void setNazivRole(String nazivRole) {
         this.nazivRole = nazivRole;
     }
 
