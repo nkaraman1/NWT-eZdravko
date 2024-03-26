@@ -9,7 +9,7 @@ import lombok.Data;
 @Table(name="nalaz_rezultati")
 public class TestResult {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
     @ManyToOne

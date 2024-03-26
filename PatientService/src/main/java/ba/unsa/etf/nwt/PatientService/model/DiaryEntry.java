@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Table(name = "dnevnik_unosi")
 public class DiaryEntry {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
     @Column

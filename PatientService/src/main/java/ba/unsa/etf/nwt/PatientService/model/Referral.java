@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @Table(name = "Uputnice")
 public class Referral {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
     @ManyToOne
