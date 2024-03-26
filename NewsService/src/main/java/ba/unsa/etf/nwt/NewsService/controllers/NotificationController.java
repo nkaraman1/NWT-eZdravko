@@ -2,6 +2,7 @@ package ba.unsa.etf.nwt.NewsService.controllers;
 
 import ba.unsa.etf.nwt.NewsService.DTO.NewsDTO;
 import ba.unsa.etf.nwt.NewsService.DTO.NotificationDTO;
+import ba.unsa.etf.nwt.NewsService.model.ErrorMsg;
 import ba.unsa.etf.nwt.NewsService.model.News;
 import ba.unsa.etf.nwt.NewsService.model.Notification;
 import ba.unsa.etf.nwt.NewsService.repositories.NotificationsRepository;
@@ -10,10 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
@@ -39,14 +37,15 @@ public class NotificationController {
     }
 
     @PostMapping(value="/notifications")
-    public ResponseEntity<Notification> createNotification(@RequestBody NotificationDTO notificationDTO) {
+    public ResponseEntity<?> createNotification(@RequestBody NotificationDTO notificationDTO) {
         Errors errors = new BeanPropertyBindingResult(notificationDTO, "notificationDTO");
         validator.validate(notificationDTO, errors);
 
         if (errors.hasErrors()) {
             StringBuilder errorMessage = new StringBuilder();
             errors.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()));
-            throw new RuntimeException(errorMessage.toString());
+            return new ResponseEntity<>(new ErrorMsg(errorMessage.toString()), HttpStatus.FORBIDDEN);
+//            throw new RuntimeException(errorMessage.toString());
         }
         Notification notification = new Notification();
         notification.setTip_notifikacije(notificationDTO.getTip_notifikacije());
@@ -55,5 +54,10 @@ public class NotificationController {
 
         Notification savedNotification = notificationsRepository.save(notification);
         return new ResponseEntity<>(savedNotification, HttpStatus.CREATED);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }

@@ -6,6 +6,7 @@ import ba.unsa.etf.nwt.ForumService.model.Comment;
 import ba.unsa.etf.nwt.ForumService.model.Question;
 import ba.unsa.etf.nwt.ForumService.repositories.CommentRepository;
 import ba.unsa.etf.nwt.ForumService.repositories.QuestionRepository;
+import ba.unsa.etf.nwt.UserManagementService.model.ErrorMsg;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -40,19 +41,21 @@ public class CommentController {
     }
 
     @PostMapping(value="/comments")
-    public ResponseEntity<Comment> createComment(@RequestBody CommentDTO commentDTO) {
+    public ResponseEntity<?> createComment(@RequestBody CommentDTO commentDTO) {
         Errors errors = new BeanPropertyBindingResult(commentDTO, "commentDTO");
         validator.validate(commentDTO, errors);
 
         if (errors.hasErrors()) {
             StringBuilder errorMessage = new StringBuilder();
-            errors.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()));
-            throw new RuntimeException(errorMessage.toString());
+            errors.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()).append(" "));
+            return new ResponseEntity<>(new ErrorMsg(errorMessage.toString()), HttpStatus.FORBIDDEN);
+//            throw new RuntimeException(errorMessage.toString());
         }
 
         Question question = questionRepository.findById(Math.toIntExact(commentDTO.getQuestionId())).orElse(null);
         if (question == null) {
-            throw new InvalidQuestionIdException("Nepostojeći question ID: " + commentDTO.getQuestionId());
+            return new ResponseEntity<>(new ErrorMsg("Nije pronadjeno nijedno pitanje sa tim ID-em."), HttpStatus.FORBIDDEN);
+//            throw new InvalidQuestionIdException("Nepostojeći question ID: " + commentDTO.getQuestionId());
         }
 
         Comment comment = new Comment();

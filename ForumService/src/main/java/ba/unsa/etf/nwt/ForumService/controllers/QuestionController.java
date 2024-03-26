@@ -4,6 +4,7 @@ import ba.unsa.etf.nwt.ForumService.DTO.QuestionDTO;
 import ba.unsa.etf.nwt.ForumService.model.Comment;
 import ba.unsa.etf.nwt.ForumService.model.Question;
 import ba.unsa.etf.nwt.ForumService.repositories.QuestionRepository;
+import ba.unsa.etf.nwt.UserManagementService.model.ErrorMsg;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,14 +37,15 @@ public class QuestionController {
     }
 
     @PostMapping(value="/questions")
-    public ResponseEntity<Question> createQuestion(@RequestBody QuestionDTO questionDTO) {
+    public ResponseEntity<?> createQuestion(@RequestBody QuestionDTO questionDTO) {
         Errors errors = new BeanPropertyBindingResult(questionDTO, "questionDTO");
         validator.validate(questionDTO, errors);
 
         if (errors.hasErrors()) {
             StringBuilder errorMessage = new StringBuilder();
             errors.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()));
-            throw new RuntimeException(errorMessage.toString());
+            return new ResponseEntity<>(new ErrorMsg(errorMessage.toString()), HttpStatus.FORBIDDEN);
+//            throw new RuntimeException(errorMessage.toString());
         }
         Question question = new Question();
         question.setUser_uid(questionDTO.getUserUid());

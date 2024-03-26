@@ -1,10 +1,14 @@
 package ba.unsa.etf.nwt.NewsService.DTO;
 
 import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
 
 public class NotificationDTO {
+    @NotBlank(message = "Tip notifikacije je obavezan.")
     private String tip_notifikacije;
+    @NotBlank(message = "Sadržaj notifikacije je obavezan.")
     private String sadrzaj;
+    @NotBlank(message = "UID korisnika je obavezan.")
     private String user_uid;
 
     public NotificationDTO(String tip_notifikacije, String sadrzaj, String user_uid) {

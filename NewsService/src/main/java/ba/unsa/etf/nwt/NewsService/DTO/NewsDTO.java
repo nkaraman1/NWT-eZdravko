@@ -1,11 +1,16 @@
 package ba.unsa.etf.nwt.NewsService.DTO;
 
 import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
 
 public class NewsDTO {
+    @NotBlank(message = "Naslov je obavezan.")
     private String naslov;
+    @NotBlank(message = "Sadržaj novosti je obavezan.")
     private String sadrzaj;
+    @NotBlank(message = "Slika je obavezna.")
     private String slika;
+    @NotBlank(message = "UID korisnika je obavezan.")
     private String user_uid;
 
     public NewsDTO(String naslov, String sadrzaj, String slika, String user_uid) {

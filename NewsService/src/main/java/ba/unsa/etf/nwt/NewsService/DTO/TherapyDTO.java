@@ -1,12 +1,19 @@
 package ba.unsa.etf.nwt.NewsService.DTO;
 
-import jakarta.persistence.Column;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class TherapyDTO {
+    @NotBlank(message = "Lijek je obavezan.")
     private String lijek;
     private String napomena;
+    @NotNull(message = "Količina je obavezna.")
+    @DecimalMin(value = "0", message = "Količina mora biti veća od 0.")
     private Integer kolicina;
+    @NotBlank(message = "UID pacijenta je obavezan.")
     private String pacijent_uid;
+    @NotBlank(message = "UID doktora je obavezan.")
     private String doktor_uid;
 
     public TherapyDTO(String lijek, String napomena, Integer kolicina, String pacijent_uid, String doktor_uid) {
