@@ -1,5 +1,6 @@
 package ba.unsa.etf.nwt.SurveyService.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -13,6 +14,8 @@ public class SurveyAnswer {
     @OneToOne
     @JoinColumn(name = "answer_id", referencedColumnName = "ID")
     private AnswerOptions anketaOdgovor;
+
+
 
     public SurveyAnswer(Long ID, AnswerOptions anketaOdgovor) {
         this.ID = ID;
@@ -32,6 +35,7 @@ public class SurveyAnswer {
         this.ID = ID;
     }
 
+    @JsonBackReference
     public AnswerOptions getAnketaOdgovor() {
         return anketaOdgovor;
     }

@@ -47,6 +47,18 @@ public class SurveyQuestionControllerTests {
     }
 
     @Test
+    public void getSurveyQuestion_Success() throws Exception {
+        // Mock the behavior of SurveyRepository
+        when(surveyQuestionRepository.findAll()).thenReturn(List.of(new SurveyQuestion( "A vi kako te?")));
+
+        // Perform GET request to fetch all surveys
+        mockMvc.perform(MockMvcRequestBuilders.get("/surveyquestions"))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", Matchers.is(1)))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].sadrzaj", Matchers.is("A vi kako te?")));
+    }
+
+    @Test
     public void createSurveyQuestion_ValidInput_Success() throws Exception {
         // Mock Survey object
         Survey survey = new Survey(1L, "user_uid", "Survey Title", "Survey Description", 1);
