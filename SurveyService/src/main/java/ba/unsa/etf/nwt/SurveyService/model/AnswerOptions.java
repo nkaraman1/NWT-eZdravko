@@ -34,6 +34,10 @@ public class AnswerOptions {
         this.sadrzaj = sadrzaj;
     }
 
+    public AnswerOptions(String sadrzaj) {
+        this.sadrzaj = sadrzaj;
+    }
+
     public AnswerOptions() {
         this.ID = null;
         this.anketaPitanje = null;
