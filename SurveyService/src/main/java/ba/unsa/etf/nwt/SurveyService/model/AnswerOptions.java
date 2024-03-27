@@ -22,6 +22,11 @@ public class AnswerOptions {
         this.sadrzaj = sadrzaj;
     }
 
+    public AnswerOptions(Long ID, String sadrzaj) {
+        this.ID = ID;
+        this.sadrzaj = sadrzaj;
+    }
+
     public AnswerOptions() {
         this.ID = null;
         this.anketaPitanje = null;

@@ -27,6 +27,13 @@ public class Survey {
         this.status = status;
     }
 
+    public Survey(String user_uid, String naslov, String opis, Integer status) {
+        this.user_uid = user_uid;
+        this.naslov = naslov;
+        this.opis = opis;
+        this.status = status;
+    }
+
     public Survey() {
         this.ID = null;
         this.user_uid = null;
