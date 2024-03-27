@@ -1,5 +1,6 @@
 package ba.unsa.etf.nwt.PatientService.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,6 +10,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -35,6 +37,9 @@ public class Examination {
     @NotNull(message = "Termin pregleda je obavezan.")
     @PastOrPresent(message = "Termin pregleda ne može biti u budućnosti.")
     private LocalDateTime termin_pregleda;
+
+    @OneToMany(mappedBy = "pregled", cascade = CascadeType.ALL)
+    private List<Referral> uputnice;
 
     public Examination() {
         //this.ID = null;
@@ -90,5 +95,15 @@ public class Examination {
 
     public void setTermin_pregleda(LocalDateTime termin_pregleda) {
         this.termin_pregleda = termin_pregleda;
+    }
+
+    @JsonManagedReference
+    public List<Referral> getUputnice() {
+        return uputnice;
+    }
+
+
+    public void setUputnice(List<Referral> uputnice) {
+        this.uputnice = uputnice;
     }
 }
