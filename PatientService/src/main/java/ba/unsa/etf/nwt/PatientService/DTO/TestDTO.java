@@ -1,77 +1,43 @@
-package ba.unsa.etf.nwt.PatientService.model;
+package ba.unsa.etf.nwt.PatientService.DTO;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
-import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Data
-@Table(name = "Nalazi")
-public class Test {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ID;
-
-    @Column
+public class TestDTO {
     @NotBlank(message = "UID pacijenta je obavezan.")
     private String pacijent_uid;
 
-    @Column
     @NotBlank(message = "UID laboranta je obavezan.")
     private String laborant_uid;
 
-    @Column
     //nije obavezan jer nema doktr_uid vrijednost sve dok doktor ne uzme nalaz da doda dijagnozu
     private String doktor_uid;
 
-    @ManyToOne
-    @JoinColumn(name = "tip_nalaza_id", referencedColumnName = "ID")
-    @NotBlank(message = "ID tipa nalaza je obavezan.")
-    private TestType tip_nalaza;
+    @NotNull(message = "ID tipa nalaza je obavezan.")
+    private Long tip_nalaza_id;
 
-    @Column
-    //@NotBlank(message = "Dijagnoza je obavezna.")
     private String dijagnoza;
 
-    @Column
     @PastOrPresent(message = "Vrijeme pregleda ne može biti u budućnosti.")
     private LocalDateTime vrijeme_pregleda;
 
-    @Column
     @PastOrPresent(message = "Vrijeme dijagnoze ne može biti u budućnosti.")
     private LocalDateTime vrijeme_dijagnoze;
 
-    public Test() {
-        //this.ID = null;
-        this.pacijent_uid = null;
-        this.laborant_uid = null;
-        this.doktor_uid = null;
-        this.tip_nalaza = null;
-        this.dijagnoza = "/";
-        this.vrijeme_pregleda = null;
-        this.vrijeme_dijagnoze = null;
+    public TestDTO() {
     }
 
-    public Test(Long ID, String pacijent_uid, String laborant_uid, String doktor_uid, TestType tip_nalaza_id, String dijagnoza, LocalDateTime vrijeme_pregleda, LocalDateTime vrijeme_dijagnoze) {
-        this.ID = ID;
+    public TestDTO(String pacijent_uid, String laborant_uid, String doktor_uid, Long tip_nalaza_id, String dijagnoza, LocalDateTime vrijeme_pregleda, LocalDateTime vrijeme_dijagnoze) {
         this.pacijent_uid = pacijent_uid;
         this.laborant_uid = laborant_uid;
         this.doktor_uid = doktor_uid;
-        this.tip_nalaza = tip_nalaza_id;
+        this.tip_nalaza_id = tip_nalaza_id;
         this.dijagnoza = dijagnoza;
         this.vrijeme_pregleda = vrijeme_pregleda;
         this.vrijeme_dijagnoze = vrijeme_dijagnoze;
-    }
-
-    public Long getID() {
-        return ID;
-    }
-
-    public void setID(Long ID) {
-        this.ID = ID;
     }
 
     public String getPacijent_uid() {
@@ -98,12 +64,12 @@ public class Test {
         this.doktor_uid = doktor_uid;
     }
 
-    public TestType getTip_nalaza() {
-        return tip_nalaza;
+    public Long getTip_nalaza_id() {
+        return tip_nalaza_id;
     }
 
-    public void setTip_nalaza(TestType tip_nalaza) {
-        this.tip_nalaza = tip_nalaza;
+    public void setTip_nalaza_id(Long tip_nalaza_id) {
+        this.tip_nalaza_id = tip_nalaza_id;
     }
 
     public String getDijagnoza() {
