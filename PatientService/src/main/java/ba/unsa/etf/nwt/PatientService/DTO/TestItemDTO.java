@@ -1,68 +1,36 @@
-package ba.unsa.etf.nwt.PatientService.model;
+package ba.unsa.etf.nwt.PatientService.DTO;
 
-import jakarta.persistence.*;
-import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
-import lombok.Data;
 
-@Entity
-@Data
-@Table(name = "Stavke")
-public class TestItem {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ID;
-
-    @Column
+public class TestItemDTO {
     @NotBlank(message = "Naziv stavke je obavezan.")
     private String naziv;
 
-    @Column
     @PositiveOrZero(message = "Referentni minimum ne smije biti negativan.")
     private Double ref_min;
 
-    @Column
     @PositiveOrZero(message = "Referentni maksimum ne smije biti negativan.")
     private Double ref_max;
 
-    @Column
     private String ref;
 
-    @Column
     private String mjerna_jedinica;
 
-    @ManyToOne
-    @JoinColumn(name = "tip_nalaza_id", referencedColumnName = "ID")
-    @NotBlank(message = "ID tipa nalaza je obavezan.")
-    private TestType tip_nalaza;
+    @NotNull()
+    private Long tip_nalaza_id;
 
-    public TestItem() {
-        //this.ID = null;
-        this.naziv = null;
-        this.ref_min = null;
-        this.ref_max = null;
-        this.ref = null;
-        this.mjerna_jedinica = null;
-        this.tip_nalaza = null;
+    public TestItemDTO() {
     }
 
-    public TestItem(Long ID, String naziv, Double ref_min, Double ref_max, String ref, String mjerna_jedinica, TestType tip_nalaza) {
-        this.ID = ID;
+    public TestItemDTO(String naziv, Double ref_min, Double ref_max, String ref, String mjerna_jedinica, Long tip_nalaza_id) {
         this.naziv = naziv;
         this.ref_min = ref_min;
         this.ref_max = ref_max;
         this.ref = ref;
         this.mjerna_jedinica = mjerna_jedinica;
-        this.tip_nalaza = tip_nalaza;
-    }
-
-    public Long getID() {
-        return ID;
-    }
-
-    public void setID(Long ID) {
-        this.ID = ID;
+        this.tip_nalaza_id = tip_nalaza_id;
     }
 
     public String getNaziv() {
@@ -105,11 +73,11 @@ public class TestItem {
         this.mjerna_jedinica = mjerna_jedinica;
     }
 
-    public TestType getTip_nalaza() {
-        return tip_nalaza;
+    public Long getTip_nalaza_id() {
+        return tip_nalaza_id;
     }
 
-    public void setTip_nalaza(TestType tip_nalaza) {
-        this.tip_nalaza = tip_nalaza;
+    public void setTip_nalaza_id(Long tip_nalaza_id) {
+        this.tip_nalaza_id = tip_nalaza_id;
     }
 }
