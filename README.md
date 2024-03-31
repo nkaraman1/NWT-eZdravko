@@ -7,5 +7,5 @@ Portovi koji se koriste za servise:
   <li>Forum: 4000</li>
   <li>Novosti: 5000</li>
   <li>Anketa: 7000</li>  
-  <li>Pacijenti: 8080</li>  
+  <li>Pacijenti: 3456</li>  
 </list>
