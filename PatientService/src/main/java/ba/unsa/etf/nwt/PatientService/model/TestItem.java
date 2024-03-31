@@ -3,6 +3,7 @@ package ba.unsa.etf.nwt.PatientService.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
@@ -34,7 +35,7 @@ public class TestItem {
 
     @ManyToOne
     @JoinColumn(name = "tip_nalaza_id", referencedColumnName = "ID")
-    @NotBlank(message = "ID tipa nalaza je obavezan.")
+    @NotNull(message = "ID tipa nalaza je obavezan.")
     private TestType tip_nalaza;
 
     public TestItem() {

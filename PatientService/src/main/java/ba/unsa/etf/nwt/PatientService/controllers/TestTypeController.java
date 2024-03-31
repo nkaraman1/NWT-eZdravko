@@ -1,27 +1,31 @@
 package ba.unsa.etf.nwt.PatientService.controllers;
 
+import ba.unsa.etf.nwt.PatientService.DTO.TestTypeDTO;
 import ba.unsa.etf.nwt.PatientService.model.TestType;
 import ba.unsa.etf.nwt.PatientService.repositories.TestTypeRepository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import ba.unsa.etf.nwt.PatientService.services.TestTypeService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
 
 @RestController
+@RequestMapping(value="/test-types")
 public class TestTypeController {
-    private final TestTypeRepository testTypeRepository;
+    private final TestTypeService testTypeService;
 
-    public TestTypeController(TestTypeRepository testTypeRepository) {
-        this.testTypeRepository = testTypeRepository;
+    public TestTypeController(TestTypeService testTypeService) {
+        this.testTypeService = testTypeService;
     }
 
-    @GetMapping(value="/test-types")
+    @GetMapping(value="/")
     public List<TestType> getTestTypes(){
-        List<TestType> testTypes =  testTypeRepository.findAll();
-        if (testTypes.isEmpty()){
-            return Collections.emptyList();
-        }
-        return testTypes;
+       return testTypeService.getTestTypes();
+    }
+
+    @PostMapping(value="/")
+    public ResponseEntity<?> addTestType(@RequestBody TestTypeDTO testTypeDTO){
+        return testTypeService.addTestType(testTypeDTO);
     }
 }

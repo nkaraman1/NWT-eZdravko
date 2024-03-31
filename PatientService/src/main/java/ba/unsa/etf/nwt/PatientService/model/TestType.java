@@ -21,6 +21,10 @@ public class TestType {
         this.naziv = null;
     }
 
+    public TestType(String naziv) {
+        this.naziv = naziv;
+    }
+
     public TestType(Long ID, String naziv) {
         this.ID = ID;
         this.naziv = naziv;
