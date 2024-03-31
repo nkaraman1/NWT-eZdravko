@@ -1,27 +1,33 @@
 package ba.unsa.etf.nwt.PatientService.controllers;
 
+import ba.unsa.etf.nwt.PatientService.DTO.ExaminationDTO;
 import ba.unsa.etf.nwt.PatientService.model.Examination;
 import ba.unsa.etf.nwt.PatientService.repositories.ExaminationRepository;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import ba.unsa.etf.nwt.PatientService.services.ExaminationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
 
 @RestController
+@RequestMapping(path = "/api/examinations")
 public class ExaminationController {
-    private final ExaminationRepository examinationRepository;
+    private final ExaminationService examinationService;
 
-    public ExaminationController(ExaminationRepository examinationRepository) {
-        this.examinationRepository = examinationRepository;
+    @Autowired
+    public ExaminationController(ExaminationService examinationService) {
+        this.examinationService = examinationService;
     }
 
-    @GetMapping(value="/examinations")
+    @GetMapping(value="/")
     public List<Examination> getDiaryEntries() {
-        List<Examination> examinations = examinationRepository.findAll();
-        if (examinations.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return examinations;
+        return examinationService.getDiaryEntries();
+    }
+
+    @PostMapping(value="/")
+    public ResponseEntity<?> addExamination(@RequestBody ExaminationDTO examinationDTO){
+        return examinationService.addExamination(examinationDTO);
     }
 }

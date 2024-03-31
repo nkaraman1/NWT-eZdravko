@@ -1,70 +1,43 @@
-package ba.unsa.etf.nwt.PatientService.model;
+package ba.unsa.etf.nwt.PatientService.DTO;
 
-import jakarta.persistence.*;
+import ba.unsa.etf.nwt.PatientService.model.Examination;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Data;
 
 import java.time.LocalDate;
 
-@Entity
-@Data
-@Table(name = "Uputnice")
-public class Referral {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long ID;
-
-    @ManyToOne
-    @JoinColumn(name = "pregled_id", referencedColumnName = "ID")
+public class ReferralDTO {
     @NotBlank(message = "ID pregleda je obavezan.")
-    private Examination pregled;
+    private Long pregled_id;
 
-    @Column
     @NotBlank(message = "UID specijaliste je obavezan.")
     private String specijalista_uid;
 
-    @Column
     @Size(min = 10, max = 1000, message
             = "Komentar mora imati između 10 i 1000 karaktera.")
     private String komentar;
 
-    @Column
     @Future(message = "Datum isteka mora biti u budućnosti.")
     private LocalDate datum_isteka;
 
-
-    public Referral() {
-        //this.ID = null;
-        this.pregled = null;
-        this.specijalista_uid = null;
-        this.komentar = null;
-        this.datum_isteka = null;
+    public ReferralDTO() {
     }
 
-    public Referral(Long ID, Examination pregled, String specijalista_uid, String komentar, LocalDate datum_isteka) {
-        this.ID = ID;
-        this.pregled = pregled;
+    public ReferralDTO(Long pregled_id, String specijalista_uid, String komentar, LocalDate datum_isteka) {
+        this.pregled_id = pregled_id;
         this.specijalista_uid = specijalista_uid;
         this.komentar = komentar;
         this.datum_isteka = datum_isteka;
     }
 
-    public Long getID() {
-        return ID;
+    public Long getPregled_id() {
+        return pregled_id;
     }
 
-    public void setID(Long ID) {
-        this.ID = ID;
-    }
-
-    public Examination getPregled() {
-        return pregled;
-    }
-
-    public void setPregled(Examination pregled) {
-        this.pregled = pregled;
+    public void setPregled_id(Long pregled_id) {
+        this.pregled_id = pregled_id;
     }
 
     public String getSpecijalista_uid() {
