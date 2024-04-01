@@ -9,7 +9,15 @@
         <option value="$PROJECT_DIR$/SurveyService/pom.xml" />
         <option value="$PROJECT_DIR$/PatientService/pom.xml" />
         <option value="$PROJECT_DIR$/UserManagementService/pom.xml" />
+        <option value="$PROJECT_DIR$/ConfigService/pom.xml" />
+        <option value="$PROJECT_DIR$/ConfigClient/pom.xml" />
+        <option value="$PROJECT_DIR$/ConfigServer/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/ConfigService/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" project-jdk-name="21" project-jdk-type="JavaSDK">
