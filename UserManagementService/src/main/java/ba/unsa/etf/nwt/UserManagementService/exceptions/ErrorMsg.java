@@ -1,4 +1,4 @@
-package ba.unsa.etf.nwt.UserManagementService.model;
+package ba.unsa.etf.nwt.UserManagementService.exceptions;
 
 public class ErrorMsg {
     private String error;
