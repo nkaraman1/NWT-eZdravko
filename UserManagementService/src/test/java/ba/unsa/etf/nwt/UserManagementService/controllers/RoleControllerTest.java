@@ -2,6 +2,7 @@ package ba.unsa.etf.nwt.UserManagementService.controllers;
 
 import ba.unsa.etf.nwt.UserManagementService.model.Role;
 import ba.unsa.etf.nwt.UserManagementService.repositories.RoleRepository;
+import ba.unsa.etf.nwt.UserManagementService.repositories.UserRepository;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,6 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class RoleControllerTest {
     @MockBean
     private RoleRepository roleRepository;
+    @MockBean
+    private UserRepository userRepository;
 
     @Autowired
     private MockMvc mockMvc;
@@ -111,8 +114,9 @@ public class RoleControllerTest {
         Long roleId = 1L;
 
         // Mock the behavior of RoleRepository
-        Role roleToDelete = new Role(roleId, "Doktor");
+        Role roleToDelete = new Role(roleId, "Rola");
         when(roleRepository.findById(roleId)).thenReturn(Optional.of(roleToDelete));
+        when(userRepository.findByRola(roleToDelete)).thenReturn(List.of());
         doNothing().when(roleRepository).deleteById(roleId);
 
         // Perform DELETE request to delete a role
