@@ -3,6 +3,7 @@ E-Health sistem koji omogućava lakši rad i organizaciju u zdravstvu, kako za m
 <br/><br/>
 Portovi koji se koriste za servise:
 <list>
+  <li>Config Server: 8888</li>
   <li>Korisnici: 3000</li>
   <li>Forum: 4000</li>
   <li>Novosti: 5000</li>
