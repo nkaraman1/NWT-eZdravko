@@ -1,11 +1,9 @@
 package ba.unsa.etf.nwt.ForumService.controllers;
 
 import ba.unsa.etf.nwt.ForumService.DTO.QuestionDTO;
-import ba.unsa.etf.nwt.ForumService.model.Comment;
 import ba.unsa.etf.nwt.ForumService.model.Question;
 import ba.unsa.etf.nwt.ForumService.repositories.QuestionRepository;
-import ba.unsa.etf.nwt.UserManagementService.model.ErrorMsg;
-import jakarta.validation.Valid;
+import ba.unsa.etf.nwt.UserManagementService.exceptions.ErrorMsg;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BeanPropertyBindingResult;
