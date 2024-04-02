@@ -117,6 +117,10 @@ public class SurveyAnswerController {
 
         AnswerOptions answerOptions = answerOptionsRepository.findById((surveyAnswerDTO.getAnswerId())).orElse(null);
 
+        if(answerOptions == null) {
+            return new ResponseEntity<>(new ErrorMsg("Nije pronadjen nijedan ponudjeni odgovor sa tim ID-em."), HttpStatus.FORBIDDEN);
+        }
+
         existingSurveyAnswer.setAnketaOdgovor(answerOptions);
 
         SurveyAnswer updatedSurveyAnswer = surveyAnswerRepository.save(existingSurveyAnswer);

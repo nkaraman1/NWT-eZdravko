@@ -126,7 +126,7 @@ public class SurveyController {
         return new ResponseEntity<>(updatedSurvey, HttpStatus.OK);
     }
 
-    @PutMapping(value="/surveys/{id}/user-uid/{userUid}")
+    @PatchMapping(value="/surveys/{id}/user-uid/{userUid}")
     public ResponseEntity<?> updateUserUid(@PathVariable Long id, @PathVariable String userUid) {
         Optional<Survey> optionalSurvey = surveyRepository.findById(id);
         if (optionalSurvey.isPresent()) {
@@ -139,7 +139,7 @@ public class SurveyController {
         }
     }
 
-    @PutMapping(value="/surveys/{id}/naslov/{naslov}")
+    @PatchMapping(value="/surveys/{id}/naslov/{naslov}")
     public ResponseEntity<?> updateNaslov(@PathVariable Long id, @PathVariable String naslov) {
         Optional<Survey> optionalSurvey = surveyRepository.findById(id);
         if (optionalSurvey.isPresent()) {
@@ -151,7 +151,7 @@ public class SurveyController {
             return new ResponseEntity<>(new ErrorMsg("Neispravni parametri!"), HttpStatus.NOT_FOUND);        }
     }
 
-    @PutMapping(value="/surveys/{id}/opis/{opis}")
+    @PatchMapping(value="/surveys/{id}/opis/{opis}")
     public ResponseEntity<?> updateOpis(@PathVariable Long id, @PathVariable String opis) {
         Optional<Survey> optionalSurvey = surveyRepository.findById(id);
         if (optionalSurvey.isPresent()) {
@@ -162,7 +162,7 @@ public class SurveyController {
         } else {
             return new ResponseEntity<>(new ErrorMsg("Neispravni parametri!"), HttpStatus.NOT_FOUND);        }
     }
-    @PutMapping(value="/surveys/{id}/status/{status}")
+    @PatchMapping(value="/surveys/{id}/status/{status}")
     public ResponseEntity<?> updateStatus(@PathVariable Long id, @PathVariable Integer status) {
         Optional<Survey> optionalSurvey = surveyRepository.findById(id);
         if (optionalSurvey.isPresent()) {

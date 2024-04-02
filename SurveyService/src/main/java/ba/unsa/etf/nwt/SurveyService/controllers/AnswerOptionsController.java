@@ -118,6 +118,10 @@ public class AnswerOptionsController {
 
         SurveyQuestion surveyQuestion = surveyQuestionRepository.findById((answerOptionsDTO.getQuestionId())).orElse(null);
 
+        if(surveyQuestion == null) {
+            return new ResponseEntity<>(new ErrorMsg("Nije pronadjeno nijedno pitanje u anketi sa tim ID-em."), HttpStatus.FORBIDDEN);
+        }
+
         existingAnswerOptions.setSadrzaj(answerOptionsDTO.getSadrzaj());
         existingAnswerOptions.setAnketaPitanje(surveyQuestion);
 
@@ -126,7 +130,7 @@ public class AnswerOptionsController {
         return new ResponseEntity<>(updatedAnswerOptions, HttpStatus.OK);
     }
 
-    @PutMapping(value="/answeroptions/{id}/sadrzaj/{sadrzaj}")
+    @PatchMapping(value="/answeroptions/{id}/sadrzaj/{sadrzaj}")
     public ResponseEntity<?> updateSadrzaj(@PathVariable Long id, @PathVariable String sadrzaj) {
         Optional<AnswerOptions> optionalAnswerOptions = answerOptionsRepository.findById(id);
         if (optionalAnswerOptions.isPresent()) {

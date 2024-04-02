@@ -120,15 +120,21 @@ public class SurveyQuestionController {
 
         Survey survey = surveyRepository.findById((surveyQuestionDTO.getSurveyId())).orElse(null);
 
+        if (survey == null)
+            return new ResponseEntity<>(new ErrorMsg("Nije pronadjena nijedna anketa sa tim ID-em."), HttpStatus.NOT_FOUND);
+
         existingSurveyQuestion.setSadrzaj(surveyQuestionDTO.getSadrzaj());
         existingSurveyQuestion.setAnketa(survey);
+
+//        if(existingSurveyQuestion.getAnketa() != null)
+//            System.out.println("ID: " + existingSurveyQuestion.getAnketa().getID());
 
         SurveyQuestion updatedSurveyQuestion = surveyQuestionRepository.save(existingSurveyQuestion);
 
         return new ResponseEntity<>(updatedSurveyQuestion, HttpStatus.OK);
     }
 
-    @PutMapping(value="/surveyquestions/{id}/sadrzaj/{sadrzaj}")
+    @PatchMapping(value="/surveyquestions/{id}/sadrzaj/{sadrzaj}")
     public ResponseEntity<?> updateSadrzaj(@PathVariable Long id, @PathVariable String sadrzaj) {
         Optional<SurveyQuestion> optionalSurveyQuestion = surveyQuestionRepository.findById(id);
         if (optionalSurveyQuestion.isPresent()) {
