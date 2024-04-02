@@ -99,6 +99,35 @@ public class SurveyQuestionController {
         }
     }
 
+    @PutMapping(value="/surveyquestions/surveyquestion/{id}")
+    public ResponseEntity<?> updateSurveyQuestion(@PathVariable Long id, @RequestBody SurveyQuestionDTO surveyQuestionDTO){
+        Optional<SurveyQuestion> optionalSurveyQuestion = surveyQuestionRepository.findById(id);
+        if (!optionalSurveyQuestion.isPresent()) {
+            return new ResponseEntity<>(new ErrorMsg("Nije pronadjena nijedno pitanje sa tim ID-em."), HttpStatus.NOT_FOUND);
+        }
+
+        Errors errors = new BeanPropertyBindingResult(surveyQuestionDTO, "surveyQuestionDTO");
+        validator.validate(surveyQuestionDTO, errors);
+
+        if (errors.hasErrors()) {
+            StringBuilder errorMessage = new StringBuilder();
+            errors.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()));
+            return new ResponseEntity<>(new ErrorMsg("validation", errorMessage.toString()), HttpStatus.FORBIDDEN);
+//            throw new RuntimeException(errorMessage.toString());
+        }
+
+        SurveyQuestion existingSurveyQuestion = optionalSurveyQuestion.get();
+
+        Survey survey = surveyRepository.findById((surveyQuestionDTO.getSurveyId())).orElse(null);
+
+        existingSurveyQuestion.setSadrzaj(surveyQuestionDTO.getSadrzaj());
+        existingSurveyQuestion.setAnketa(survey);
+
+        SurveyQuestion updatedSurveyQuestion = surveyQuestionRepository.save(existingSurveyQuestion);
+
+        return new ResponseEntity<>(updatedSurveyQuestion, HttpStatus.OK);
+    }
+
     @PutMapping(value="/surveyquestions/{id}/sadrzaj/{sadrzaj}")
     public ResponseEntity<?> updateSadrzaj(@PathVariable Long id, @PathVariable String sadrzaj) {
         Optional<SurveyQuestion> optionalSurveyQuestion = surveyQuestionRepository.findById(id);

@@ -1,6 +1,7 @@
 package ba.unsa.etf.nwt.SurveyService.controllers;
 
 import ba.unsa.etf.nwt.SurveyService.DTO.AnswerOptionsDTO;
+import ba.unsa.etf.nwt.SurveyService.DTO.SurveyQuestionDTO;
 import ba.unsa.etf.nwt.SurveyService.model.AnswerOptions;
 import ba.unsa.etf.nwt.SurveyService.model.ErrorMsg;
 import ba.unsa.etf.nwt.SurveyService.model.Survey;
@@ -94,6 +95,35 @@ public class AnswerOptionsController {
         } else {
             return new ResponseEntity<>(new ErrorMsg("Nije pronadjen ponudjeni odgovor na pitanju sa tim ID-em."), HttpStatus.NOT_FOUND);
         }
+    }
+
+    @PutMapping(value="/answeroptions/answeroption/{id}")
+    public ResponseEntity<?> updateAnswerOptions(@PathVariable Long id, @RequestBody AnswerOptionsDTO answerOptionsDTO){
+        Optional<AnswerOptions> optionalAnswerOptions = answerOptionsRepository.findById(id);
+        if (!optionalAnswerOptions.isPresent()) {
+            return new ResponseEntity<>(new ErrorMsg("Nije pronadjen nijedan ponudjen odgovor sa tim ID-em."), HttpStatus.NOT_FOUND);
+        }
+
+        Errors errors = new BeanPropertyBindingResult(answerOptionsDTO, "answerOptionsDTO");
+        validator.validate(answerOptionsDTO, errors);
+
+        if (errors.hasErrors()) {
+            StringBuilder errorMessage = new StringBuilder();
+            errors.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()));
+            return new ResponseEntity<>(new ErrorMsg("validation", errorMessage.toString()), HttpStatus.FORBIDDEN);
+//            throw new RuntimeException(errorMessage.toString());
+        }
+
+        AnswerOptions existingAnswerOptions = optionalAnswerOptions.get();
+
+        SurveyQuestion surveyQuestion = surveyQuestionRepository.findById((answerOptionsDTO.getQuestionId())).orElse(null);
+
+        existingAnswerOptions.setSadrzaj(answerOptionsDTO.getSadrzaj());
+        existingAnswerOptions.setAnketaPitanje(surveyQuestion);
+
+        AnswerOptions updatedAnswerOptions = answerOptionsRepository.save(existingAnswerOptions);
+
+        return new ResponseEntity<>(updatedAnswerOptions, HttpStatus.OK);
     }
 
     @PutMapping(value="/answeroptions/{id}/sadrzaj/{sadrzaj}")

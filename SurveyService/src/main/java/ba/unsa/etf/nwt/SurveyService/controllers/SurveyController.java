@@ -97,6 +97,35 @@ public class SurveyController {
         }
     }
 
+    @PutMapping(value="/surveys/survey/{id}")
+    public ResponseEntity<?> updateSurvey(@PathVariable Long id, @RequestBody SurveyDTO surveyDTO){
+        Optional<Survey> optionalSurvey = surveyRepository.findById(id);
+        if (!optionalSurvey.isPresent()) {
+            return new ResponseEntity<>(new ErrorMsg("Nije pronadjena nijedna anketa sa tim ID-em."), HttpStatus.NOT_FOUND);
+        }
+
+        Errors errors = new BeanPropertyBindingResult(surveyDTO, "surveyDTO");
+        validator.validate(surveyDTO, errors);
+
+        if (errors.hasErrors()) {
+            StringBuilder errorMessage = new StringBuilder();
+            errors.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()));
+            return new ResponseEntity<>(new ErrorMsg("validation", errorMessage.toString()), HttpStatus.FORBIDDEN);
+//            throw new RuntimeException(errorMessage.toString());
+        }
+
+        Survey existingSurvey = optionalSurvey.get();
+
+        existingSurvey.setUser_uid(surveyDTO.getUserUid());
+        existingSurvey.setNaslov(surveyDTO.getNaslov());
+        existingSurvey.setOpis(surveyDTO.getOpis());
+        existingSurvey.setStatus(surveyDTO.getStatus());
+
+        Survey updatedSurvey = surveyRepository.save(existingSurvey);
+
+        return new ResponseEntity<>(updatedSurvey, HttpStatus.OK);
+    }
+
     @PutMapping(value="/surveys/{id}/user-uid/{userUid}")
     public ResponseEntity<?> updateUserUid(@PathVariable Long id, @PathVariable String userUid) {
         Optional<Survey> optionalSurvey = surveyRepository.findById(id);

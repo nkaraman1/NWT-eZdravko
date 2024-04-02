@@ -1,5 +1,6 @@
 package ba.unsa.etf.nwt.SurveyService.controllers;
 
+import ba.unsa.etf.nwt.SurveyService.DTO.AnswerOptionsDTO;
 import ba.unsa.etf.nwt.SurveyService.DTO.SurveyAnswerDTO;
 import ba.unsa.etf.nwt.SurveyService.DTO.SurveyQuestionDTO;
 import ba.unsa.etf.nwt.SurveyService.model.*;
@@ -93,6 +94,34 @@ public class SurveyAnswerController {
         } else {
             return new ResponseEntity<>(new ErrorMsg("Nije pronadjen odgovor sa tim ID-em."), HttpStatus.NOT_FOUND);
         }
+    }
+
+    @PutMapping(value="/surveyanswers/surveyanswer/{id}")
+    public ResponseEntity<?> updateSurveyAnswer(@PathVariable Long id, @RequestBody SurveyAnswerDTO surveyAnswerDTO){
+        Optional<SurveyAnswer> optionalSurveyAnswer = surveyAnswerRepository.findById(id);
+        if (!optionalSurveyAnswer.isPresent()) {
+            return new ResponseEntity<>(new ErrorMsg("Nije pronadjen nijedan odgovor sa tim ID-em."), HttpStatus.NOT_FOUND);
+        }
+
+        Errors errors = new BeanPropertyBindingResult(surveyAnswerDTO, "surveyAnswerDTO");
+        validator.validate(surveyAnswerDTO, errors);
+
+        if (errors.hasErrors()) {
+            StringBuilder errorMessage = new StringBuilder();
+            errors.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()));
+            return new ResponseEntity<>(new ErrorMsg("validation", errorMessage.toString()), HttpStatus.FORBIDDEN);
+//            throw new RuntimeException(errorMessage.toString());
+        }
+
+        SurveyAnswer existingSurveyAnswer = optionalSurveyAnswer.get();
+
+        AnswerOptions answerOptions = answerOptionsRepository.findById((surveyAnswerDTO.getAnswerId())).orElse(null);
+
+        existingSurveyAnswer.setAnketaOdgovor(answerOptions);
+
+        SurveyAnswer updatedSurveyAnswer = surveyAnswerRepository.save(existingSurveyAnswer);
+
+        return new ResponseEntity<>(updatedSurveyAnswer, HttpStatus.OK);
     }
 
     @ExceptionHandler(RuntimeException.class)
