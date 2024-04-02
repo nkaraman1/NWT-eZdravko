@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class CommentDTO {
+    private Long ID;
     @NotNull(message = "ID pitanja je obavezan.")
     private Long questionId;
     @NotBlank(message = "UID korisnika je obavezan.")
@@ -17,7 +18,8 @@ public class CommentDTO {
     @DecimalMax(value = "1", message = "Status anonimnosti može biti ili 0 ili 1.")
     private Integer anonimnost;
 
-    public CommentDTO(Long questionId, String userUid, String sadrzaj, Integer anonimnost) {
+    public CommentDTO(Long ID, Long questionId, String userUid, String sadrzaj, Integer anonimnost) {
+        this.ID = ID;
         this.questionId = questionId;
         this.userUid = userUid;
         this.sadrzaj = sadrzaj;

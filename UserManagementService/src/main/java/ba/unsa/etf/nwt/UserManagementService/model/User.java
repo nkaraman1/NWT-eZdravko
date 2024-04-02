@@ -1,31 +1,45 @@
 package ba.unsa.etf.nwt.UserManagementService.model;
 
+import ba.unsa.etf.nwt.UserManagementService.DTO.UserDTO;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.Data;
+import lombok.Getter;
 
 import java.time.LocalDate;
-import java.util.regex.Pattern;
 
 @Entity
 @Data
 @Table(name = "Korisnici")
 public class User {
+    @Getter
+    public enum Spol {
+        MUSKO, ZENSKO;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
     @Column
+    @NotBlank(message = "Ime ne smije biti prazno!")
     private String ime;
     @Column
+    @NotBlank(message = "Prezime ne smije biti prazno!")
     private String prezime;
     @Column
+    @PastOrPresent(message = "Datum rođenja ne smije biti u budućnosti!")
     private LocalDate datum_rodjenja;
     @Column
-    private Integer spol;
+    @Enumerated(EnumType.ORDINAL)
+    private Spol spol;
     @Column
+    @Pattern(regexp="[0-9]+", message="Broj telefona smije imati samo brojčane vrijednosti!")
     private String broj_telefona;
     @Column
+    @Email(message = "Mail nije ispravan!")
     private String email;
     @Column
+    @Size(min = 8, message = "Password mora imati barem 8 znakova!")
     private String password;
     @Column
     private String adresa_stanovanja;
@@ -33,6 +47,7 @@ public class User {
     private String slika;
     @ManyToOne
     @JoinColumn(name = "role_id", referencedColumnName = "ID")
+    @NotNull(message = "Korisnik mora imati rolu!")
     private Role rola;
     @Column
     private String UID;
@@ -43,7 +58,7 @@ public class User {
                 String ime,
                 String prezime,
                 LocalDate datum_rodjenja,
-                Integer spol,
+                Spol spol,
                 String broj_telefona,
                 String email,
                 String password,
@@ -51,7 +66,7 @@ public class User {
                 String slika,
                 Role rola,
                 String UID,
-                String broj_knjizice) throws Exception {
+                String broj_knjizice) {
 
         this.ID = ID;
         this.ime = ime;
@@ -71,7 +86,7 @@ public class User {
     public User(String ime,
                 String prezime,
                 LocalDate datum_rodjenja,
-                Integer spol,
+                Spol spol,
                 String broj_telefona,
                 String email,
                 String password,
@@ -130,11 +145,11 @@ public class User {
         this.datum_rodjenja = datum_rodjenja;
     }
 
-    public Integer getSpol() {
+    public Spol getSpol() {
         return spol;
     }
 
-    public void setSpol(Integer spol) {
+    public void setSpol(Spol spol) {
         this.spol = spol;
     }
 
@@ -202,6 +217,19 @@ public class User {
         this.broj_knjizice = broj_knjizice;
     }
 
+    public void setAllAttributes(UserDTO userDTO) throws Exception {
+        this.setIme(userDTO.getIme());
+        this.setPrezime(userDTO.getPrezime());
+        this.setDatum_rodjenja(userDTO.getDatum_rodjenja());
+        this.setSpol(userDTO.getSpol());
+        this.setBroj_telefona(userDTO.getBroj_telefona());
+        this.setEmail(userDTO.getEmail());
+        this.setPassword(userDTO.getPassword());
+        this.setAdresa_stanovanja(userDTO.getAdresa_stanovanja());
+        this.setSlika(userDTO.getSlika());
+        this.setUID(userDTO.getUID());
+        this.setBroj_knjizice(userDTO.getBroj_knjizice());
+    }
     @Override
     public String toString() {
         return ime + " " + prezime;

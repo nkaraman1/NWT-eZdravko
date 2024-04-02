@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Table(name = "dnevnik_unosi")
 public class DiaryEntry {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
     @Column
@@ -19,7 +19,7 @@ public class DiaryEntry {
     private String user_uid;
 
     @Column
-    @PastOrPresent
+    @PastOrPresent(message = "Datum ne smije biti u budućnosti.")
     private LocalDate datum;
 
     @Column
@@ -53,7 +53,7 @@ public class DiaryEntry {
     private Integer broj_koraka;
 
     public DiaryEntry() {
-        //this.ID = null;
+        this.ID = null;
         this.user_uid = null;
         this.datum = null;
         this.visina = null;
@@ -66,6 +66,17 @@ public class DiaryEntry {
 
     public DiaryEntry(Long ID, String user_uid, LocalDate datum, Double visina, Double tezina, Double bmi, Integer puls, Double unos_vode, Integer broj_koraka) {
         this.ID = ID;
+        this.user_uid = user_uid;
+        this.datum = datum;
+        this.visina = visina;
+        this.tezina = tezina;
+        this.bmi = bmi;
+        this.puls = puls;
+        this.unos_vode = unos_vode;
+        this.broj_koraka = broj_koraka;
+    }
+
+    public DiaryEntry(String user_uid, LocalDate datum, Double visina, Double tezina, Double bmi, Integer puls, Double unos_vode, Integer broj_koraka) {
         this.user_uid = user_uid;
         this.datum = datum;
         this.visina = visina;

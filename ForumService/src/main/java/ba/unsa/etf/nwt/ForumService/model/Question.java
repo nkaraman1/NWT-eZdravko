@@ -1,13 +1,17 @@
 package ba.unsa.etf.nwt.ForumService.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import io.swagger.annotations.ApiModelProperty;
 import jakarta.persistence.*;
-import lombok.Data;
 import ba.unsa.etf.nwt.UserManagementService.model.User;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "Pitanja")
 public class Question {
     @Id
@@ -22,10 +26,17 @@ public class Question {
     private String sadrzaj;
     @Column
     private Integer anonimnost;
-
     @OneToMany(mappedBy = "pitanje", cascade = CascadeType.ALL)
     private List<Comment> comments;
+    @JsonManagedReference
+    @ApiModelProperty(notes = "List of comments associated with this question")
+    public List<Comment> getComments() {
+        return comments;
+    }
 
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
 
     public Question(Long ID, String user_uid, String naslov, String sadrzaj, Integer anonimnost) {
         this.user_uid = user_uid;

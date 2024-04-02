@@ -9,7 +9,7 @@ import lombok.Data;
 @Table(name = "tip_nalaza")
 public class TestType {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
     @Column
@@ -19,6 +19,10 @@ public class TestType {
     public TestType() {
         //this.ID = null;
         this.naziv = null;
+    }
+
+    public TestType(String naziv) {
+        this.naziv = naziv;
     }
 
     public TestType(Long ID, String naziv) {

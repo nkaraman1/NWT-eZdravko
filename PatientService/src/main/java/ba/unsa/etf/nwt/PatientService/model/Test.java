@@ -2,8 +2,8 @@ package ba.unsa.etf.nwt.PatientService.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Table(name = "Nalazi")
 public class Test {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
     @Column
@@ -30,11 +30,11 @@ public class Test {
 
     @ManyToOne
     @JoinColumn(name = "tip_nalaza_id", referencedColumnName = "ID")
-    @NotBlank(message = "ID tipa nalaza je obavezan.")
-    private TestType tip_nalaza_id;
+    @NotNull(message = "ID tipa nalaza je obavezan.")
+    private TestType tip_nalaza;
 
     @Column
-    @NotBlank(message = "Dijagnoza je obavezna.")
+    //@NotBlank(message = "Dijagnoza je obavezna.")
     private String dijagnoza;
 
     @Column
@@ -50,7 +50,7 @@ public class Test {
         this.pacijent_uid = null;
         this.laborant_uid = null;
         this.doktor_uid = null;
-        this.tip_nalaza_id = null;
+        this.tip_nalaza = null;
         this.dijagnoza = "/";
         this.vrijeme_pregleda = null;
         this.vrijeme_dijagnoze = null;
@@ -61,7 +61,7 @@ public class Test {
         this.pacijent_uid = pacijent_uid;
         this.laborant_uid = laborant_uid;
         this.doktor_uid = doktor_uid;
-        this.tip_nalaza_id = tip_nalaza_id;
+        this.tip_nalaza = tip_nalaza_id;
         this.dijagnoza = dijagnoza;
         this.vrijeme_pregleda = vrijeme_pregleda;
         this.vrijeme_dijagnoze = vrijeme_dijagnoze;
@@ -99,12 +99,12 @@ public class Test {
         this.doktor_uid = doktor_uid;
     }
 
-    public TestType getTip_nalaza_id() {
-        return tip_nalaza_id;
+    public TestType getTip_nalaza() {
+        return tip_nalaza;
     }
 
-    public void setTip_nalaza_id(TestType tip_nalaza_id) {
-        this.tip_nalaza_id = tip_nalaza_id;
+    public void setTip_nalaza(TestType tip_nalaza) {
+        this.tip_nalaza = tip_nalaza;
     }
 
     public String getDijagnoza() {

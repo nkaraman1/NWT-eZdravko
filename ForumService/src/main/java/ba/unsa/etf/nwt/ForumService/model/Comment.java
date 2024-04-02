@@ -1,11 +1,16 @@
 package ba.unsa.etf.nwt.ForumService.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import ba.unsa.etf.nwt.UserManagementService.model.User;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Table(name = "Komentari")
 public class Comment {
     @Id
@@ -13,6 +18,7 @@ public class Comment {
     private Long ID;
     @ManyToOne
     @JoinColumn(name = "question_id", referencedColumnName = "ID")
+    @ApiModelProperty(notes = "The question associated with this comment")
     private Question pitanje;
     //@ManyToOne
     //@JoinColumn(name = "user_uid", referencedColumnName = "UID")
@@ -41,7 +47,7 @@ public class Comment {
     public void setID(Long ID) {
         this.ID = ID;
     }
-
+    @JsonBackReference
     public Question getPitanje() {
         return pitanje;
     }
