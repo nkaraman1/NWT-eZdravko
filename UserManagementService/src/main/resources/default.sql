@@ -12,4 +12,4 @@ VALUES                (1, 1, "Adresa", "12345", "062123456", '2001-01-10', "esma
 
 INSERT INTO korisnici (id, uid, adresa_stanovanja, broj_knjizice, broj_telefona, datum_rodjenja, email, ime, password, prezime, slika, spol, role_id)
 VALUES                (2, 2, "Adresa", "12345", "061235771", '1980-05-31', "nnekic1@etf.unsa.ba", "Neko", "password123", "Nekić",
-"img_path", 0, 2);
+"img_path", 1, 2);
