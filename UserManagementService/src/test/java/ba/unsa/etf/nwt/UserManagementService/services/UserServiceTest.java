@@ -498,4 +498,50 @@ public class UserServiceTest {
 
         verify(userRepository, times(0)).save(any(User.class));
     }
+
+    @Test
+    public void testDeleteUser_Success() throws Exception {
+        Long userId = 1L;
+
+        User user = new User();
+        user.setID(1L);
+        user.setIme("John");
+        user.setPrezime("Doe");
+        user.setAdresa_stanovanja("123 Main St");
+        user.setBroj_knjizice("123456789");
+        user.setEmail("john@example.com");
+        user.setDatum_rodjenja(LocalDate.now().minusYears(30));
+        user.setPassword("password123");
+        user.setBroj_telefona("123456789");
+        user.setRola(new Role(1L, "Doktor", false));
+        user.setSlika("img_path");
+        user.setSpol(User.Spol.MUSKO);
+        user.setUID("UID-132541");
+
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+
+        // Perform DELETE request to delete a user
+        mockMvc.perform(MockMvcRequestBuilders.delete("/users/delete/{ID}", userId))
+                .andExpect(status().isOk()) // Expect status OK
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(userId.intValue()))); // Expect returned user ID to match deleted user ID
+
+        // Verify that userRepository.deleteById() was called with the correct user ID
+        verify(userRepository, times(1)).deleteById(userId);
+    }
+
+    @Test
+    public void testDeleteUser_NotFound() throws Exception {
+        Long userId = 1L;
+
+        // Mock the behavior of UserRepository to return an empty optional, indicating user not found
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        // Perform DELETE request to delete a user
+        mockMvc.perform(MockMvcRequestBuilders.delete("/users/delete/{ID}", userId))
+                .andExpect(status().isForbidden()); // Expect status Forbidden
+
+        // Verify that userRepository.deleteById() was not called
+        verify(userRepository, never()).deleteById(anyLong());
+    }
 }
