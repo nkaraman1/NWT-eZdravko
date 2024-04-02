@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class UserErrorHandler {
     public enum UserErrorCode {
         NAME_BLANK, SURNAME_BLANK, DATE_IN_FUTURE, PHONE_NOT_NUMERIC, EMAIL_INVALID, PASSWORD_TOO_SHORT, ROLE_NULL,
-        USER_NOT_FOUND
+        USER_NOT_FOUND, WRONG_LOGIN_CREDENTIALS, USER_ALREADY_EXISTS
     }
 
     private final HashMap<UserErrorHandler.UserErrorCode, String> errorMap;
@@ -20,6 +20,8 @@ public class UserErrorHandler {
         this.errorMap.put(UserErrorCode.PASSWORD_TOO_SHORT, "Password mora imati barem 8 znakova!");
         this.errorMap.put(UserErrorCode.ROLE_NULL, "Korisnik mora imati rolu!");
         this.errorMap.put(UserErrorCode.USER_NOT_FOUND, "Traženi korisnik nije pronađen!");
+        this.errorMap.put(UserErrorCode.WRONG_LOGIN_CREDENTIALS, "Podaci za prijavu nisu ispravni!");
+        this.errorMap.put(UserErrorCode.USER_ALREADY_EXISTS, "Već postoji kreiran račun sa tim e-mailom!");
     }
 
     public String getError(UserErrorHandler.UserErrorCode userErrorCode) {

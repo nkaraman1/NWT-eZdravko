@@ -4,6 +4,7 @@ import ba.unsa.etf.nwt.UserManagementService.DTO.UserDTO;
 import ba.unsa.etf.nwt.UserManagementService.exceptions.ErrorMsg;
 import ba.unsa.etf.nwt.UserManagementService.model.Role;
 import ba.unsa.etf.nwt.UserManagementService.model.User;
+import ba.unsa.etf.nwt.UserManagementService.model.UserLogin;
 import ba.unsa.etf.nwt.UserManagementService.repositories.RoleRepository;
 import ba.unsa.etf.nwt.UserManagementService.repositories.UserRepository;
 import ba.unsa.etf.nwt.UserManagementService.services.UserService;
@@ -45,6 +46,16 @@ public class UserController {
     @GetMapping(value="/users/role/{nazivRole}")
     public ResponseEntity<?> getUserByRola(@PathVariable String nazivRole) {
         return userService.getUserByRola(nazivRole);
+    }
+
+    @GetMapping(value="/users/search")
+    public List<User> searchUsers(@RequestParam(name = "query", required = false) String search) {
+        return userService.searchUser(search);
+    }
+
+    @PostMapping(value="/users/login")
+    public ResponseEntity<?> login(@RequestBody UserLogin userLogin) {
+        return userService.userLogin(userLogin);
     }
 
     @PostMapping(value="/users/create")

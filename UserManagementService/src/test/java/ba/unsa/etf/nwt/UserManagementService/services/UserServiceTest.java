@@ -188,6 +188,37 @@ public class UserServiceTest {
     }
 
     @Test
+    public void createUser_UserAlreadyExists() throws Exception {
+        String userJSON = "{\n" +
+                "  \"ime\": \"ime\",\n" +
+                "  \"prezime\": \"prezime\",\n" +
+                "  \"datum_rodjenja\": \"2001-04-02\",\n" +
+                "  \"spol\": \"MUSKO\",\n" +
+                "  \"broj_telefona\": \"123351\",\n" +
+                "  \"email\": \"ime@domain.com\",\n" +
+                "  \"password\": \"stringst\",\n" +
+                "  \"adresa_stanovanja\": \"string\",\n" +
+                "  \"slika\": \"string\",\n" +
+                "  \"rola_id\": 1,\n" +
+                "  \"rola_kod\": \" \",\n" +
+                "  \"broj_knjizice\": \"string\",\n" +
+                "  \"uid\": \"string\"\n" +
+                "}";
+
+        when(roleRepository.findById(1L)).thenReturn(Optional.of(new Role(1L, "Rola", false, null)));
+        when(userRepository.findByEmail("ime@domain.com")).thenReturn(List.of(mockUseri.get(0)));
+        when(userRepository.findAll()).thenReturn(mockUseri);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/create")
+                        .contentType(MediaType.APPLICATION_JSON).content(userJSON))
+                .andExpect(status().isForbidden())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("validation")));
+
+        verify(userRepository, times(0)).save(any(User.class));
+
+    }
+
+    @Test
     public void createUser_Success_CodedRole() throws Exception {
         String userJSON = "{\n" +
                 "  \"ime\": \"ime\",\n" +
@@ -543,5 +574,31 @@ public class UserServiceTest {
 
         // Verify that userRepository.deleteById() was not called
         verify(userRepository, never()).deleteById(anyLong());
+    }
+
+    @Test
+    public void testLogin_Success() throws Exception {
+        String JSONLogin = "{\n" +
+                "  \"email\": \"ime@domain.com\",\n" +
+                "  \"password\": \"password123\"\n" +
+                "}";
+
+        when(userRepository.findByEmailAndPassword("ime@domain.com", "password123")).thenReturn(List.of(mockUseri.get(0)));
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/login").contentType(MediaType.APPLICATION_JSON).content(JSONLogin))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testLogin_Fail() throws Exception {
+        String JSONLogin = "{\n" +
+                "  \"email\": \"ime@domain.com\",\n" +
+                "  \"password\": \"wrongpass\"\n" +
+                "}";
+
+        when(userRepository.findByEmailAndPassword("ime@domain.com", "wrongpass")).thenReturn(List.of());
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/users/login").contentType(MediaType.APPLICATION_JSON).content(JSONLogin))
+                .andExpect(status().isForbidden());
     }
 }
