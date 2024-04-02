@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 public class RoleErrorHandler {
     public enum RoleErrorCode {
-        ID_NOT_FOUND, ROLENAME_NOT_FOUND, ROLENAME_REQUIRED, ROLE_ALREADY_EXISTS, USERS_EXIST_WITH_ROLE
+        ID_NOT_FOUND, ROLENAME_NOT_FOUND, ROLENAME_REQUIRED, ROLE_ALREADY_EXISTS, USERS_EXIST_WITH_ROLE, WRONG_CODE
     }
 
     private final HashMap<RoleErrorCode, String> errorMap;
@@ -16,6 +16,7 @@ public class RoleErrorHandler {
         this.errorMap.put(RoleErrorCode.ROLENAME_REQUIRED, "Naziv role je obavezan");
         this.errorMap.put(RoleErrorCode.ROLE_ALREADY_EXISTS, "Postoji već rola sa tim nazivom!");
         this.errorMap.put(RoleErrorCode.USERS_EXIST_WITH_ROLE, "Postoje korisnici sa datom rolom!");
+        this.errorMap.put(RoleErrorCode.WRONG_CODE, "Neispravan aktivacijski kod za rolu!");
     }
 
     public String getError(RoleErrorCode roleErrorCode) {
