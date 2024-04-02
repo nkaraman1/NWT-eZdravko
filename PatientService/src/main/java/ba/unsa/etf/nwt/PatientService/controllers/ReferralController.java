@@ -1,28 +1,34 @@
 package ba.unsa.etf.nwt.PatientService.controllers;
 
+import ba.unsa.etf.nwt.PatientService.DTO.ReferralDTO;
 import ba.unsa.etf.nwt.PatientService.model.Referral;
-import ba.unsa.etf.nwt.PatientService.repositories.ReferralRepository;
+import ba.unsa.etf.nwt.PatientService.services.ReferralService;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.List;
 
+@RequestMapping("api/referrals")
 @RestController
 public class ReferralController {
 
-    private final ReferralRepository referralRepository;
+    private final ReferralService referralService;
 
-    public ReferralController (ReferralRepository referralRepository){
-        this.referralRepository = referralRepository;
+    public ReferralController (ReferralService referralService){
+        this.referralService = referralService;
     }
 
-    @GetMapping(value="/referrals")
+    @GetMapping(value="/")
     public List<Referral> getReferrals(){
-        List<Referral> referrals = referralRepository.findAll();
-        if (referrals.isEmpty()) {
-            return Collections.emptyList();
-        }
-        return referrals;
+        return referralService.getReferrals();
+    }
+
+    @PostMapping(value = "/")
+    public ResponseEntity<?> addReferral(@RequestBody ReferralDTO referralDTO){
+        return referralService.addReferral(referralDTO);
     }
 }

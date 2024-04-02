@@ -3,6 +3,7 @@ package ba.unsa.etf.nwt.PatientService.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
@@ -11,7 +12,7 @@ import lombok.Data;
 @Table(name = "Stavke")
 public class TestItem {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ID;
 
     @Column
@@ -34,8 +35,8 @@ public class TestItem {
 
     @ManyToOne
     @JoinColumn(name = "tip_nalaza_id", referencedColumnName = "ID")
-    @NotBlank(message = "ID tipa nalaza je obavezan.")
-    private TestType tip_nalaza_id;
+    @NotNull(message = "ID tipa nalaza je obavezan.")
+    private TestType tip_nalaza;
 
     public TestItem() {
         //this.ID = null;
@@ -44,17 +45,17 @@ public class TestItem {
         this.ref_max = null;
         this.ref = null;
         this.mjerna_jedinica = null;
-        this.tip_nalaza_id = null;
+        this.tip_nalaza = null;
     }
 
-    public TestItem(Long ID, String naziv, Double ref_min, Double ref_max, String ref, String mjerna_jedinica, TestType tip_nalaza_id) {
+    public TestItem(Long ID, String naziv, Double ref_min, Double ref_max, String ref, String mjerna_jedinica, TestType tip_nalaza) {
         this.ID = ID;
         this.naziv = naziv;
         this.ref_min = ref_min;
         this.ref_max = ref_max;
         this.ref = ref;
         this.mjerna_jedinica = mjerna_jedinica;
-        this.tip_nalaza_id = tip_nalaza_id;
+        this.tip_nalaza = tip_nalaza;
     }
 
     public Long getID() {
@@ -105,11 +106,11 @@ public class TestItem {
         this.mjerna_jedinica = mjerna_jedinica;
     }
 
-    public TestType getTip_nalaza_id() {
-        return tip_nalaza_id;
+    public TestType getTip_nalaza() {
+        return tip_nalaza;
     }
 
-    public void setTip_nalaza_id(TestType tip_nalaza_id) {
-        this.tip_nalaza_id = tip_nalaza_id;
+    public void setTip_nalaza(TestType tip_nalaza) {
+        this.tip_nalaza = tip_nalaza;
     }
 }

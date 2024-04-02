@@ -6,7 +6,7 @@ import ba.unsa.etf.nwt.ForumService.model.Comment;
 import ba.unsa.etf.nwt.ForumService.model.Question;
 import ba.unsa.etf.nwt.ForumService.repositories.CommentRepository;
 import ba.unsa.etf.nwt.ForumService.repositories.QuestionRepository;
-import ba.unsa.etf.nwt.UserManagementService.model.ErrorMsg;
+import ba.unsa.etf.nwt.ForumService.exceptions.ErrorMsg;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;

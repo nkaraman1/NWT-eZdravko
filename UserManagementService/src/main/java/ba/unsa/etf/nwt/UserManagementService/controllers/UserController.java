@@ -1,6 +1,6 @@
 package ba.unsa.etf.nwt.UserManagementService.controllers;
 
-import ba.unsa.etf.nwt.UserManagementService.model.ErrorMsg;
+import ba.unsa.etf.nwt.UserManagementService.exceptions.ErrorMsg;
 import ba.unsa.etf.nwt.UserManagementService.model.Role;
 import ba.unsa.etf.nwt.UserManagementService.model.User;
 import ba.unsa.etf.nwt.UserManagementService.repositories.RoleRepository;
