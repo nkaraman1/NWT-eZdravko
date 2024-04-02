@@ -1,5 +1,6 @@
 package ba.unsa.etf.nwt.ForumService.controllers;
 
+import ba.unsa.etf.nwt.ForumService.DTO.CommentDTO;
 import ba.unsa.etf.nwt.ForumService.model.Comment;
 import ba.unsa.etf.nwt.ForumService.model.Question;
 import ba.unsa.etf.nwt.ForumService.repositories.CommentRepository;
@@ -30,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class QuestionControllerTest {
+public class CommentControllerTest {
     @MockBean
     private QuestionRepository questionRepository;
     @MockBean
@@ -39,18 +40,18 @@ public class QuestionControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private List<Question> mockQuestions = List.of(
-            new Question(1L,
-                    "1",
-                    "Ishrana",
-                    "Koliki je preporučeni dnevni unos kalorija?",
-                    1),
-
-            new Question(2L,
+    private List<Comment> mockComments = List.of(
+            new Comment(2L,
+                    new Question(1L, "1", "zdravlje", "savjeti za zdravlje", 0),
                     "2",
-                    "Slatkiši",
-                    "Zdravi slatkiši???",
-                    0)
+                    "odgovor",
+                    0),
+
+            new Comment(1L,
+                    new Question(2L, "2", "sreca", "savjeti za srecu", 1),
+                    "1",
+                    "komentar",
+                    1)
     );
 
     @Test
@@ -59,31 +60,31 @@ public class QuestionControllerTest {
     }
 
     @Test
-    public void getAllQuestions() throws Exception {
-        when(questionRepository.findAll()).thenReturn(mockQuestions);
-        mockMvc.perform(MockMvcRequestBuilders.get("/questions"))
+    public void getAllComments() throws Exception {
+        when(commentRepository.findAll()).thenReturn(mockComments);
+        mockMvc.perform(MockMvcRequestBuilders.get("/comments"))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.size()", Matchers.is(2)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].naslov", Matchers.is("Ishrana")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].naslov", Matchers.is("Slatkiši")));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].sadrzaj", Matchers.is("odgovor")))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].sadrzaj", Matchers.is("komentar")));
     }
 
     @Test
-    public void getQuestionByID_Success() throws Exception {
+    public void getCommentByID_Success() throws Exception {
         Long id = 1L;
-        when(questionRepository.findById(id)).thenReturn(Optional.of(mockQuestions.get(0)));
+        when(commentRepository.findById(id)).thenReturn(Optional.of(mockComments.get(0)));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/questions/{ID}", id))
+        mockMvc.perform(MockMvcRequestBuilders.get("/comments/{ID}", id))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.naslov", Matchers.is("Ishrana")));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.sadrzaj", Matchers.is("odgovor")));
     }
 
     @Test
-    public void getQuestionByID_Fail() throws Exception {
+    public void getCommentByID_Fail() throws Exception {
         Long id = 1L;
-        when(questionRepository.findById(id)).thenReturn(Optional.of(mockQuestions.get(0)));
+        when(commentRepository.findById(id)).thenReturn(Optional.of(mockComments.get(0)));
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/questions/{ID}", 2L))
+        mockMvc.perform(MockMvcRequestBuilders.get("/comments/{ID}", 2L))
                 .andExpect(status().isNotFound())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("not_found")));
     }
@@ -136,25 +137,24 @@ public class QuestionControllerTest {
     }*/
 
     @Test
-    public void createQuestion_Success() throws Exception {
-        Question question = new Question();
-        question.setID(3L);
-        question.setUser_uid("1");
-        question.setNaslov("Testic");
-        question.setSadrzaj("Cvjetic");
-        question.setAnonimnost(1);
+    public void createComment_Success() throws Exception {
+        CommentDTO comment = new CommentDTO();
+        comment.setQuestionId(2L);
+        comment.setUserUid("1");
+        comment.setSadrzaj("Cvjetic");
+        comment.setAnonimnost(1);
 
-        String questionJSON = "{\n" +
+        String commentJSON = "{\n" +
+                "  \"questionId\": 2,\n" +
                 "  \"userUid\": \"1\",\n" +
-                "  \"naslov\": \"Testic\",\n" +
                 "  \"sadrzaj\": \"Cvjetic\",\n" +
                 "  \"anonimnost\": 1\n" +
                 "}";
 
-        when(questionRepository.findAll()).thenReturn(mockQuestions);
+        when(commentRepository.findAll()).thenReturn(mockComments);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/questions")
-                        .contentType(MediaType.APPLICATION_JSON).content(questionJSON))
+        mockMvc.perform(MockMvcRequestBuilders.post("/comments")
+                        .contentType(MediaType.APPLICATION_JSON).content(commentJSON))
                 .andExpect(status().isCreated());
                 /*.andExpect(MockMvcResultMatchers.jsonPath("$.naslov", Matchers.is("Testic")))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.sadrzaj", Matchers.is("Cvjetic")))
@@ -167,60 +167,59 @@ public class QuestionControllerTest {
 
     @Test
     public void createQuestion_WrongAnonimnost() throws Exception {
-        Question question = new Question();
-        question.setID(3L);
-        question.setUser_uid("1");
-        question.setNaslov("Testic");
-        question.setSadrzaj("Cvjetic");
-        question.setAnonimnost(5);
+        Comment comment = new Comment();
+        comment.setID(3L);
+        comment.setUser_uid("1");
+        comment.setPitanje(new Question(3L, "2", "naslov", "sadrzaj", 1));
+        comment.setSadrzaj("Cvjetic");
+        comment.setAnonimnost(5);
 
-        String questionJSON = "{\n" +
+        String commentJSON = "{\n" +
                 "  \"userUid\": \"1\",\n" +
-                "  \"naslov\": \"Testic\",\n" +
                 "  \"sadrzaj\": \"Cvjetic\",\n" +
                 "  \"anonimnost\": 5\n" +
                 "}";
 
-        when(questionRepository.findAll()).thenReturn(mockQuestions);
+        when(commentRepository.findAll()).thenReturn(mockComments);
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/questions")
-                        .contentType(MediaType.APPLICATION_JSON).content(questionJSON))
+        mockMvc.perform(MockMvcRequestBuilders.post("/comments")
+                        .contentType(MediaType.APPLICATION_JSON).content(commentJSON))
                 .andExpect(status().isForbidden())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("validation")));
     }
 
     @Test
-    public void testDeleteQuestion_Success() throws Exception {
-        Long questionId = 3L;
+    public void testDeleteComment_Success() throws Exception {
+        Long commentId = 3L;
 
-        Question question = new Question();
-        question.setID(3L);
-        question.setUser_uid("1");
-        question.setNaslov("Testic");
-        question.setSadrzaj("Cvjetic");
-        question.setAnonimnost(1);
+        Comment comment = new Comment();
+        comment.setID(3L);
+        comment.setUser_uid("1");
+        comment.setPitanje(new Question(3L, "2", "naslov", "sadrzaj", 1));
+        comment.setSadrzaj("Cvjetic");
+        comment.setAnonimnost(1);
 
 
-        when(questionRepository.findById(questionId)).thenReturn(Optional.of(question));
+        when(commentRepository.findById(commentId)).thenReturn(Optional.of(comment));
 
         // Perform DELETE request to delete a user
-        mockMvc.perform(MockMvcRequestBuilders.delete("/questions/{ID}", questionId))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/comments/{ID}", commentId))
                 .andExpect(status().isOk()) // Expect status OK
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(questionId.intValue())));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(commentId.intValue())));
 
         // Verify that userRepository.deleteById() was called with the correct user ID
-        verify(questionRepository, times(1)).deleteById(questionId);
+        verify(commentRepository, times(1)).deleteById(commentId);
     }
 
     @Test
-    public void testDeleteQuestion_NotFound() throws Exception {
-        Long questionId = 1L;
+    public void testDeleteComment_NotFound() throws Exception {
+        Long commentId = 1L;
 
-        when(questionRepository.findById(questionId)).thenReturn(Optional.empty());
+        when(commentRepository.findById(commentId)).thenReturn(Optional.empty());
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/questions/{ID}", questionId))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/comments/{ID}", commentId))
                 .andExpect(status().isNotFound());
 
-        verify(questionRepository, never()).deleteById(anyLong());
+        verify(commentRepository, never()).deleteById(anyLong());
     }
 }

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class QuestionDTO {
+    private Long ID;
     @NotBlank(message = "UID korisnika je obavezan.")
     private String userUid;
     @NotBlank(message = "Naslov pitanja je obavezan.")
@@ -17,7 +18,8 @@ public class QuestionDTO {
     @DecimalMax(value = "1", message = "Status anonimnosti može biti ili 0 ili 1.")
     private Integer anonimnost;
 
-    public QuestionDTO(String userUid, String naslov, String sadrzaj, Integer anonimnost) {
+    public QuestionDTO(Long ID, String userUid, String naslov, String sadrzaj, Integer anonimnost) {
+        this.ID = ID;
         this.userUid = userUid;
         this.naslov = naslov;
         this.sadrzaj = sadrzaj;

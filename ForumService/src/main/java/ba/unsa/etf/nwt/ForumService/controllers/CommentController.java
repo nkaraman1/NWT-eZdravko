@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -34,12 +35,16 @@ public class CommentController {
     }
 
     @GetMapping(value="/comments")
-    public List<Comment> getComments() {
+    public List<CommentDTO> getComments() {
         List<Comment> comments = commentRepository.findAll();
         if (comments.isEmpty()) {
             return Collections.emptyList();
         }
-        return comments;
+        List<CommentDTO> commentsDTO = new ArrayList<>();
+        for (Comment c : comments) {
+            commentsDTO.add(new CommentDTO(c.getID(), c.getPitanje().getID(), c.getUser_uid(), c.getSadrzaj(), c.getAnonimnost()));
+        }
+        return commentsDTO;
     }
 
     @PostMapping(value="/comments")
