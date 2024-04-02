@@ -1,6 +1,7 @@
 package ba.unsa.etf.nwt.ForumService.controllers;
 
 import ba.unsa.etf.nwt.ForumService.DTO.QuestionDTO;
+import ba.unsa.etf.nwt.ForumService.model.Comment;
 import ba.unsa.etf.nwt.ForumService.model.Question;
 import ba.unsa.etf.nwt.ForumService.repositories.CommentRepository;
 import ba.unsa.etf.nwt.ForumService.repositories.QuestionRepository;
