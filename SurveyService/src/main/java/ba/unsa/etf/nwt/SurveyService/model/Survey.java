@@ -1,7 +1,10 @@
 package ba.unsa.etf.nwt.SurveyService.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -19,9 +22,19 @@ public class Survey {
     @Column
     private Integer status;
 
+    @OneToMany(mappedBy = "anketa", cascade = CascadeType.ALL)
+    private List<SurveyQuestion> surveyQuestions;
+
     public Survey(Long ID, String UID_korisnika, String naslov, String opis, Integer status) {
         this.ID = ID;
         this.user_uid = UID_korisnika;
+        this.naslov = naslov;
+        this.opis = opis;
+        this.status = status;
+    }
+
+    public Survey(String user_uid, String naslov, String opis, Integer status) {
+        this.user_uid = user_uid;
         this.naslov = naslov;
         this.opis = opis;
         this.status = status;
@@ -73,6 +86,15 @@ public class Survey {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    @JsonManagedReference
+    public List<SurveyQuestion> getSurveyQuestions() {
+        return surveyQuestions;
+    }
+
+    public void setSurveyQuestions(List<SurveyQuestion> surveyQuestions) {
+        this.surveyQuestions = surveyQuestions;
     }
 
     @Override

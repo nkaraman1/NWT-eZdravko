@@ -1,7 +1,11 @@
 package ba.unsa.etf.nwt.SurveyService.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -16,9 +20,21 @@ public class AnswerOptions {
     @Column
     private String sadrzaj;
 
+    @OneToOne(mappedBy = "anketaOdgovor", cascade = CascadeType.ALL)
+    private SurveyAnswer surveyAnswer;
+
     public AnswerOptions(Long ID, SurveyQuestion anketaPitanje, String sadrzaj) {
         this.ID = ID;
         this.anketaPitanje = anketaPitanje;
+        this.sadrzaj = sadrzaj;
+    }
+
+    public AnswerOptions(Long ID, String sadrzaj) {
+        this.ID = ID;
+        this.sadrzaj = sadrzaj;
+    }
+
+    public AnswerOptions(String sadrzaj) {
         this.sadrzaj = sadrzaj;
     }
 
@@ -36,6 +52,7 @@ public class AnswerOptions {
         this.ID = ID;
     }
 
+    @JsonBackReference
     public SurveyQuestion getAnketaPitanje() {
         return anketaPitanje;
     }
@@ -50,6 +67,15 @@ public class AnswerOptions {
 
     public void setSadrzaj(String sadrzaj) {
         this.sadrzaj = sadrzaj;
+    }
+
+    @JsonManagedReference
+    public SurveyAnswer getSurveyAnswer() {
+        return surveyAnswer;
+    }
+
+    public void setSurveyAnswer(SurveyAnswer surveyAnswer) {
+        this.surveyAnswer = surveyAnswer;
     }
 
     @Override
