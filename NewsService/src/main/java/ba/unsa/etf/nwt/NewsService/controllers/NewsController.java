@@ -26,7 +26,7 @@ public class NewsController {
     }
 
     @GetMapping(value="/news")
-    public List<News> getComments() {
+    public List<News> getNews() {
         List<News> news = newsRepository.findAll();
         if (news.isEmpty()) {
             return Collections.emptyList();

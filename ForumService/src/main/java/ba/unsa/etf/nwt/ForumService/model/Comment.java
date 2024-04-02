@@ -1,5 +1,6 @@
 package ba.unsa.etf.nwt.ForumService.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import ba.unsa.etf.nwt.UserManagementService.model.User;
@@ -41,7 +42,7 @@ public class Comment {
     public void setID(Long ID) {
         this.ID = ID;
     }
-
+    @JsonBackReference
     public Question getPitanje() {
         return pitanje;
     }

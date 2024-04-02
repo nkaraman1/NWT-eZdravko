@@ -27,7 +27,7 @@ public class TherapyController {
     }
 
     @GetMapping(value="/therapy")
-    public List<Therapy> getQuestions() {
+    public List<Therapy> getTherapies() {
         List<Therapy> therapy = therapyRepository.findAll();
         if (therapy.isEmpty()) {
             return Collections.emptyList();

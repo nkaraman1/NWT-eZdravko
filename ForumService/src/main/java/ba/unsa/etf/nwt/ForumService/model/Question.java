@@ -1,5 +1,6 @@
 package ba.unsa.etf.nwt.ForumService.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import ba.unsa.etf.nwt.UserManagementService.model.User;
@@ -25,7 +26,14 @@ public class Question {
 
     @OneToMany(mappedBy = "pitanje", cascade = CascadeType.ALL)
     private List<Comment> comments;
+    @JsonManagedReference
+    public List<Comment> getComments() {
+        return comments;
+    }
 
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
 
     public Question(Long ID, String user_uid, String naslov, String sadrzaj, Integer anonimnost) {
         this.user_uid = user_uid;

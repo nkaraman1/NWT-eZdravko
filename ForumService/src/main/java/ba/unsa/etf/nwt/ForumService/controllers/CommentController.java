@@ -52,9 +52,9 @@ public class CommentController {
 //            throw new RuntimeException(errorMessage.toString());
         }
 
-        Question question = questionRepository.findById(Math.toIntExact(commentDTO.getQuestionId())).orElse(null);
+        Question question = questionRepository.findById(commentDTO.getQuestionId()).orElse(null);
         if (question == null) {
-            return new ResponseEntity<>(new ErrorMsg("Nije pronadjeno nijedno pitanje sa tim ID-em."), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new ErrorMsg("Nije pronadjeno nijedno pitanje sa tim ID-em."), HttpStatus.NOT_FOUND);
 //            throw new InvalidQuestionIdException("Nepostojeći question ID: " + commentDTO.getQuestionId());
         }
 
