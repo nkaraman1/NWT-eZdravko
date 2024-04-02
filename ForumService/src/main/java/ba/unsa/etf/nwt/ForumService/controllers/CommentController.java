@@ -79,7 +79,7 @@ public class CommentController {
     public ResponseEntity<?> getCommentById(@PathVariable("commentId") Long commentId) {
         Optional<Comment> optionalComment = commentRepository.findById(commentId);
         if (!optionalComment.isPresent()) {
-            return new ResponseEntity<>(new ba.unsa.etf.nwt.UserManagementService.exceptions.ErrorMsg("not_found", "Nije pronadjeno nijedno pitanje sa tim ID-em."), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ba.unsa.etf.nwt.ForumService.model.ErrorMsg("not_found", "Nije pronadjeno nijedno pitanje sa tim ID-em."), HttpStatus.NOT_FOUND);
         }
 
         Comment comment = optionalComment.get();
@@ -90,7 +90,7 @@ public class CommentController {
     public ResponseEntity<?> deleteComment(@PathVariable("commentId") Long commentId) {
         Optional<Comment> optionalComment = commentRepository.findById(commentId);
         if (!optionalComment.isPresent()) {
-            return new ResponseEntity<>(new ba.unsa.etf.nwt.UserManagementService.exceptions.ErrorMsg("Nije pronadjen nijedan komentar sa tim ID-em."), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ba.unsa.etf.nwt.ForumService.model.ErrorMsg("Nije pronadjen nijedan komentar sa tim ID-em."), HttpStatus.NOT_FOUND);
         }
 
         Comment comment = optionalComment.get();
@@ -104,7 +104,7 @@ public class CommentController {
     public ResponseEntity<?> updateComment(@PathVariable("commentId") Long commentId, @RequestBody CommentDTO commentDTO) {
         Optional<Comment> optionalComment = commentRepository.findById(commentId);
         if (!optionalComment.isPresent()) {
-            return new ResponseEntity<>(new ba.unsa.etf.nwt.UserManagementService.exceptions.ErrorMsg("Nije pronadjen nijedan komentar sa tim ID-em."), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ba.unsa.etf.nwt.ForumService.model.ErrorMsg("Nije pronadjen nijedan komentar sa tim ID-em."), HttpStatus.NOT_FOUND);
         }
 
         Errors errors = new BeanPropertyBindingResult(commentDTO, "commentDTO");
@@ -113,7 +113,7 @@ public class CommentController {
         if (errors.hasErrors()) {
             StringBuilder errorMessage = new StringBuilder();
             errors.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()));
-            return new ResponseEntity<>(new ba.unsa.etf.nwt.UserManagementService.exceptions.ErrorMsg("validation", errorMessage.toString()), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new ba.unsa.etf.nwt.ForumService.model.ErrorMsg("validation", errorMessage.toString()), HttpStatus.FORBIDDEN);
 //            throw new RuntimeException(errorMessage.toString());
         }
 

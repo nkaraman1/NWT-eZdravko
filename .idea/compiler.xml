@@ -8,6 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="ForumService" />
+        <module name="EurekaServiceRegistry" />
         <module name="PatientService" />
         <module name="NewsService" />
         <module name="UserManagementService" />
@@ -25,6 +26,7 @@
       <module name="ConfigClient" options="-parameters" />
       <module name="ConfigServer" options="-parameters" />
       <module name="ConfigService" options="-parameters" />
+      <module name="EurekaServiceRegistry" options="-parameters" />
       <module name="ForumService" options="-parameters" />
       <module name="NewsService" options="-parameters" />
       <module name="PatientService" options="-parameters" />
