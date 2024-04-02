@@ -3,7 +3,6 @@ package ba.unsa.etf.nwt.ForumService.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.annotations.ApiModelProperty;
 import jakarta.persistence.*;
-import ba.unsa.etf.nwt.UserManagementService.model.User;
 import lombok.Getter;
 import lombok.Setter;
 
