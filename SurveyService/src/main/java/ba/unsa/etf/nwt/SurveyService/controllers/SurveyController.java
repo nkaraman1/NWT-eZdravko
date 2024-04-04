@@ -56,7 +56,7 @@ public class SurveyController {
         return new ResponseEntity<>(savedSurvey, HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "/surveys/survey/id/{id}")
+    @GetMapping(value = "/surveys/id/{id}")
     public ResponseEntity<?> getSurveyByID(@PathVariable Long id) {
         Optional<Survey> survey = surveyRepository.findById(id);
         if (survey.isPresent()) {
@@ -66,7 +66,7 @@ public class SurveyController {
         }
     }
 
-    @GetMapping(value = "/surveys/survey/naslov/{naslov}")
+    @GetMapping(value = "/surveys/naslov/{naslov}")
     public ResponseEntity<?> getSurveyByNaslov(@PathVariable String naslov) {
         Optional<Survey> survey = surveyRepository.findByNaslov(naslov);
         if (survey.isPresent()) {
@@ -76,7 +76,7 @@ public class SurveyController {
         }
     }
 
-    @GetMapping(value = "/surveys/survey/status/{status}")
+    @GetMapping(value = "/surveys/status/{status}")
     public ResponseEntity<?> getSurveyByStatus(@PathVariable Integer status) {
         List<Survey> survey = surveyRepository.findByStatus(status);
         if (survey.isEmpty()) {
@@ -86,7 +86,7 @@ public class SurveyController {
         }
     }
 
-    @DeleteMapping(value = "/surveys/survey/{id}")
+    @DeleteMapping(value = "/surveys/{id}")
     public ResponseEntity<?> deleteSurvey(@PathVariable Long id) {
         Optional<Survey> survey = surveyRepository.findById(id);
         if (survey.isPresent()) {
@@ -97,7 +97,7 @@ public class SurveyController {
         }
     }
 
-    @PutMapping(value="/surveys/survey/{id}")
+    @PutMapping(value="/surveys/{id}")
     public ResponseEntity<?> updateSurvey(@PathVariable Long id, @RequestBody SurveyDTO surveyDTO){
         Optional<Survey> optionalSurvey = surveyRepository.findById(id);
         if (!optionalSurvey.isPresent()) {

@@ -27,6 +27,7 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -100,9 +101,9 @@ public class SurveyAnswerControllerTests {
         Mockito.when(surveyAnswerRepository.findById(1L)).thenReturn(Optional.of(surveyAnswer));
 
         // Act & Assert
-        mockMvc.perform(MockMvcRequestBuilders.get("/surveyanswers/surveyanswer/id/{id}", 1L))
+        mockMvc.perform(MockMvcRequestBuilders.get("/surveyanswers/id/{id}", 1L))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1));
+                .andExpect(jsonPath("$.id").value(1));
     }
 
 //    @Test
@@ -139,10 +140,89 @@ public class SurveyAnswerControllerTests {
         Mockito.when(surveyAnswerRepository.findById(1L)).thenReturn(Optional.of(surveyAnswer));
 
         // Act & Assert
-        mockMvc.perform(MockMvcRequestBuilders.delete("/surveyanswers/surveyanswer/{id}", 1L))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/surveyanswers/{id}", 1L))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1));
+                .andExpect(jsonPath("$.id").value(1));
     }
+
+    @Test
+    public void updateSurveyAnswer_ValidInput_Success() throws Exception {
+        // Mock the behavior of SurveyAnswerRepository
+        SurveyAnswer existingSurveyAnswer = new SurveyAnswer();
+        when(surveyAnswerRepository.findById(1L)).thenReturn(Optional.of(existingSurveyAnswer));
+
+        // Mock the behavior of AnswerOptionsRepository
+        AnswerOptions answerOptions = new AnswerOptions();
+        when(answerOptionsRepository.findById(1L)).thenReturn(Optional.of(answerOptions));
+
+        // Mock SurveyAnswerDTO object
+        SurveyAnswerDTO surveyAnswerDTO = new SurveyAnswerDTO();
+        surveyAnswerDTO.setAnswerId(1L);
+
+        // Perform PUT request to update survey answer
+        mockMvc.perform(MockMvcRequestBuilders.put("/surveyanswers/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(surveyAnswerDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.anketaOdgovor").value(answerOptions));
+    }
+
+    @Test
+    public void updateSurveyAnswer_SurveyAnswerNotFound_Fail() throws Exception {
+        // Mock the behavior of SurveyAnswerRepository to return an empty optional, indicating survey answer not found
+        when(surveyAnswerRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Mock SurveyAnswerDTO object
+        SurveyAnswerDTO surveyAnswerDTO = new SurveyAnswerDTO();
+        surveyAnswerDTO.setAnswerId(1L);
+
+        // Perform PUT request to update survey answer
+        mockMvc.perform(MockMvcRequestBuilders.put("/surveyanswers/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(surveyAnswerDTO)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void updateSurveyAnswer_AnswerOptionsNotFound_Fail() throws Exception {
+        // Mock the behavior of SurveyAnswerRepository
+        SurveyAnswer existingSurveyAnswer = new SurveyAnswer();
+        when(surveyAnswerRepository.findById(1L)).thenReturn(Optional.of(existingSurveyAnswer));
+
+        // Mock the behavior of AnswerOptionsRepository to return an empty optional, indicating answer options not found
+        when(answerOptionsRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Mock SurveyAnswerDTO object
+        SurveyAnswerDTO surveyAnswerDTO = new SurveyAnswerDTO();
+        surveyAnswerDTO.setAnswerId(1L);
+
+        // Perform PUT request to update survey answer
+        mockMvc.perform(MockMvcRequestBuilders.put("/surveyanswers/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(surveyAnswerDTO)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void updateSurveyAnswer_ValidationError_Fail() throws Exception {
+        // Mock the behavior of SurveyAnswerRepository
+        SurveyAnswer existingSurveyAnswer = new SurveyAnswer();
+        when(surveyAnswerRepository.findById(1L)).thenReturn(Optional.of(existingSurveyAnswer));
+
+        // Mock the behavior of AnswerOptionsRepository
+        AnswerOptions answerOptions = new AnswerOptions();
+        when(answerOptionsRepository.findById(1L)).thenReturn(Optional.of(answerOptions));
+
+        // Mock SurveyAnswerDTO object with invalid data (e.g., missing required fields)
+        SurveyAnswerDTO surveyAnswerDTO = new SurveyAnswerDTO();
+
+        // Perform PUT request to update survey answer
+        mockMvc.perform(MockMvcRequestBuilders.put("/surveyanswers/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(surveyAnswerDTO)))
+                .andExpect(status().isForbidden());
+    }
+
 
     // Utility method to convert objects to JSON string
     private static String asJsonString(final Object obj) {
