@@ -52,7 +52,7 @@ public class ReferralService {
 
         Examination examination = examinationRepository.findById(referralDTO.getPregled_id()).orElse(null);
         if (examination == null) {
-            return new ResponseEntity<>(new ErrorMsg("Nije pronadjen nijedan pregled sa tim ID-em."), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new ErrorMsg("not found","Nije pronadjen nijedan pregled sa tim ID-em."), HttpStatus.NOT_FOUND);
         }
 
         Referral referral = convertToEntity(referralDTO, examination);
@@ -83,10 +83,9 @@ public class ReferralService {
 
     public ResponseEntity<?> deleteReferral(Long id) {
         ResponseEntity<?> response = getReferral(id);
-        if(response.getStatusCode() != HttpStatus.OK) {
-            return response;
+        if(response.getStatusCode() == HttpStatus.OK) {
+            referralRepository.deleteById(id);
         }
-        referralRepository.deleteById(id);
         return response;
     }
 
@@ -107,8 +106,9 @@ public class ReferralService {
 
         Examination examination = examinationRepository.findById(referralDTO.getPregled_id()).orElse(null);
         if (examination == null) {
-            return new ResponseEntity<>(new ErrorMsg("Nije pronadjen nijedan pregled sa tim ID-em."), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new ErrorMsg("not found","Nije pronadjen nijedan pregled sa tim ID-em."), HttpStatus.NOT_FOUND);
         }
+
         Referral referral = (Referral) response.getBody();
         assert referral != null;
         updateFromDTO(referral, referralDTO, examination);

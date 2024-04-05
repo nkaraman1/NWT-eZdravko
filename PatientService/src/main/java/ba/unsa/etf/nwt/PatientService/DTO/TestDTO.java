@@ -7,6 +7,8 @@ import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDateTime;
 
 public class TestDTO {
+
+    private Long ID;
     @NotBlank(message = "UID pacijenta je obavezan.")
     private String pacijent_uid;
 
@@ -38,6 +40,14 @@ public class TestDTO {
         this.dijagnoza = dijagnoza;
         this.vrijeme_pregleda = vrijeme_pregleda;
         this.vrijeme_dijagnoze = vrijeme_dijagnoze;
+    }
+
+    public Long getID() {
+        return ID;
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
     }
 
     public String getPacijent_uid() {

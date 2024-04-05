@@ -79,10 +79,9 @@ public class ExaminationService {
 
     public ResponseEntity<?> deleteExamination(Long id) {
         ResponseEntity<?> response = getExamination(id);
-        if(response.getStatusCode() != HttpStatus.OK) {
-            return response;
-        };
-        examinationRepository.deleteById(id);
+        if(response.getStatusCode() == HttpStatus.OK) {
+            examinationRepository.deleteById(id);
+        }
         return response;
     }
 

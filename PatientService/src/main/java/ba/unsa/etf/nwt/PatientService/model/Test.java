@@ -1,5 +1,6 @@
 package ba.unsa.etf.nwt.PatientService.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -31,6 +32,7 @@ public class Test {
     @ManyToOne
     @JoinColumn(name = "tip_nalaza_id", referencedColumnName = "ID")
     @NotNull(message = "ID tipa nalaza je obavezan.")
+    @JsonBackReference
     private TestType tip_nalaza;
 
     @Column

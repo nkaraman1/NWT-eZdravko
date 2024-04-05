@@ -77,10 +77,9 @@ public class DiaryEntryService {
 
     public ResponseEntity<?> deleteDiaryEntry(Long id) {
         ResponseEntity<?> response = getDiaryEntry(id);
-        if(response.getStatusCode() != HttpStatus.OK){
-            return response;
+        if(response.getStatusCode() == HttpStatus.OK){
+            diaryEntryRepository.deleteById(id);
         }
-        diaryEntryRepository.deleteById(id);
         return response;
     }
 

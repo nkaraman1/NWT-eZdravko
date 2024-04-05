@@ -22,12 +22,27 @@ public class TestController {
     }
 
     @GetMapping(value="/")
-    public List<Test> getTests(){
+    public List<TestDTO> getTests(){
         return testService.getTests();
     }
 
     @PostMapping(value = "/")
     public ResponseEntity<?> addTest(@RequestBody TestDTO testDTO){
         return testService.addTest(testDTO);
+    }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<?> getTest(@PathVariable("id") Long id){
+        return testService.getTest(id);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<?> deleteTest(@PathVariable("id") Long id){
+        return testService.deleteTest(id);
+    }
+
+    @PutMapping(value = "{id}")
+    public ResponseEntity<?> updateTest(@PathVariable("id") Long id, @RequestBody TestDTO testDTO){
+        return testService.updateTest(id, testDTO);
     }
 }
