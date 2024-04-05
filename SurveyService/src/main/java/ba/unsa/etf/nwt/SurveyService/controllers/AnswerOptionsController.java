@@ -59,7 +59,7 @@ public class AnswerOptionsController {
         return new ResponseEntity<>(savedAnswerOptions, HttpStatus.CREATED);
     }
 
-    @GetMapping(value = "/answeroptions/answeroption/id/{id}")
+    @GetMapping(value = "/answeroptions/id/{id}")
     public ResponseEntity<?> getAnswerOptionsByID(@PathVariable Long id) {
         Optional<AnswerOptions> answerOptions = answerOptionsRepository.findById(id);
         if (answerOptions.isPresent()) {
@@ -86,7 +86,7 @@ public class AnswerOptionsController {
         }
     }
 
-    @DeleteMapping(value = "/answeroptions/answeroption/{id}")
+    @DeleteMapping(value = "/answeroptions/{id}")
     public ResponseEntity<?> deleteAnswerOptions(@PathVariable Long id) {
         Optional<AnswerOptions> answerOptions = answerOptionsRepository.findById(id);
         if (answerOptions.isPresent()) {
@@ -97,7 +97,7 @@ public class AnswerOptionsController {
         }
     }
 
-    @PutMapping(value="/answeroptions/answeroption/{id}")
+    @PutMapping(value="/answeroptions/{id}")
     public ResponseEntity<?> updateAnswerOptions(@PathVariable Long id, @RequestBody AnswerOptionsDTO answerOptionsDTO){
         Optional<AnswerOptions> optionalAnswerOptions = answerOptionsRepository.findById(id);
         if (!optionalAnswerOptions.isPresent()) {

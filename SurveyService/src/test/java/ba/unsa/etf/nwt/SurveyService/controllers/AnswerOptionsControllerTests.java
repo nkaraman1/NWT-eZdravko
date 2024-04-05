@@ -26,6 +26,7 @@ import java.util.Optional;
 import static ba.unsa.etf.nwt.SurveyService.controllers.SurveyControllerTests.asJsonString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
@@ -48,8 +49,8 @@ public class AnswerOptionsControllerTests {
         // Perform GET request to fetch all answer options
         mockMvc.perform(MockMvcRequestBuilders.get("/answeroptions"))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", Matchers.is(1)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].sadrzaj", Matchers.is("Sample Answer")));
+                .andExpect(jsonPath("$.size()", Matchers.is(1)))
+                .andExpect(jsonPath("$[0].sadrzaj", Matchers.is("Sample Answer")));
     }
 
     @Test
@@ -117,9 +118,9 @@ public class AnswerOptionsControllerTests {
         when(answerOptionsRepository.findById(1L)).thenReturn(Optional.of(answerOptions));
 
         // Perform GET request to fetch answer options by ID
-        mockMvc.perform(MockMvcRequestBuilders.get("/answeroptions/answeroption/id/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/answeroptions/id/1"))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.sadrzaj", Matchers.is("Sample Answer")));
+                .andExpect(jsonPath("$.sadrzaj", Matchers.is("Sample Answer")));
     }
 
     @Test
@@ -128,9 +129,9 @@ public class AnswerOptionsControllerTests {
         when(answerOptionsRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Perform GET request with non-existing answer option ID
-        mockMvc.perform(MockMvcRequestBuilders.get("/answeroptions/answeroption/id/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/answeroptions/id/1"))
                 .andExpect(status().isNotFound())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("validation")));
+                .andExpect(jsonPath("$.error", Matchers.is("validation")));
 //                .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("Nije pronadjen ponudjeni odgovor na pitanju sa tim ID-em.")));
     }
 
@@ -147,8 +148,8 @@ public class AnswerOptionsControllerTests {
         // Perform GET request to fetch answer options by question ID
         mockMvc.perform(MockMvcRequestBuilders.get("/answeroptions/question-id/1"))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", Matchers.is(1)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].sadrzaj", Matchers.is("Sample Answer")));
+                .andExpect(jsonPath("$.size()", Matchers.is(1)))
+                .andExpect(jsonPath("$[0].sadrzaj", Matchers.is("Sample Answer")));
     }
 
     @Test
@@ -169,9 +170,9 @@ public class AnswerOptionsControllerTests {
         when(answerOptionsRepository.findById(1L)).thenReturn(Optional.of(answerOptions));
 
         // Perform DELETE request to delete answer options by ID
-        mockMvc.perform(MockMvcRequestBuilders.delete("/answeroptions/answeroption/1"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/answeroptions/1"))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.sadrzaj", Matchers.is("Sample Answer")));
+                .andExpect(jsonPath("$.sadrzaj", Matchers.is("Sample Answer")));
     }
 
     @Test
@@ -180,10 +181,81 @@ public class AnswerOptionsControllerTests {
         when(answerOptionsRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Perform DELETE request with non-existing answer option ID
-        mockMvc.perform(MockMvcRequestBuilders.delete("/answeroptions/answeroption/1"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/answeroptions/1"))
                 .andExpect(status().isNotFound())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("validation")));
+                .andExpect(jsonPath("$.error", Matchers.is("validation")));
 //                .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("Nije pronadjen ponudjeni odgovor na pitanju sa tim ID-em.")));
+    }
+
+    @Test
+    public void updateAnswerOptions_ValidInput_Success() throws Exception {
+        // Mock the behavior of AnswerOptionsRepository
+        AnswerOptions existingAnswerOptions = new AnswerOptions(1L, "Old Answer");
+        when(answerOptionsRepository.findById(1L)).thenReturn(Optional.of(existingAnswerOptions));
+
+        // Mock the behavior of SurveyQuestionRepository
+        SurveyQuestion surveyQuestion = new SurveyQuestion("Sample Question");
+        when(surveyQuestionRepository.findById(1L)).thenReturn(Optional.of(surveyQuestion));
+
+        // Mock AnswerOptionsDTO object
+        AnswerOptionsDTO answerOptionsDTO = new AnswerOptionsDTO();
+        answerOptionsDTO.setQuestionId(1L);
+        answerOptionsDTO.setSadrzaj("New Answer");
+
+        // Perform PUT request to update answer options
+        mockMvc.perform(MockMvcRequestBuilders.put("/answeroptions/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(answerOptionsDTO)))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.sadrzaj").value("New Answer"));
+    }
+
+
+    @Test
+    public void updateAnswerOptions_InvalidSurveyQuestion_Fail() throws Exception {
+        // Mock existing AnswerOptions object
+        AnswerOptions existingAnswerOptions = new AnswerOptions(1L, "Old Answer");
+
+        // Mock the behavior of AnswerOptionsRepository to return the existing AnswerOptions object
+        when(answerOptionsRepository.findById(1L)).thenReturn(Optional.of(existingAnswerOptions));
+
+        // Mock AnswerOptionsDTO object with updated data
+        AnswerOptionsDTO answerOptionsDTO = new AnswerOptionsDTO();
+        answerOptionsDTO.setQuestionId(1L); // Assuming there is no survey question with ID 1 in the database
+        answerOptionsDTO.setSadrzaj("New Answer");
+
+        // Mock the behavior of SurveyQuestionRepository to return an empty optional, indicating survey question not found
+        when(surveyQuestionRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Perform PUT request to update answer options
+        mockMvc.perform(MockMvcRequestBuilders.put("/answeroptions/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(answerOptionsDTO)))
+                .andExpect(status().isForbidden());
+
+        // Verify that answerOptionsRepository.save() was not called
+        verify(answerOptionsRepository, never()).save(existingAnswerOptions);
+    }
+
+    @Test
+    public void updateAnswerOptions_ValidationError_Fail() throws Exception {
+        // Mock existing AnswerOptions object
+        AnswerOptions existingAnswerOptions = new AnswerOptions(1L, "Old Answer");
+
+        // Mock the behavior of AnswerOptionsRepository to return the existing AnswerOptions object
+        when(answerOptionsRepository.findById(1L)).thenReturn(Optional.of(existingAnswerOptions));
+
+        // Mock AnswerOptionsDTO object with invalid data (e.g., missing required fields)
+        AnswerOptionsDTO answerOptionsDTO = new AnswerOptionsDTO();
+
+        // Perform PUT request to update answer options
+        mockMvc.perform(MockMvcRequestBuilders.put("/answeroptions/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(answerOptionsDTO)))
+                .andExpect(status().isForbidden());
+
+        // Verify that answerOptionsRepository.save() was not called
+        verify(answerOptionsRepository, never()).save(existingAnswerOptions);
     }
 
     @Test
@@ -193,9 +265,9 @@ public class AnswerOptionsControllerTests {
         when(answerOptionsRepository.findById(1L)).thenReturn(Optional.of(answerOptions));
 
         // Perform PUT request to update answer options
-        mockMvc.perform(MockMvcRequestBuilders.put("/answeroptions/1/sadrzaj/New Answer"))
+        mockMvc.perform(MockMvcRequestBuilders.patch("/answeroptions/1/sadrzaj/New Answer"))
                 .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.sadrzaj", Matchers.is("New Answer")));
+                .andExpect(jsonPath("$.sadrzaj", Matchers.is("New Answer")));
     }
 
     @Test
@@ -204,9 +276,9 @@ public class AnswerOptionsControllerTests {
         when(answerOptionsRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Perform PUT request with non-existing answer option ID
-        mockMvc.perform(MockMvcRequestBuilders.put("/answeroptions/1/sadrzaj/New Answer"))
+        mockMvc.perform(MockMvcRequestBuilders.patch("/answeroptions/1/sadrzaj/New Answer"))
                 .andExpect(status().isNotFound())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("validation")));
+                .andExpect(jsonPath("$.error", Matchers.is("validation")));
 //                .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("Neispravni parametri!")));
     }
 }

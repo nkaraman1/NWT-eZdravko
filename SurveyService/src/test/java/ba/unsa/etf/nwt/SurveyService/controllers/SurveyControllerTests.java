@@ -112,7 +112,7 @@ public class SurveyControllerTests {
         when(surveyRepository.findById(1L)).thenReturn(Optional.of(survey));
 
         // Perform GET request to fetch survey by ID
-        mockMvc.perform(MockMvcRequestBuilders.get("/surveys/survey/id/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/surveys/id/1"))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.naslov", Matchers.is("Naslov ankete")));
     }
@@ -123,7 +123,7 @@ public class SurveyControllerTests {
         when(surveyRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Perform GET request with non-existing survey ID
-        mockMvc.perform(MockMvcRequestBuilders.get("/surveys/survey/id/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/surveys/id/1"))
                 .andExpect(status().isNotFound())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("validation")));
 //                .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("Nije pronadjena anketa sa tim ID-em.")));
@@ -136,7 +136,7 @@ public class SurveyControllerTests {
         when(surveyRepository.findByNaslov("Naslov ankete")).thenReturn(Optional.of(survey));
 
         // Perform GET request to fetch survey by title
-        mockMvc.perform(MockMvcRequestBuilders.get("/surveys/survey/naslov/Naslov ankete"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/surveys/naslov/Naslov ankete"))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.naslov", Matchers.is("Naslov ankete")));
     }
@@ -147,7 +147,7 @@ public class SurveyControllerTests {
         when(surveyRepository.findByNaslov("Naslov ankete")).thenReturn(Optional.empty());
 
         // Perform GET request with non-existing survey title
-        mockMvc.perform(MockMvcRequestBuilders.get("/surveys/survey/naslov/Naslov ankete"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/surveys/naslov/Naslov ankete"))
                 .andExpect(status().isNotFound())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("validation")));
 //                .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("Nije pronadjena anketa sa tim naslovom.")));
@@ -160,7 +160,7 @@ public class SurveyControllerTests {
         when(surveyRepository.findByStatus(1)).thenReturn(surveys);
 
         // Perform GET request to fetch surveys by status
-        mockMvc.perform(MockMvcRequestBuilders.get("/surveys/survey/status/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/surveys/status/1"))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.size()", Matchers.is(1)))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].naslov", Matchers.is("Naslov ankete")));
@@ -172,7 +172,7 @@ public class SurveyControllerTests {
         when(surveyRepository.findByStatus(1)).thenReturn(Collections.emptyList());
 
         // Perform GET request with non-existing survey status
-        mockMvc.perform(MockMvcRequestBuilders.get("/surveys/survey/status/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/surveys/status/1"))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.size()", Matchers.is(0)));
     }
@@ -184,7 +184,7 @@ public class SurveyControllerTests {
         when(surveyRepository.findById(1L)).thenReturn(Optional.of(survey));
 
         // Perform DELETE request to delete survey by ID
-        mockMvc.perform(MockMvcRequestBuilders.delete("/surveys/survey/1"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/surveys/1"))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.naslov", Matchers.is("Naslov ankete")));
 
@@ -198,7 +198,7 @@ public class SurveyControllerTests {
         when(surveyRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Perform DELETE request with non-existing survey ID
-        mockMvc.perform(MockMvcRequestBuilders.delete("/surveys/survey/1"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/surveys/1"))
                 .andExpect(status().isNotFound())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("validation")));
 //                .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("Nije pronadjena anketa sa tim ID-em.")));
@@ -208,13 +208,114 @@ public class SurveyControllerTests {
     }
 
     @Test
+    public void updateSurvey_Success() throws Exception {
+        // Mock the behavior of SurveyRepository
+        Survey existingSurvey = new Survey(1L, "user123", "Naslov ankete", "Opis ankete", 1);
+        when(surveyRepository.findById(1L)).thenReturn(Optional.of(existingSurvey));
+        when(surveyRepository.save(any(Survey.class))).thenReturn(existingSurvey); // mock save operation
+
+        SurveyDTO updatedSurveyDTO = new SurveyDTO();
+        updatedSurveyDTO.setUserUid("updatedUser123");
+        updatedSurveyDTO.setNaslov("Updated Naslov ankete");
+        updatedSurveyDTO.setOpis("Updated Opis ankete");
+        updatedSurveyDTO.setStatus(1);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/surveys/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(updatedSurveyDTO)))
+                .andExpect(status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.user_uid").value("updatedUser123"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.naslov").value("Updated Naslov ankete"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.opis").value("Updated Opis ankete"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.status").value(1));
+    }
+
+    @Test
+    public void updateSurvey_SurveyNotFound() throws Exception {
+        // Mock the behavior of SurveyRepository
+        when(surveyRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // Create a SurveyDTO with updated values
+        SurveyDTO updatedSurveyDTO = new SurveyDTO();
+        updatedSurveyDTO.setUserUid("updatedUser123");
+        updatedSurveyDTO.setNaslov("Updated Naslov ankete");
+        updatedSurveyDTO.setOpis("Updated Opis ankete");
+        updatedSurveyDTO.setStatus(1);
+
+        // Perform PUT request to update the survey
+        mockMvc.perform(MockMvcRequestBuilders.put("/surveys/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(updatedSurveyDTO)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void updateSurvey_InvalidInput_Fail() throws Exception {
+        Survey existingSurvey = new Survey(1L, "user123", "Naslov ankete", "Opis ankete", 1);
+        when(surveyRepository.findById(1L)).thenReturn(Optional.of(existingSurvey));
+        when(surveyRepository.save(any(Survey.class))).thenReturn(existingSurvey);
+
+        // Create a SurveyDTO with invalid data (e.g., missing required fields)
+        SurveyDTO updatedSurveyDTO = new SurveyDTO();
+
+        // Perform PUT request to update the survey with invalid data
+        mockMvc.perform(MockMvcRequestBuilders.put("/surveys/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(updatedSurveyDTO)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void updateSurvey_InvalidStatus_Fail() throws Exception {
+        // Mock the behavior of SurveyRepository
+        Survey existingSurvey = new Survey(1L, "user123", "Naslov ankete", "Opis ankete", 1);
+        when(surveyRepository.findById(1L)).thenReturn(Optional.of(existingSurvey));
+        when(surveyRepository.save(any(Survey.class))).thenReturn(existingSurvey); // mock save operation
+
+        // Create a SurveyDTO with invalid data (empty strings and negative status)
+        SurveyDTO updatedSurveyDTO = new SurveyDTO();
+        updatedSurveyDTO.setUserUid("user123");
+        updatedSurveyDTO.setNaslov("Naslov");
+        updatedSurveyDTO.setOpis("Opis");
+        updatedSurveyDTO.setStatus(2); // Invalid status
+
+        // Perform PUT request to update the survey with invalid data
+        mockMvc.perform(MockMvcRequestBuilders.put("/surveys/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(updatedSurveyDTO)))
+                .andExpect(status().isForbidden())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("validation")));
+    }
+
+    @Test
+    public void updateSurvey_Failure() throws Exception {
+        // Mock the behavior of SurveyRepository
+        Survey existingSurvey = new Survey(1L, "user123", "Naslov ankete", "Opis ankete", 1);
+        when(surveyRepository.findById(1L)).thenReturn(Optional.of(existingSurvey));
+        when(surveyRepository.save(any(Survey.class))).thenThrow(new RuntimeException("Failed to save survey")); // mock save failure
+
+        // Create a SurveyDTO with updated values
+        SurveyDTO updatedSurveyDTO = new SurveyDTO();
+        updatedSurveyDTO.setUserUid("updatedUser123");
+        updatedSurveyDTO.setNaslov("Updated Naslov ankete");
+        updatedSurveyDTO.setOpis("Updated Opis ankete");
+        updatedSurveyDTO.setStatus(1);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/surveys/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(asJsonString(updatedSurveyDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().string("Failed to save survey"));
+    }
+
+    @Test
     public void updateUserUid_Success() throws Exception {
         // Mock the behavior of SurveyRepository
         Survey survey = new Survey(1L, "user123", "Naslov ankete", "Opis ankete", 1);
         when(surveyRepository.findById(1L)).thenReturn(Optional.of(survey));
 
         // Perform PUT request to update user UID of survey
-        mockMvc.perform(MockMvcRequestBuilders.put("/surveys/1/user-uid/newUser")
+        mockMvc.perform(MockMvcRequestBuilders.patch("/surveys/1/user-uid/newUser")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.user_uid", Matchers.is("newUser")));
@@ -229,7 +330,7 @@ public class SurveyControllerTests {
         when(surveyRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Perform PUT request with non-existing survey ID
-        mockMvc.perform(MockMvcRequestBuilders.put("/surveys/1/user-uid/newUser")
+        mockMvc.perform(MockMvcRequestBuilders.patch("/surveys/1/user-uid/newUser")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("validation")));
@@ -246,7 +347,7 @@ public class SurveyControllerTests {
         when(surveyRepository.findById(1L)).thenReturn(Optional.of(survey));
 
         // Perform PUT request to update title of survey
-        mockMvc.perform(MockMvcRequestBuilders.put("/surveys/1/naslov/New Title")
+        mockMvc.perform(MockMvcRequestBuilders.patch("/surveys/1/naslov/New Title")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.naslov", Matchers.is("New Title")));
@@ -261,7 +362,7 @@ public class SurveyControllerTests {
         when(surveyRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Perform PUT request with non-existing survey ID
-        mockMvc.perform(MockMvcRequestBuilders.put("/surveys/1/naslov/New Title")
+        mockMvc.perform(MockMvcRequestBuilders.patch("/surveys/1/naslov/New Title")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("validation")));
@@ -279,7 +380,7 @@ public class SurveyControllerTests {
         when(surveyRepository.findById(1L)).thenReturn(Optional.of(survey));
 
         // Perform PUT request to update description of survey
-        mockMvc.perform(MockMvcRequestBuilders.put("/surveys/1/opis/New Description")
+        mockMvc.perform(MockMvcRequestBuilders.patch("/surveys/1/opis/New Description")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.opis", Matchers.is("New Description")));
@@ -294,7 +395,7 @@ public class SurveyControllerTests {
         when(surveyRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Perform PUT request with non-existing survey ID
-        mockMvc.perform(MockMvcRequestBuilders.put("/surveys/1/opis/New Description")
+        mockMvc.perform(MockMvcRequestBuilders.patch("/surveys/1/opis/New Description")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("validation")));
@@ -312,7 +413,7 @@ public class SurveyControllerTests {
         when(surveyRepository.findById(1L)).thenReturn(Optional.of(survey));
 
         // Perform PUT request to update status of survey
-        mockMvc.perform(MockMvcRequestBuilders.put("/surveys/1/status/2")
+        mockMvc.perform(MockMvcRequestBuilders.patch("/surveys/1/status/2")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status", Matchers.is(2)));
@@ -327,7 +428,7 @@ public class SurveyControllerTests {
         when(surveyRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Perform PUT request with non-existing survey ID
-        mockMvc.perform(MockMvcRequestBuilders.put("/surveys/1/status/2")
+        mockMvc.perform(MockMvcRequestBuilders.patch("/surveys/1/status/2")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("validation")));

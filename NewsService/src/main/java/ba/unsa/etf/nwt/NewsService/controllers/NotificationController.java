@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class NotificationController {
@@ -54,6 +55,91 @@ public class NotificationController {
 
         Notification savedNotification = notificationsRepository.save(notification);
         return new ResponseEntity<>(savedNotification, HttpStatus.CREATED);
+    }
+
+    @GetMapping(value = "/notifications/{id}")
+    public ResponseEntity<?> getNotificationByID(@PathVariable Long id) {
+        Optional<Notification> notification = notificationsRepository.findById(id);
+        if (notification.isPresent()) {
+            return new ResponseEntity<>(notification.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(new ErrorMsg("Nije pronadjena notifikacija sa tim ID-em."), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @DeleteMapping(value="/notifications/{id}")
+    public ResponseEntity<?> deleteNotification(@PathVariable Long id) {
+        Optional<Notification> notification = notificationsRepository.findById(id);
+        if (notification.isPresent()) {
+            notificationsRepository.deleteById(id);
+            return new ResponseEntity<>(notification.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(new ErrorMsg("Nije pronadjena notifikacija sa tim ID-em."), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping(value="/notifications/{id}")
+    public ResponseEntity<?> updateNotification(@PathVariable Long id, @RequestBody NotificationDTO notificationDTO){
+        Optional<Notification> optionalNotification = notificationsRepository.findById(id);
+        if (!optionalNotification.isPresent()) {
+            return new ResponseEntity<>(new ErrorMsg("Nije pronadjena nijedna notifikacija sa tim ID-em."), HttpStatus.NOT_FOUND);
+        }
+
+        Errors errors = new BeanPropertyBindingResult(notificationDTO, "notificationDTO");
+        validator.validate(notificationDTO, errors);
+
+        if (errors.hasErrors()) {
+            StringBuilder errorMessage = new StringBuilder();
+            errors.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()));
+            return new ResponseEntity<>(new ErrorMsg("validation", errorMessage.toString()), HttpStatus.FORBIDDEN);
+//            throw new RuntimeException(errorMessage.toString());
+        }
+
+        Notification existingNotification = optionalNotification.get();
+
+        existingNotification.setUser_uid(notificationDTO.getUser_uid());
+        existingNotification.setSadrzaj(notificationDTO.getSadrzaj());
+        existingNotification.setTip_notifikacije(notificationDTO.getTip_notifikacije());
+
+        Notification updatedNotification = notificationsRepository.save(existingNotification);
+
+        return new ResponseEntity<>(updatedNotification, HttpStatus.OK);
+    }
+
+    @PatchMapping(value="/notifications/{id}")
+    public ResponseEntity<?> patchNotifications(@PathVariable Long id, @RequestBody NotificationDTO notificationDTO) {
+        Optional<Notification> optionalNotification = notificationsRepository.findById(id);
+        if (!optionalNotification.isPresent()) {
+            return new ResponseEntity<>(new ErrorMsg("Nije pronadjena nijedna notifikacija sa tim ID-em."), HttpStatus.NOT_FOUND);
+        }
+
+//        Errors errors = new BeanPropertyBindingResult(notificationDTO, "notificationDTO");
+//        validator.validate(notificationDTO, errors);
+//
+//        if (errors.hasErrors()) {
+//            StringBuilder errorMessage = new StringBuilder();
+//            errors.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()));
+//            return new ResponseEntity<>(new ErrorMsg("validation", errorMessage.toString()), HttpStatus.FORBIDDEN);
+////            throw new RuntimeException(errorMessage.toString());
+//        }
+
+        Notification existingNotification = optionalNotification.get();
+
+        // Update only the fields that are present in the request
+        if (notificationDTO.getSadrzaj() != null) {
+            existingNotification.setSadrzaj(notificationDTO.getSadrzaj());
+        }
+        if(notificationDTO.getUser_uid() != null){
+            existingNotification.setUser_uid(notificationDTO.getUser_uid());
+        }
+        if(notificationDTO.getTip_notifikacije() != null){
+            existingNotification.setTip_notifikacije(notificationDTO.getTip_notifikacije());
+        }
+
+        // Save the updated news
+        Notification updatedNotification = notificationsRepository.save(existingNotification);
+
+        return new ResponseEntity<>(updatedNotification, HttpStatus.OK);
     }
 
     @ExceptionHandler(RuntimeException.class)
