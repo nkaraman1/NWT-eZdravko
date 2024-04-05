@@ -1,7 +1,6 @@
 package ba.unsa.etf.nwt.PatientService.services;
 
 import ba.unsa.etf.nwt.PatientService.DTO.DiaryEntryDTO;
-import ba.unsa.etf.nwt.PatientService.controllers.DiaryEntryController;
 import ba.unsa.etf.nwt.PatientService.model.DiaryEntry;
 import ba.unsa.etf.nwt.PatientService.model.ErrorMsg;
 import ba.unsa.etf.nwt.PatientService.repositories.DiaryEntryRepository;
@@ -9,14 +8,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
-import org.springframework.web.bind.annotation.PutMapping;
 
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class DiaryEntryService {
@@ -107,6 +109,30 @@ public class DiaryEntryService {
         return new ResponseEntity<>(convertToDTO(diaryEntry), HttpStatus.OK);
     }
 
+    public ResponseEntity<?> updateDiaryEntryPartial(Long id, Map<String, Object> fields) {
+        Optional<DiaryEntry> optionalDiaryEntry = diaryEntryRepository.findById(id);
+        if (optionalDiaryEntry.isEmpty()){
+            return new ResponseEntity<>(new ErrorMsg("not found", "Nije pronađen nijedan zapis u dnevniku sa tim ID-em."), HttpStatus.NOT_FOUND);
+        }
+        AtomicBoolean error = new AtomicBoolean(false);
+        StringBuilder errorMessage = new StringBuilder();
+        fields.forEach((key, value)->{
+            Field field = ReflectionUtils.findField(DiaryEntry.class, key);
+            if (field != null) {
+                field.setAccessible(true);
+                ReflectionUtils.setField(field, optionalDiaryEntry.get(), value);
+            }else{
+                error.set(true);
+                errorMessage.append("Dnevnik nema polje ").append(key).append(". ");
+            }
+        });
+        if(error.get()){
+            return new ResponseEntity<>(new ErrorMsg("validation", errorMessage.toString()), HttpStatus.FORBIDDEN);
+        }
+        DiaryEntry diaryEntry = diaryEntryRepository.save(optionalDiaryEntry.get());
+        return new ResponseEntity<>(convertToDTO(diaryEntry), HttpStatus.OK);
+    }
+
     private DiaryEntry updateFromDTO(DiaryEntry diaryEntry, DiaryEntryDTO diaryEntryDTO) {
         diaryEntry.setBmi(diaryEntryDTO.getBmi());
         diaryEntry.setDatum(diaryEntryDTO.getDatum());
@@ -139,4 +165,6 @@ public class DiaryEntryService {
         diaryEntryDTO.setID(diaryEntry.getID());
         return diaryEntryDTO;
     }
+
+
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -43,9 +44,14 @@ public class DiaryEntryController {
         return diaryEntryService.deleteDiaryEntry(id);
     }
 
-    @PutMapping(value = "{id}")
+    @PutMapping(value = "/{id}")
     public ResponseEntity<?> updateDiaryEntry(@PathVariable("id") Long id, @RequestBody DiaryEntryDTO diaryEntryDTO){
         return diaryEntryService.updateDiaryEntry(id, diaryEntryDTO);
+    }
+
+    @PatchMapping(value = "/{id}")
+    public ResponseEntity<?> updateDiaryEntryPartial(@PathVariable("id") Long id, @RequestBody Map<String, Object> fields){
+        return diaryEntryService.updateDiaryEntryPartial(id, fields);
     }
 
 
