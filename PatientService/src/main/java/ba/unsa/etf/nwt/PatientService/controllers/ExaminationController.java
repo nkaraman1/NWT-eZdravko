@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "/api/examinations")
@@ -42,8 +43,15 @@ public class ExaminationController {
         return examinationService.deleteExamination(id);
     }
 
-    @PutMapping(value = "{id}")
+    @PutMapping(value = "/{id}")
     public ResponseEntity<?> updateExamination(@PathVariable("id") Long id, @RequestBody ExaminationDTO examinationDTO){
         return examinationService.updateExamination(id, examinationDTO);
     }
+
+    @PatchMapping(value = "/{id}")
+    public ResponseEntity<?> updateExaminationPartial(@PathVariable("id") Long id, @RequestBody Map<String, Object> fields){
+        return examinationService.updateExaminationPartial(id, fields);
+    }
+
+
 }

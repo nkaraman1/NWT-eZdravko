@@ -11,13 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class ExaminationService {
@@ -71,7 +72,7 @@ public class ExaminationService {
     private ResponseEntity<?> getExaminationNotDTO(Long id){
         Optional<Examination> optionalExamination = examinationRepository.findById(id);
         if (optionalExamination.isEmpty()){
-            return new ResponseEntity<>(new ErrorMsg("not found", "Nije pronađen pregled sa tim ID-em."), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ErrorMsg("not found", "Nije pronađen nijedan pregled sa tim ID-em."), HttpStatus.NOT_FOUND);
         }
         Examination examination = optionalExamination.get();
         return new ResponseEntity<>(examination, HttpStatus.OK);
@@ -106,7 +107,33 @@ public class ExaminationService {
         return new ResponseEntity<>(convertToDTO(examination), HttpStatus.OK);
     }
 
-
+    public ResponseEntity<?> updateExaminationPartial(Long id, Map<String, Object> fields) {
+        Optional<Examination> optionalExamination = examinationRepository.findById(id);
+        if (optionalExamination.isEmpty()){
+            return new ResponseEntity<>(new ErrorMsg("not found", "Nije pronađen nijedan pregled sa tim ID-em."), HttpStatus.NOT_FOUND);
+        }
+        AtomicBoolean error = new AtomicBoolean(false);
+        StringBuilder errorMessage = new StringBuilder();
+        fields.forEach((key, value)->{
+            Field field = ReflectionUtils.findField(Examination.class, key);
+            if (field != null && !Objects.equals(key, "ID")) {
+                field.setAccessible(true);
+                ReflectionUtils.setField(field, optionalExamination.get(), value);
+            }else if (Objects.equals(key, "ID")){
+                error.set(true);
+                errorMessage.append("Ne smije se mijenjati vrijednost ID-a. ");
+            }
+            else{
+                error.set(true);
+                errorMessage.append("Pregled nema polje ").append(key).append(". ");
+            }
+        });
+        if(error.get()){
+            return new ResponseEntity<>(new ErrorMsg("validation", errorMessage.toString()), HttpStatus.FORBIDDEN);
+        }
+        Examination examination = examinationRepository.save(optionalExamination.get());
+        return new ResponseEntity<>(convertToDTO(examination), HttpStatus.OK);
+    }
 
     private Examination convertToEntity(ExaminationDTO examinationDTO) {
         Examination examination = new Examination();
@@ -135,6 +162,7 @@ public class ExaminationService {
         examinationDTO.setID(examination.getID());
         return examinationDTO;
     }
+
 
 
 }
