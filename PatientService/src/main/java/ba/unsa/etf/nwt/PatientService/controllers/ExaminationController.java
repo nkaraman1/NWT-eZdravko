@@ -23,8 +23,8 @@ public class ExaminationController {
     }
 
     @GetMapping(value="/")
-    public List<Examination> getDiaryEntries() {
-        return examinationService.getDiaryEntries();
+    public List<ExaminationDTO> getExaminations() {
+        return examinationService.getExaminations();
     }
 
     @PostMapping(value="/")

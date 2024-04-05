@@ -39,6 +39,7 @@ public class Examination {
     private LocalDateTime termin_pregleda;
 
     @OneToMany(mappedBy = "pregled", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Referral> uputnice;
 
     public Examination() {
@@ -97,7 +98,8 @@ public class Examination {
         this.termin_pregleda = termin_pregleda;
     }
 
-    @JsonManagedReference
+
+
     public List<Referral> getUputnice() {
         return uputnice;
     }

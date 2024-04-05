@@ -7,8 +7,11 @@ import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class ExaminationDTO {
+
+    private Long ID;
     @NotBlank(message = "UID pacijenta je obavezan.")
     private String pacijent_uid;
 
@@ -23,6 +26,8 @@ public class ExaminationDTO {
     @PastOrPresent(message = "Termin pregleda ne može biti u budućnosti.")
     private LocalDateTime termin_pregleda;
 
+    private List<Long> uputnice;
+
     public ExaminationDTO() {
     }
 
@@ -31,6 +36,14 @@ public class ExaminationDTO {
         this.doktor_uid = doktor_uid;
         this.dijagnoza = dijagnoza;
         this.termin_pregleda = termin_pregleda;
+    }
+
+    public Long getID() {
+        return ID;
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
     }
 
     public String getPacijent_uid() {
@@ -63,5 +76,13 @@ public class ExaminationDTO {
 
     public void setTermin_pregleda(LocalDateTime termin_pregleda) {
         this.termin_pregleda = termin_pregleda;
+    }
+
+    public List<Long> getUputnice() {
+        return uputnice;
+    }
+
+    public void setUputnice(List<Long> uputnice) {
+        this.uputnice = uputnice;
     }
 }

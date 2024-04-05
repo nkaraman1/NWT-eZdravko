@@ -1,8 +1,11 @@
 package ba.unsa.etf.nwt.PatientService.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -18,7 +21,8 @@ public class Referral {
 
     @ManyToOne
     @JoinColumn(name = "pregled_id", referencedColumnName = "ID")
-    @NotBlank(message = "ID pregleda je obavezan.")
+    @NotNull(message = "ID pregleda je obavezan.")
+    @JsonBackReference
     private Examination pregled;
 
     @Column
@@ -58,6 +62,8 @@ public class Referral {
     public void setID(Long ID) {
         this.ID = ID;
     }
+
+
 
     public Examination getPregled() {
         return pregled;

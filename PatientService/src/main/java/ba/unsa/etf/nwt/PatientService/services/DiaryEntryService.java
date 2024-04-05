@@ -30,12 +30,12 @@ public class DiaryEntryService {
         this.validator = validator;
     }
 
-    public List<DiaryEntry> getDiaryEntries() {
+    public List<DiaryEntryDTO> getDiaryEntries() {
         List<DiaryEntry> diaryEntries = diaryEntryRepository.findAll();
         if (diaryEntries.isEmpty()) {
             return Collections.emptyList();
         }
-        return diaryEntries;
+        return diaryEntries.stream().map(this::convertToDTO).toList();
     }
 
     public ResponseEntity<?> addDiaryEntry(DiaryEntryDTO diaryEntryDTO){
@@ -50,39 +50,47 @@ public class DiaryEntryService {
 
         DiaryEntry diaryEntry = convertToEntity(diaryEntryDTO);
         diaryEntry =  diaryEntryRepository.save(diaryEntry);
-        return new ResponseEntity<>(diaryEntry, HttpStatus.CREATED);
+        return new ResponseEntity<>(convertToDTO(diaryEntry), HttpStatus.CREATED);
     }
 
 
     public ResponseEntity<?> getDiaryEntry(Long id) {
-        Optional<DiaryEntry> optionalDiaryEntry = diaryEntryRepository.findById(id);
-        if (optionalDiaryEntry.isEmpty()){
-            return new ResponseEntity<>(new ErrorMsg("not found", "Nije pronađen nijedan zapis u dnevniku sa tim ID-em."), HttpStatus.NOT_FOUND);
+        ResponseEntity<?> response = getDiaryEntryNotDTO(id);
+        if(response.getStatusCode() != HttpStatus.OK){
+            return response;
         }
-        DiaryEntry diaryEntry = optionalDiaryEntry.get();
-        return new ResponseEntity<>(diaryEntry, HttpStatus.OK);
+        DiaryEntry diaryEntry = (DiaryEntry) response.getBody();
+        assert diaryEntry != null;
+        DiaryEntryDTO diaryEntryDTO = convertToDTO(diaryEntry);
+        return new ResponseEntity<>(diaryEntryDTO, HttpStatus.OK);
 
     }
 
-    public ResponseEntity<?> deleteDiaryEntry(Long id) {
+    private ResponseEntity<?> getDiaryEntryNotDTO(Long id){
         Optional<DiaryEntry> optionalDiaryEntry = diaryEntryRepository.findById(id);
         if (optionalDiaryEntry.isEmpty()){
             return new ResponseEntity<>(new ErrorMsg("not found", "Nije pronađen nijedan zapis u dnevniku sa tim ID-em."), HttpStatus.NOT_FOUND);
         }
         DiaryEntry diaryEntry = optionalDiaryEntry.get();
-
-        diaryEntryRepository.deleteById(id);
-
         return new ResponseEntity<>(diaryEntry, HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> deleteDiaryEntry(Long id) {
+        ResponseEntity<?> response = getDiaryEntry(id);
+        if(response.getStatusCode() != HttpStatus.OK){
+            return response;
+        }
+        diaryEntryRepository.deleteById(id);
+        return response;
     }
 
 
     public ResponseEntity<?> updateDiaryEntry(Long id, DiaryEntryDTO diaryEntryDTO){
-        Optional<DiaryEntry> optionalDiaryEntry = diaryEntryRepository.findById(id);
-        if (optionalDiaryEntry.isEmpty()){
-            return new ResponseEntity<>(new ErrorMsg("not found", "Nije pronađen nijedan zapis u dnevniku sa tim ID-em."), HttpStatus.NOT_FOUND);
+        ResponseEntity<?> response = getDiaryEntryNotDTO(id);
+        if(response.getStatusCode() != HttpStatus.OK){
+            return response;
         }
-
+        DiaryEntry diaryEntry = (DiaryEntry) response.getBody();
 
         Errors errors = new BeanPropertyBindingResult(diaryEntryDTO, "diaryEntryDTO");
         validator.validate(diaryEntryDTO, errors);
@@ -92,15 +100,15 @@ public class DiaryEntryService {
             errors.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()).append(" "));
             return new ResponseEntity<>(new ErrorMsg("validation",errorMessage.toString()), HttpStatus.FORBIDDEN);
         }
-
-        DiaryEntry diaryEntry = optionalDiaryEntry.get();
-        diaryEntry = updateFromEntity(diaryEntry, diaryEntryDTO);
+;
+        assert diaryEntry != null;
+        updateFromDTO(diaryEntry, diaryEntryDTO);
         diaryEntry = diaryEntryRepository.save(diaryEntry);
 
-        return new ResponseEntity<>(diaryEntry, HttpStatus.OK);
+        return new ResponseEntity<>(convertToDTO(diaryEntry), HttpStatus.OK);
     }
 
-    private DiaryEntry updateFromEntity(DiaryEntry diaryEntry, DiaryEntryDTO diaryEntryDTO) {
+    private DiaryEntry updateFromDTO(DiaryEntry diaryEntry, DiaryEntryDTO diaryEntryDTO) {
         diaryEntry.setBmi(diaryEntryDTO.getBmi());
         diaryEntry.setDatum(diaryEntryDTO.getDatum());
         diaryEntry.setPuls(diaryEntryDTO.getPuls());
@@ -114,8 +122,22 @@ public class DiaryEntryService {
 
     private DiaryEntry convertToEntity(DiaryEntryDTO diaryEntryDTO){
         DiaryEntry diaryEntry = new DiaryEntry();
-        return updateFromEntity(diaryEntry, diaryEntryDTO);
+        return updateFromDTO(diaryEntry, diaryEntryDTO);
     }
 
+    private DiaryEntryDTO convertToDTO(DiaryEntry diaryEntry){
+        DiaryEntryDTO diaryEntryDTO = new DiaryEntryDTO(
+                diaryEntry.getUser_uid(),
+                diaryEntry.getDatum(),
+                diaryEntry.getVisina(),
+                diaryEntry.getTezina(),
+                diaryEntry.getBmi(),
+                diaryEntry.getPuls(),
+                diaryEntry.getUnos_vode(),
+                diaryEntry.getBroj_koraka()
+        );
 
+        diaryEntryDTO.setID(diaryEntry.getID());
+        return diaryEntryDTO;
+    }
 }

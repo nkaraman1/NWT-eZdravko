@@ -29,7 +29,7 @@ public class DiaryEntryController {
     }
 
     @GetMapping(value="/")
-    public List<DiaryEntry> getDiaryEntries() {
+    public List<DiaryEntryDTO> getDiaryEntries() {
         return diaryEntryService.getDiaryEntries();
     }
 

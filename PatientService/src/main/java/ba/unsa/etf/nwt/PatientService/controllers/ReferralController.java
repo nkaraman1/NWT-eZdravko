@@ -3,12 +3,8 @@ package ba.unsa.etf.nwt.PatientService.controllers;
 import ba.unsa.etf.nwt.PatientService.DTO.ReferralDTO;
 import ba.unsa.etf.nwt.PatientService.model.Referral;
 import ba.unsa.etf.nwt.PatientService.services.ReferralService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,12 +19,27 @@ public class ReferralController {
     }
 
     @GetMapping(value="/")
-    public List<Referral> getReferrals(){
+    public List<ReferralDTO> getReferrals(){
         return referralService.getReferrals();
     }
 
     @PostMapping(value = "/")
     public ResponseEntity<?> addReferral(@RequestBody ReferralDTO referralDTO){
         return referralService.addReferral(referralDTO);
+    }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<?> getReferral(@PathVariable("id") Long id){
+        return referralService.getReferral(id);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<?> deleteReferral(@PathVariable("id") Long id){
+        return referralService.deleteReferral(id);
+    }
+
+    @PutMapping(value = "{id}")
+    public ResponseEntity<?> updateReferral(@PathVariable("id") Long id, @RequestBody ReferralDTO referralDTO){
+        return referralService.updateReferral(id, referralDTO);
     }
 }

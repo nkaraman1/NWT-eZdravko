@@ -4,7 +4,9 @@ import ba.unsa.etf.nwt.PatientService.DTO.ExaminationDTO;
 import ba.unsa.etf.nwt.PatientService.model.DiaryEntry;
 import ba.unsa.etf.nwt.PatientService.model.ErrorMsg;
 import ba.unsa.etf.nwt.PatientService.model.Examination;
+import ba.unsa.etf.nwt.PatientService.model.Referral;
 import ba.unsa.etf.nwt.PatientService.repositories.ExaminationRepository;
+import ba.unsa.etf.nwt.PatientService.repositories.ReferralRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,20 +23,23 @@ import java.util.Optional;
 public class ExaminationService {
 
     private final ExaminationRepository examinationRepository;
+
+    private final ReferralRepository referralRepository;
     private final Validator validator;
 
     @Autowired
-    public ExaminationService(ExaminationRepository examinationRepository, Validator validator) {
+    public ExaminationService(ExaminationRepository examinationRepository, ReferralRepository referralRepository, Validator validator) {
         this.examinationRepository = examinationRepository;
+        this.referralRepository = referralRepository;
         this.validator = validator;
     }
 
-    public List<Examination> getDiaryEntries() {
+    public List<ExaminationDTO> getExaminations() {
         List<Examination> examinations = examinationRepository.findAll();
         if (examinations.isEmpty()) {
             return Collections.emptyList();
         }
-        return examinations;
+        return examinations.stream().map(this::convertToDTO).toList();
     }
 
     public ResponseEntity<?> addExamination(ExaminationDTO examinationDTO) {
@@ -53,9 +58,20 @@ public class ExaminationService {
     }
 
     public ResponseEntity<?> getExamination(Long id) {
+        ResponseEntity<?> response = getExaminationNotDTO(id);
+        if(response.getStatusCode()!=HttpStatus.OK){
+            return response;
+        }
+        Examination examination = (Examination) response.getBody();
+        assert examination != null;
+        ExaminationDTO examinationDTO = convertToDTO(examination);
+        return new ResponseEntity<>(examinationDTO, HttpStatus.OK);
+    }
+
+    private ResponseEntity<?> getExaminationNotDTO(Long id){
         Optional<Examination> optionalExamination = examinationRepository.findById(id);
         if (optionalExamination.isEmpty()){
-            return new ResponseEntity<>(new ErrorMsg("not found", "Nije pronađen nijedan zapis u dnevniku sa tim ID-em."), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ErrorMsg("not found", "Nije pronađen pregled sa tim ID-em."), HttpStatus.NOT_FOUND);
         }
         Examination examination = optionalExamination.get();
         return new ResponseEntity<>(examination, HttpStatus.OK);
@@ -65,10 +81,9 @@ public class ExaminationService {
         ResponseEntity<?> response = getExamination(id);
         if(response.getStatusCode() != HttpStatus.OK) {
             return response;
-        }
+        };
         examinationRepository.deleteById(id);
         return response;
-
     }
 
     public ResponseEntity<?> updateExamination(Long id, ExaminationDTO examinationDTO) {
@@ -81,33 +96,44 @@ public class ExaminationService {
             return new ResponseEntity<>(new ErrorMsg(errorMessage.toString()), HttpStatus.FORBIDDEN);
         }
 
-        ResponseEntity<?> response = getExamination(id);
+        ResponseEntity<?> response = getExaminationNotDTO(id);
         if(response.getStatusCode() != HttpStatus.OK) {
             return response;
         }
         Examination examination = (Examination) response.getBody();
         assert examination != null;
-        updateFromEntity(examination, examinationDTO);
+        updateFromDTO(examination, examinationDTO);
         examination = examinationRepository.save(examination);
-        return new ResponseEntity<>(examination, HttpStatus.OK);
+        return new ResponseEntity<>(convertToDTO(examination), HttpStatus.OK);
     }
 
 
 
     private Examination convertToEntity(ExaminationDTO examinationDTO) {
         Examination examination = new Examination();
-        return updateFromEntity(examination, examinationDTO);
+        return updateFromDTO(examination, examinationDTO);
     }
 
-    private Examination updateFromEntity(Examination examination, ExaminationDTO examinationDTO){
+    private Examination updateFromDTO(Examination examination, ExaminationDTO examinationDTO){
         examination.setDijagnoza(examinationDTO.getDijagnoza());
         examination.setDoktor_uid(examinationDTO.getDoktor_uid());
         examination.setPacijent_uid(examinationDTO.getPacijent_uid());
         examination.setTermin_pregleda(examinationDTO.getTermin_pregleda());
+
         return examination;
     }
 
-
+    private ExaminationDTO convertToDTO(Examination examination){
+        ExaminationDTO examinationDTO = new ExaminationDTO(
+                examination.getPacijent_uid(),
+                examination.getDoktor_uid(),
+                examination.getDijagnoza(),
+                examination.getTermin_pregleda()
+        );
+        examinationDTO.setUputnice(examination.getUputnice().stream().map(Referral::getID).toList());
+        examinationDTO.setID(examination.getID());
+        return examinationDTO;
+    }
 
 
 }

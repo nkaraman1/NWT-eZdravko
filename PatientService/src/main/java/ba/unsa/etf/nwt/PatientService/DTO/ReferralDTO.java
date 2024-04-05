@@ -4,12 +4,16 @@ import ba.unsa.etf.nwt.PatientService.model.Examination;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
 public class ReferralDTO {
-    @NotBlank(message = "ID pregleda je obavezan.")
+
+    private Long ID;
+
+    @NotNull(message = "ID pregleda je obavezan.")
     private Long pregled_id;
 
     @NotBlank(message = "UID specijaliste je obavezan.")
@@ -30,6 +34,14 @@ public class ReferralDTO {
         this.specijalista_uid = specijalista_uid;
         this.komentar = komentar;
         this.datum_isteka = datum_isteka;
+    }
+
+    public Long getID() {
+        return ID;
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
     }
 
     public Long getPregled_id() {
