@@ -10,6 +10,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -99,9 +100,11 @@ public class Examination {
     }
 
 
-
     public List<Referral> getUputnice() {
-        return uputnice;
+        if(uputnice!=null){
+            return uputnice;
+        }
+        return Collections.emptyList();
     }
 
 

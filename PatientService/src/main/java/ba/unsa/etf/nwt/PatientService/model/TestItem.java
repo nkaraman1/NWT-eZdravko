@@ -1,11 +1,16 @@
 package ba.unsa.etf.nwt.PatientService.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
+
+import java.util.Collections;
+import java.util.List;
 
 @Entity
 @Data
@@ -36,7 +41,13 @@ public class TestItem {
     @ManyToOne
     @JoinColumn(name = "tip_nalaza_id", referencedColumnName = "ID")
     @NotNull(message = "ID tipa nalaza je obavezan.")
+    @JsonBackReference
     private TestType tip_nalaza;
+
+    @OneToMany(mappedBy = "stavka", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<TestResult> rezultati;
+
 
     public TestItem() {
         //this.ID = null;
@@ -112,5 +123,16 @@ public class TestItem {
 
     public void setTip_nalaza(TestType tip_nalaza) {
         this.tip_nalaza = tip_nalaza;
+    }
+
+    public List<TestResult> getRezultati() {
+        if(rezultati!=null) {
+            return rezultati;
+        }
+        return Collections.emptyList();
+    }
+
+    public void setRezultati(List<TestResult> rezultati) {
+        this.rezultati = rezultati;
     }
 }

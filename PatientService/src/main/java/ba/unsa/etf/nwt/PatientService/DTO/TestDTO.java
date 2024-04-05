@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 public class TestDTO {
 
@@ -22,6 +24,8 @@ public class TestDTO {
     private Long tip_nalaza_id;
 
     private String dijagnoza;
+
+    private List<Long> rezultati;
 
     @PastOrPresent(message = "Vrijeme pregleda ne može biti u budućnosti.")
     private LocalDateTime vrijeme_pregleda;
@@ -104,5 +108,16 @@ public class TestDTO {
 
     public void setVrijeme_dijagnoze(LocalDateTime vrijeme_dijagnoze) {
         this.vrijeme_dijagnoze = vrijeme_dijagnoze;
+    }
+
+    public List<Long> getRezultati() {
+        if(rezultati!=null){
+            return rezultati;
+        }
+        return Collections.emptyList();
+    }
+
+    public void setRezultati(List<Long> rezultati) {
+        this.rezultati = rezultati;
     }
 }

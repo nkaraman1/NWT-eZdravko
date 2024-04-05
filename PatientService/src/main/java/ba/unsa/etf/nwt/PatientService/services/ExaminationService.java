@@ -129,7 +129,9 @@ public class ExaminationService {
                 examination.getDijagnoza(),
                 examination.getTermin_pregleda()
         );
-        examinationDTO.setUputnice(examination.getUputnice().stream().map(Referral::getID).toList());
+        if(!examination.getUputnice().isEmpty()) {
+            examinationDTO.setUputnice(examination.getUputnice().stream().map(Referral::getID).toList());
+        }
         examinationDTO.setID(examination.getID());
         return examinationDTO;
     }

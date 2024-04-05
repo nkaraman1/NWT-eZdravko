@@ -7,6 +7,7 @@ import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 public class ExaminationDTO {
@@ -79,7 +80,10 @@ public class ExaminationDTO {
     }
 
     public List<Long> getUputnice() {
-        return uputnice;
+        if(uputnice!=null){
+            return uputnice;
+        }
+        return Collections.emptyList();
     }
 
     public void setUputnice(List<Long> uputnice) {

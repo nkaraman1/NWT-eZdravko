@@ -4,7 +4,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
+import java.util.Collections;
+import java.util.List;
+
 public class TestItemDTO {
+
+    private Long ID;
     @NotBlank(message = "Naziv stavke je obavezan.")
     private String naziv;
 
@@ -20,6 +25,8 @@ public class TestItemDTO {
 
     @NotNull()
     private Long tip_nalaza_id;
+
+    private List<Long> rezultati;
 
     public TestItemDTO() {
     }
@@ -79,5 +86,23 @@ public class TestItemDTO {
 
     public void setTip_nalaza_id(Long tip_nalaza_id) {
         this.tip_nalaza_id = tip_nalaza_id;
+    }
+
+    public List<Long> getRezultati() {
+        if(rezultati!=null)
+            return rezultati;
+        return Collections.emptyList();
+    }
+
+    public void setRezultati(List<Long> rezultati) {
+        this.rezultati = rezultati;
+    }
+
+    public Long getID() {
+        return ID;
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
     }
 }

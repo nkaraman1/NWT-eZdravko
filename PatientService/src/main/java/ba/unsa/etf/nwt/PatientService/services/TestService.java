@@ -49,7 +49,7 @@ public class TestService {
 
         TestType testType = testTypeRepository.findById(testDTO.getTip_nalaza_id()).orElse(null);
         if (testType == null) {
-            return new ResponseEntity<>(new ErrorMsg("not found","Nije pronadjen nijedan tip testa sa tim ID-em."), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ErrorMsg("not found","Nije pronadjen nijedan tip nalaza sa tim ID-em."), HttpStatus.NOT_FOUND);
         }
 
         Test test = convertToEntity(testDTO, testType);
@@ -70,7 +70,7 @@ public class TestService {
     private ResponseEntity<?> getTestNotDTO(Long id){
         Optional<Test> optionalTest = testRepository.findById(id);
         if (optionalTest.isEmpty()){
-            return new ResponseEntity<>(new ErrorMsg("not found","Nije pronadjen nijedan test sa tim ID-em."), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ErrorMsg("not found","Nije pronadjen nijedan nalaz sa tim ID-em."), HttpStatus.NOT_FOUND);
         }
         Test test = optionalTest.get();
         return new ResponseEntity<>(test, HttpStatus.OK);
@@ -101,7 +101,7 @@ public class TestService {
 
         TestType testType = testTypeRepository.findById(testDTO.getTip_nalaza_id()).orElse(null);
         if (testType == null) {
-            return new ResponseEntity<>(new ErrorMsg("not found","Nije pronadjen nijedan tip testa sa tim ID-em."), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ErrorMsg("not found","Nije pronadjen nijedan tip nalaza sa tim ID-em."), HttpStatus.NOT_FOUND);
         }
 
         Test test = (Test) response.getBody();
@@ -137,6 +137,7 @@ public class TestService {
                 test.getVrijeme_dijagnoze()
         );
         testDTO.setID(test.getID());
+        testDTO.setRezultati(test.getRezultati().stream().map(TestResult::getID).toList());
         return testDTO;
     }
 
