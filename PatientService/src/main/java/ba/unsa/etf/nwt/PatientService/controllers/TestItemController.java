@@ -1,5 +1,6 @@
 package ba.unsa.etf.nwt.PatientService.controllers;
 
+import ba.unsa.etf.nwt.PatientService.DTO.TestDTO;
 import ba.unsa.etf.nwt.PatientService.DTO.TestItemDTO;
 import ba.unsa.etf.nwt.PatientService.model.TestItem;
 import ba.unsa.etf.nwt.PatientService.repositories.TestItemRepository;
@@ -21,16 +22,27 @@ public class TestItemController {
     }
 
     @GetMapping(value="/")
-    public List<TestItem> getTestItems(){
-        List<TestItem> testItems = testItemService.getTestItems();
-        if (testItems.isEmpty()){
-            return Collections.emptyList();
-        }
-        return testItems;
+    public List<TestItemDTO> getTestItems(){
+        return testItemService.getTestItems();
     }
 
     @PostMapping(value="/")
     public ResponseEntity<?> addTestItem(@RequestBody TestItemDTO testItemDTO){
         return testItemService.addTestItem(testItemDTO);
+    }
+
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<?> getTestItem(@PathVariable("id") Long id){
+        return testItemService.getTestItem(id);
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<?> deleteTestItem(@PathVariable("id") Long id){
+        return testItemService.deleteTestItem(id);
+    }
+
+    @PutMapping(value = "{id}")
+    public ResponseEntity<?> updateTestItem(@PathVariable("id") Long id, @RequestBody TestItemDTO testItemDTO){
+        return testItemService.updateTestItem(id, testItemDTO);
     }
 }

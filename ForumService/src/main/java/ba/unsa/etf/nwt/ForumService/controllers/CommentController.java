@@ -92,7 +92,6 @@ public class CommentController {
         if (!optionalComment.isPresent()) {
             return new ResponseEntity<>(new ba.unsa.etf.nwt.ForumService.model.ErrorMsg("Nije pronadjen nijedan komentar sa tim ID-em."), HttpStatus.NOT_FOUND);
         }
-
         Comment comment = optionalComment.get();
 
         commentRepository.deleteById(commentId);

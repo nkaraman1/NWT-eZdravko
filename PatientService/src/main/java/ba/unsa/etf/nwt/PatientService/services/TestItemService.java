@@ -1,10 +1,7 @@
 package ba.unsa.etf.nwt.PatientService.services;
 
 import ba.unsa.etf.nwt.PatientService.DTO.TestItemDTO;
-import ba.unsa.etf.nwt.PatientService.model.ErrorMsg;
-import ba.unsa.etf.nwt.PatientService.model.Test;
-import ba.unsa.etf.nwt.PatientService.model.TestItem;
-import ba.unsa.etf.nwt.PatientService.model.TestType;
+import ba.unsa.etf.nwt.PatientService.model.*;
 import ba.unsa.etf.nwt.PatientService.repositories.TestItemRepository;
 import ba.unsa.etf.nwt.PatientService.repositories.TestTypeRepository;
 import org.springframework.http.HttpStatus;
@@ -16,6 +13,7 @@ import org.springframework.validation.Validator;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TestItemService {
@@ -30,12 +28,12 @@ public class TestItemService {
         this.testTypeRepository = testTypeRepository;
     }
 
-    public List<TestItem> getTestItems(){
+    public List<TestItemDTO> getTestItems(){
         List<TestItem> testItems = testItemRepository.findAll();
         if (testItems.isEmpty()){
             return Collections.emptyList();
         }
-        return testItems;
+        return testItems.stream().map(this::convertToDTO).toList();
     }
 
     public ResponseEntity<?> addTestItem(TestItemDTO testItemDTO) {
@@ -50,16 +48,73 @@ public class TestItemService {
 
         TestType testType = testTypeRepository.findById(testItemDTO.getTip_nalaza_id()).orElse(null);
         if (testType == null) {
-            return new ResponseEntity<>(new ErrorMsg("Nije pronadjen nijedan tip testa sa tim ID-em."), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new ErrorMsg("not found","Nije pronadjen nijedan tip nalaza sa tim ID-em."), HttpStatus.NOT_FOUND);
         }
 
         TestItem testItem = convertToEntity(testItemDTO, testType);
         testItem = testItemRepository.save(testItem);
-        return new ResponseEntity<>(testItem, HttpStatus.CREATED);
+        return new ResponseEntity<>(convertToDTO(testItem), HttpStatus.CREATED);
+    }
+
+    public ResponseEntity<?> getTestItem(Long id) {
+        ResponseEntity<?> response = getTestItemNotDTO(id);
+        if(response.getStatusCode()!=HttpStatus.OK){
+            return response;
+        }
+        TestItem testItem = (TestItem) response.getBody();
+        assert testItem != null;
+        return new ResponseEntity<>(convertToDTO(testItem), HttpStatus.OK);
+    }
+
+    private ResponseEntity<?> getTestItemNotDTO(Long id){
+        Optional<TestItem> optionalTestItem = testItemRepository.findById(id);
+        if (optionalTestItem.isEmpty()){
+            return new ResponseEntity<>(new ErrorMsg("not found","Nije pronadjen nijedan nalaz sa tim ID-em."), HttpStatus.NOT_FOUND);
+        }
+        TestItem testItem = optionalTestItem.get();
+        return new ResponseEntity<>(testItem, HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> deleteTestItem(Long id) {
+        ResponseEntity<?> response = getTestItem(id);
+        if(response.getStatusCode() == HttpStatus.OK){
+            testItemRepository.deleteById(id);
+        }
+        return response;
+    }
+
+    public ResponseEntity<?> updateTestItem(Long id, TestItemDTO testItemDTO) {
+        ResponseEntity<?> response = getTestItemNotDTO(id);
+        if(response.getStatusCode() != HttpStatus.OK) {
+            return response;
+        }
+        Errors errors = new BeanPropertyBindingResult(testItemDTO, "testItemDTO");
+        validator.validate(testItemDTO, errors);
+
+        if (errors.hasErrors()) {
+            StringBuilder errorMessage = new StringBuilder();
+            errors.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()).append(" "));
+            return new ResponseEntity<>(new ErrorMsg(errorMessage.toString()), HttpStatus.FORBIDDEN);
+        }
+
+        TestType testType = testTypeRepository.findById(testItemDTO.getTip_nalaza_id()).orElse(null);
+        if (testType == null) {
+            return new ResponseEntity<>(new ErrorMsg("not found","Nije pronadjen nijedan tip nalaza sa tim ID-em."), HttpStatus.NOT_FOUND);
+        }
+
+        TestItem testItem = (TestItem) response.getBody();
+        assert testItem != null;
+        updateFromDTO(testItem, testItemDTO, testType);
+        testItem = testItemRepository.save(testItem);
+        return new ResponseEntity<>(convertToDTO(testItem), HttpStatus.OK);
     }
 
     private TestItem convertToEntity(TestItemDTO testItemDTO, TestType testType) {
         TestItem testItem = new TestItem();
+        return updateFromDTO(testItem, testItemDTO,testType);
+    }
+
+    private TestItem updateFromDTO(TestItem testItem, TestItemDTO testItemDTO, TestType testType){
         testItem.setNaziv(testItemDTO.getNaziv());
         testItem.setMjerna_jedinica(testItemDTO.getMjerna_jedinica());
         testItem.setRef(testItemDTO.getRef());
@@ -68,4 +123,22 @@ public class TestItemService {
         testItem.setTip_nalaza(testType);
         return testItem;
     }
+
+    private TestItemDTO convertToDTO(TestItem testItem){
+        TestItemDTO testItemDTO = new TestItemDTO(
+                testItem.getNaziv(),
+                testItem.getRef_min(),
+                testItem.getRef_max(),
+                testItem.getRef(),
+                testItem.getMjerna_jedinica(),
+                testItem.getTip_nalaza().getID()
+        );
+        if(!testItem.getRezultati().isEmpty()) {
+            testItemDTO.setRezultati(testItem.getRezultati().stream().map(TestResult::getID).toList());
+        }
+        testItemDTO.setID(testItem.getID());
+        return testItemDTO;
+    }
+
+
 }

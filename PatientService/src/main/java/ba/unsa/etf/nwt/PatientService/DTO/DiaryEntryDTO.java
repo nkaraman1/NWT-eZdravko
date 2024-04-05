@@ -6,6 +6,7 @@ import java.time.LocalDate;
 
 public class DiaryEntryDTO {
 
+    private Long ID;
     @NotBlank(message = "UID korisnika je obavezan.")
     private String user_uid;
 
@@ -48,6 +49,14 @@ public class DiaryEntryDTO {
         this.puls = puls;
         this.unos_vode = unos_vode;
         this.broj_koraka = broj_koraka;
+    }
+
+    public Long getID() {
+        return ID;
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
     }
 
     public String getUser_uid() {

@@ -10,6 +10,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -39,6 +40,7 @@ public class Examination {
     private LocalDateTime termin_pregleda;
 
     @OneToMany(mappedBy = "pregled", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Referral> uputnice;
 
     public Examination() {
@@ -97,9 +99,12 @@ public class Examination {
         this.termin_pregleda = termin_pregleda;
     }
 
-    @JsonManagedReference
+
     public List<Referral> getUputnice() {
-        return uputnice;
+        if(uputnice!=null){
+            return uputnice;
+        }
+        return Collections.emptyList();
     }
 
 

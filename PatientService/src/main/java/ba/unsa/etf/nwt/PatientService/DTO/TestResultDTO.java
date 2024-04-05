@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class TestResultDTO {
+
+    private Long ID;
     @NotBlank(message = "Vrijednost je obavezna.")
     private String vrijednost;
 
@@ -20,6 +22,14 @@ public class TestResultDTO {
         this.vrijednost = vrijednost;
         this.nalaz_id = nalaz_id;
         this.stavka_id = stavka_id;
+    }
+
+    public Long getID() {
+        return ID;
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
     }
 
     public String getVrijednost() {
