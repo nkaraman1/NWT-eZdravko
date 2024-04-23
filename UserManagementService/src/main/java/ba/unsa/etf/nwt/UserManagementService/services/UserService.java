@@ -80,13 +80,8 @@ public class UserService {
 
         if (errors.hasErrors()) {
             StringBuilder errorMessage = new StringBuilder();
-            errors.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()).append(" "));
+            errors.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()));
             return new ResponseEntity<>(new ErrorMsg(errorMessage.toString()), HttpStatus.FORBIDDEN);
-        }
-
-        var dtoError = userDTO.validateUserDTO();
-        if (dtoError.isPresent()) {
-            return new ResponseEntity<>(new ErrorMsg(userErrorHandler.getError(dtoError.get())), HttpStatus.FORBIDDEN);
         }
 
         try {
@@ -126,13 +121,8 @@ public class UserService {
 
         if (errors.hasErrors()) {
             StringBuilder errorMessage = new StringBuilder();
-            errors.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()).append(" "));
+            errors.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()));
             return new ResponseEntity<>(new ErrorMsg(errorMessage.toString()), HttpStatus.FORBIDDEN);
-        }
-
-        var dtoError = userDTO.validateUserDTO();
-        if (dtoError.isPresent()) {
-            return new ResponseEntity<>(new ErrorMsg(userErrorHandler.getError(dtoError.get())), HttpStatus.FORBIDDEN);
         }
 
         try {
