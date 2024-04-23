@@ -168,49 +168,4 @@ public class UserDTO {
     public void setBroj_knjizice(String broj_knjizice) {
         this.broj_knjizice = broj_knjizice;
     }
-
-    public Optional<UserErrorHandler.UserErrorCode> validateUserDTO() {
-        if (this.ime.isBlank()) {
-            return Optional.of(UserErrorHandler.UserErrorCode.NAME_BLANK);
-        }
-        if (this.prezime.isBlank()) {
-            return Optional.of(UserErrorHandler.UserErrorCode.SURNAME_BLANK);
-        }
-        if (!ispravanDatum(this.datum_rodjenja)) {
-            return Optional.of(UserErrorHandler.UserErrorCode.DATE_IN_FUTURE);
-        }
-        if (!ispravanBrojTelefona(this.broj_telefona)) {
-            return Optional.of(UserErrorHandler.UserErrorCode.PHONE_NOT_NUMERIC);
-        }
-        if (!ispravanMail(this.email)) {
-            return Optional.of(UserErrorHandler.UserErrorCode.EMAIL_INVALID);
-        }
-        if (!ispravanPassword(this.password)) {
-            return Optional.of(UserErrorHandler.UserErrorCode.PASSWORD_TOO_SHORT);
-        }
-        if (this.rola_id == null) {
-            return Optional.of(UserErrorHandler.UserErrorCode.ROLE_NULL);
-        }
-
-        return Optional.empty();
-    }
-
-    private static boolean ispravanDatum(LocalDate datum) {
-        return !datum.isAfter(LocalDate.now());
-    }
-
-    private static boolean ispravanBrojTelefona(String broj) {
-        return broj.matches("[0-9]+");
-    }
-
-    private static boolean ispravanPassword(String password) {
-        return password.length() >= 8;
-    }
-
-    private static boolean ispravanMail(String email) {
-        var regexPattern = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
-                + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
-        var pattern = java.util.regex.Pattern.compile(regexPattern);
-        return pattern.matcher(email).matches();
-    }
 }
