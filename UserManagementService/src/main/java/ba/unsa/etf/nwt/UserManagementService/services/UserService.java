@@ -78,6 +78,16 @@ public class UserService {
         }
     }
 
+    public ResponseEntity<?> getUserByUID(String UID) {
+        Optional<User> user = userRepository.findByUID(UID);
+        if (user.isPresent()) {
+            return new ResponseEntity<>(user.get(), HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>(new ErrorMsg(userErrorHandler.getError(UserErrorHandler.UserErrorCode.USER_NOT_FOUND)), HttpStatus.FORBIDDEN);
+        }
+    }
+
     public ResponseEntity<?> createUser(UserDTO userDTO) {
         Errors errors = new BeanPropertyBindingResult(userDTO, "userDTO");
         validator.validate(userDTO, errors);
@@ -150,7 +160,66 @@ public class UserService {
                 }
             }
             else {
-                return new ResponseEntity<>(new ErrorMsg(roleErrorHandler.getError(RoleErrorHandler.RoleErrorCode.ROLENAME_NOT_FOUND)), HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(new ErrorMsg(roleErrorHandler.getError(RoleErrorHandler.RoleErrorCode.ID_NOT_FOUND)), HttpStatus.FORBIDDEN);
+            }
+        }
+        catch (EntityNotFoundException enfexc) {
+            return new ResponseEntity<>(new ErrorMsg(userErrorHandler.getError(UserErrorHandler.UserErrorCode.USER_NOT_FOUND)), HttpStatus.FORBIDDEN);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(new ErrorMsg(e.getMessage()), HttpStatus.FORBIDDEN);
+        }
+    }
+
+    public ResponseEntity<?> changeUserPassword(Long ID, String password) {
+        try {
+            User user = userRepository.getReferenceById(ID);
+            if (password != null && password.length() >= 8) {
+                user.setPassword(password);
+                var rezultat = userRepository.save(user);
+
+                NotificationDTO newNotification = new NotificationDTO("alert", "Vaša lozinka je promijenjena!", user.getUID());
+                notificationInterface.createNotification(newNotification);
+
+                return new ResponseEntity<>(rezultat, HttpStatus.OK);
+            }
+            else {
+                //return new ResponseEntity<>(new ErrorMsg(userErrorHandler.getError(UserErrorHandler.UserErrorCode.PASSWORD_TOO_SHORT)), HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(password + " ne valja", HttpStatus.FORBIDDEN);
+            }
+        }
+        catch (EntityNotFoundException enfexc) {
+            return new ResponseEntity<>(new ErrorMsg(userErrorHandler.getError(UserErrorHandler.UserErrorCode.USER_NOT_FOUND)), HttpStatus.FORBIDDEN);
+        }
+        catch (Exception e) {
+            return new ResponseEntity<>(new ErrorMsg(e.getMessage()), HttpStatus.FORBIDDEN);
+        }
+    }
+
+    public ResponseEntity<?> changeUserRole(Long ID, Long roleID) {
+        try {
+            User user = userRepository.getReferenceById(ID);
+            if (roleID != null) {
+                Optional<Role> rola = roleRepository.findById(roleID);
+
+                if (rola.isPresent()) {
+                    Role selected = rola.get();
+                    user.setRola(selected);
+                    var rezultat = userRepository.save(user);
+
+                    NotificationDTO newNotification = new NotificationDTO("alert", "Vaša rola je promijenjena u " + selected.getNazivRole() + "!", user.getUID());
+                    notificationInterface.createNotification(newNotification);
+
+                    return new ResponseEntity<>(rezultat, HttpStatus.OK);
+                }
+
+                else {
+                    return new ResponseEntity<>(new ErrorMsg(roleErrorHandler.getError(RoleErrorHandler.RoleErrorCode.ID_NOT_FOUND)), HttpStatus.FORBIDDEN);
+                }
+
+            }
+            else {
+                return new ResponseEntity<>(new ErrorMsg(userErrorHandler.getError(UserErrorHandler.UserErrorCode.ROLE_NULL)), HttpStatus.FORBIDDEN);
             }
         }
         catch (EntityNotFoundException enfexc) {

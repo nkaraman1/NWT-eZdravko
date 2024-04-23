@@ -1,5 +1,8 @@
 package ba.unsa.etf.nwt.UserManagementService.services;
 
+import ba.unsa.etf.nwt.NewsService.DTO.NotificationDTO;
+import ba.unsa.etf.nwt.NewsService.repositories.NotificationsRepository;
+import ba.unsa.etf.nwt.UserManagementService.feign.NotificationInterface;
 import ba.unsa.etf.nwt.UserManagementService.model.Role;
 import ba.unsa.etf.nwt.UserManagementService.model.User;
 import ba.unsa.etf.nwt.UserManagementService.repositories.RoleRepository;
@@ -36,6 +39,8 @@ public class UserServiceTest {
     private RoleRepository roleRepository;
     @MockBean
     private UserRepository userRepository;
+    @MockBean
+    private NotificationInterface notificationInterface;
     @MockBean
     private Validator validator;
     @Autowired
@@ -600,5 +605,36 @@ public class UserServiceTest {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/users/login").contentType(MediaType.APPLICATION_JSON).content(JSONLogin))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    public void testChangePassword_Notification() throws Exception {
+        when(userRepository.getReferenceById(1L)).thenReturn(mockUseri.get(0));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/change/{ID}/password/{password}", 1L, "newPassword"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        // Verify password change
+        verify(userRepository).save(any(User.class));
+
+        // Verify notification creation
+        verify(notificationInterface).createNotification(any(NotificationDTO.class));
+    }
+
+    @Test
+    public void testChangeRole_Notification() throws Exception {
+        when(userRepository.getReferenceById(1L)).thenReturn(mockUseri.get(0));
+        when(roleRepository.findById(5L)).thenReturn(Optional.of(new Role(5L, "NovaRola", false, null)));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        mockMvc.perform(MockMvcRequestBuilders.patch("/users/change/{ID}/role/{roleID}", 1L, 5L))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+
+        // Verify password change
+        verify(userRepository).save(any(User.class));
+
+        // Verify notification creation
+        verify(notificationInterface).createNotification(any(NotificationDTO.class));
     }
 }
