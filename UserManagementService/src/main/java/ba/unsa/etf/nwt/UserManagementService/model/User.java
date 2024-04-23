@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 @Entity
 @Data
-@Table(name = "Korisnici")
+@Table(name = "Korisnici", uniqueConstraints = @UniqueConstraint(columnNames = "UID"))
 public class User {
     @Getter
     public enum Spol {
