@@ -1,10 +1,12 @@
 package ba.unsa.etf.nwt.UserManagementService.services;
 
+import ba.unsa.etf.nwt.NewsService.DTO.NotificationDTO;
 import ba.unsa.etf.nwt.UserManagementService.DTO.UserDTO;
 import ba.unsa.etf.nwt.UserManagementService.controllers.UserController;
 import ba.unsa.etf.nwt.UserManagementService.exceptions.ErrorMsg;
 import ba.unsa.etf.nwt.UserManagementService.exceptions.RoleErrorHandler;
 import ba.unsa.etf.nwt.UserManagementService.exceptions.UserErrorHandler;
+import ba.unsa.etf.nwt.UserManagementService.feign.NotificationInterface;
 import ba.unsa.etf.nwt.UserManagementService.model.Role;
 import ba.unsa.etf.nwt.UserManagementService.model.UIMessage;
 import ba.unsa.etf.nwt.UserManagementService.model.User;
@@ -32,6 +34,8 @@ public class UserService {
     @Autowired
     private RoleRepository roleRepository;
     private final Validator validator;
+    @Autowired
+    private NotificationInterface notificationInterface;
 
     public UserService(UserRepository userRepository, Validator validator) {
         this.userRepository = userRepository;
@@ -135,6 +139,10 @@ public class UserService {
                     user.setAllAttributes(userDTO);
                     user.setRola(selected);
                     var rezultat = userRepository.save(user);
+
+                    NotificationDTO newNotification = new NotificationDTO("alert", "Vaši podaci su promijenjeni!", user.getUID());
+                    notificationInterface.createNotification(newNotification);
+
                     return new ResponseEntity<>(rezultat, HttpStatus.OK);
                 }
                 else {
