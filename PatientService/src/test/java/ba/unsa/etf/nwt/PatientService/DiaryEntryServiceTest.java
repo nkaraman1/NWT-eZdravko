@@ -1,9 +1,9 @@
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class DiaryEntryControllerTest{
+public class DiaryEntryServiceTest{
 	@MockBean
-	private DiaryEntryService diaryEntryService;
+	private DiaryEntryRepository diaryEntryRepository;
 	
 	@Autowired
 	private MockMvc mockMvc;
@@ -20,7 +20,7 @@ public class DiaryEntryControllerTest{
 
 	@Test
 	public void getAllDiaryEntries() throws Exception{
-		when(diaryEntryService.findAll()).thenReturn(mockDiaryEntries);
+		when(diaryEntryRepository.findAll()).thenReturn(mockDiaryEntries);
 		mockMvc.perform(MockMvcRequestBuilders.get("/diaryEntries"))
 			.andExpect(status().isOk())
 			.andExpect(MockMvcResultMatchers.jsonPath("$.size()", Matchers.is(2)))
@@ -31,7 +31,7 @@ public class DiaryEntryControllerTest{
 	@Test
 	public void getDiaryEntryByID_Success() throws Exception{
 		Long id = 1L;
-		when(diaryEntryService.findById(id)).thenReturn(Optional.of(mockDiaryEntries.get(0)));
+		when(diaryEntryRepository.findById(id)).thenReturn(Optional.of(mockDiaryEntries.get(0)));
 
 		mockMvc.perform(MockMvcRequestBuilders.get("/diary-entries/{ID}", id))
 			.andExpect(status().isOk())
@@ -41,7 +41,7 @@ public class DiaryEntryControllerTest{
 	@Test
 	public void getDiaryEntryByID_Fail() throws Exception {
 		Long id = 1L;
-		when(diaryEntryService.findById(id)).thenReturn(Optional.of(mockDiaryEntries.get(0)));
+		when(diaryEntryRepository.findById(id)).thenReturn(Optional.of(mockDiaryEntries.get(0)));
 
 		mockMvc.perform(MockMvcRequestBuilders.get("/diary-entries/{ID}", 2L))
 			.andExpect(status().isNotFound())
@@ -70,7 +70,7 @@ public class DiaryEntryControllerTest{
 			"\"unos_vode\": 1.5, \n" +
 			"\"broj_koraka\": 1234, \n" +
 			"}"
-		when(diaryEntryService.findAll()).thenReturn(mockDiaryEntries);
+		when(diaryEntryRepository.findAll()).thenReturn(mockDiaryEntries);
 		
 		mockMvc.perform(MockMvcRequestBuilders.post("/diary-entries")
 				.contentType(MediaType.APPLICATION_JSON).content(diaryEntryJSON))
@@ -79,7 +79,7 @@ public class DiaryEntryControllerTest{
 	}
 
 	@Test
-	public void CreateDiaryEntry_WrongVisina() throws Exception{
+	public void CreateDiaryEntry_InvalidVisina() throws Exception{
 		DiaryEntryDTO diaryEntryDTO = new DiaryEntryDTO();
 		diaryEntryDTO.setUser_uid("user_uid");
 		diaryEntryDTO.setDatum(datum);
@@ -100,12 +100,14 @@ public class DiaryEntryControllerTest{
 			"\"unos_vode\": 1.5, \n" +
 			"\"broj_koraka\": 1234, \n" +
 			"}"
-		when(diaryEntryService.findAll()).thenReturn(mockDiaryEntries);
+		when(diaryEntryRepository.findAll()).thenReturn(mockDiaryEntries);
 		
 		mockMvc.perform(MockMvcRequestBuilders.post("/diary-entries")
 				.contentType(MediaType.APPLICATION_JSON).content(diaryEntryJSON))
 			.andExpect(status().isForbidden())
 			.andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("validation")));
+
+		verify(diaryEntryRepository, times(1)).save(any(DiaryEntry.class));	
 
 	}
 
@@ -113,26 +115,72 @@ public class DiaryEntryControllerTest{
 	public void DeleteDiaryEntry_Success() throws Exception{
 		Long diaryEntryID = 3L;
 		DiaryEntry diaryEntry = new DiaryEntry(diaryEntryID, 'user_UID', datum, 166.5, 60, 23, 67, 2, 2468);
-		when(diaryEntryService.findById(diaryEntryID)).thenReturn(Optional.of(diaryEntry));
+		when(diaryEntryRepository.findById(diaryEntryID)).thenReturn(Optional.of(diaryEntry));
 		
 		mockMvc.perform(MockMvcRequestBuilders.delete("/diary-entries/{ID}", diaryEntryID))
 			.andExpect(status().isOk())
 			.andExpect(MovkMvcResultMatcher.jsonPath("$.id", Matchers.is(3)));
 
-		verify(diaryEntryService, times(1)).deleteById(diaryEntryID);		
+		verify(diaryEntryRepository, times(1)).deleteById(diaryEntryID);		
 		
 	}
 
 	@Test
 	public void DeleteDiaryEntry_NotFound() throws Exception{
 		Long diaryEntryID = 1L;
-		when(diaryEntryService.findById(diaryEntryID)).thenReturn(Optional.empty());
+		when(diaryEntryRepository.findById(diaryEntryID)).thenReturn(Optional.empty());
 		
 		mockMvc.perform(MockMvcRequetBuilders.delete("diary-entries/{ID}", diaryEntryID))
 			.andExpect(status().isNotFound());
 
-		verify(diaryEntryService, never())-deleteById(anyLong());
-}
+		verify(diaryEntryRepository, never()).deleteById(anyLong());
+	}
+
+	@Test
+	public void UpdateDiaryEntry_Success() throws Exception{
+		String diaryEntryJSON = "{\n" +
+			"\"user_uid\": \"user_uid\", \n" +
+			"\"datum\": datum, \n" +
+			"\"visina\": 166, \n" +
+			"\"tezina\": 60, \n" +
+			"\"bmi\": 23, \n" +
+			"\"puls\": 66, \n" +
+			"\"unos_vode\": 1.5, \n" +
+			"\"broj_koraka\": 1234, \n" +
+			"}";
+		
+		 when(diaryEntryRepository.getReferenceById(1L)).thenReturn(mockDiaryEntries.get(0));
+		
+	        mockMvc.perform(MockMvcRequestBuilders.put("/diary-entries/{ID}", 1L).
+	                        contentType(MediaType.APPLICATION_JSON).content(diaryEntryJSON))
+	                .andExpect(status().isOk()) // Expect status OK
+	                .andExpect(MockMvcResultMatchers.jsonPath("$.tezina", Matchers.is(60)));
+
+		verify(diaryEntryRepository, times(1)).save(any(DiaryEntry.class));
+	}
+
+	@Test
+	public void UpdateDiaryEntry_InvalidVisina() throws Exception{
+		String diaryEntryJSON = "{\n" +
+			"\"user_uid\": \"user_uid\", \n" +
+			"\"datum\": datum, \n" +
+			"\"visina\": -166, \n" +
+			"\"tezina\": 60, \n" +
+			"\"bmi\": 23, \n" +
+			"\"puls\": 66, \n" +
+			"\"unos_vode\": 1.5, \n" +
+			"\"broj_koraka\": 1234, \n" +
+			"}";
+		
+		 when(diaryEntryRepository.getReferenceById(1L)).thenReturn(mockDiaryEntries.get(0));
+		
+	        mockMvc.perform(MockMvcRequestBuilders.put("/diary-entries/{ID}", 1L)
+				.contentType(MediaType.APPLICATION_JSON).content(diaryEntryJSON))
+			.andExpect(status().isForbidden())
+			.andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("validation")));
+
+		verify(diaryEntryRepository, never()).save(any(DiaryEntry.class));	
+	}
 
 
 
