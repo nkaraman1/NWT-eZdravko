@@ -153,7 +153,7 @@ public class DiaryEntryServiceTest{
 		
 	        mockMvc.perform(MockMvcRequestBuilders.put("/diary-entries/{ID}", 1L).
 	                        contentType(MediaType.APPLICATION_JSON).content(diaryEntryJSON))
-	                .andExpect(status().isOk()) // Expect status OK
+	                .andExpect(status().isOk())
 	                .andExpect(MockMvcResultMatchers.jsonPath("$.tezina", Matchers.is(60)));
 
 		verify(diaryEntryRepository, times(1)).save(any(DiaryEntry.class));
@@ -182,6 +182,37 @@ public class DiaryEntryServiceTest{
 		verify(diaryEntryRepository, never()).save(any(DiaryEntry.class));	
 	}
 
+	@Test
+	public void UpdateDiaryEntryPartial_Success() throws Exception{
+		String diaryEntryJSON = "{\n" +
+			"\"tezina\": 80, \n" +
+			"}";
+		
+		 when(diaryEntryRepository.getReferenceById(1L)).thenReturn(mockDiaryEntries.get(0));
+		
+	        mockMvc.perform(MockMvcRequestBuilders.patch("/diary-entries/{ID}", 1L).
+	                        contentType(MediaType.APPLICATION_JSON).content(diaryEntryJSON))
+	                .andExpect(status().isOk()) 
+	                .andExpect(MockMvcResultMatchers.jsonPath("$.tezina", Matchers.is(80)));
+
+		verify(diaryEntryRepository, times(1)).save(any(DiaryEntry.class));
+	}
+
+	@Test
+	public void UpdateDiaryEntryPartial_InvalidTezina() throws Exception{
+		String diaryEntryJSON = "{\n" +
+			"\"tezina\": -80, \n" +
+			"}";
+		
+		 when(diaryEntryRepository.getReferenceById(1L)).thenReturn(mockDiaryEntries.get(0));
+		
+	        mockMvc.perform(MockMvcRequestBuilders.patch("/diary-entries/{ID}", 1L).
+	                        contentType(MediaType.APPLICATION_JSON).content(diaryEntryJSON))
+	                .andExpect(status().isForbidden())
+			.andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("validation")));
+
+		verify(diaryEntryRepository, never()).save(any(DiaryEntry.class));
+	}
 
 
 
