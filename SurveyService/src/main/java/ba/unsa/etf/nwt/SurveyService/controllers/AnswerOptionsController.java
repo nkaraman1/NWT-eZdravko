@@ -8,138 +8,65 @@ import ba.unsa.etf.nwt.SurveyService.model.Survey;
 import ba.unsa.etf.nwt.SurveyService.model.SurveyQuestion;
 import ba.unsa.etf.nwt.SurveyService.repositories.AnswerOptionsRepository;
 import ba.unsa.etf.nwt.SurveyService.repositories.SurveyQuestionRepository;
+import ba.unsa.etf.nwt.SurveyService.services.AnswerOptionsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @RestController
 public class AnswerOptionsController {
-    private final AnswerOptionsRepository answerOptionsRepository;
-    private final SurveyQuestionRepository surveyQuestionRepository;
-    private final Validator validator;
 
-    public AnswerOptionsController(AnswerOptionsRepository answerOptionsRepository, SurveyQuestionRepository surveyQuestionRepository, Validator validator){
-        this.answerOptionsRepository = answerOptionsRepository;
-        this.surveyQuestionRepository = surveyQuestionRepository;
-        this.validator = validator;
+    private final AnswerOptionsService answerOptionsService;
+
+    @Autowired
+    public AnswerOptionsController(AnswerOptionsService answerOptionsService) {
+        this.answerOptionsService = answerOptionsService;
     }
 
     @GetMapping(value="/answeroptions")
-    public List<AnswerOptions> getAnswerOptions() {
-        return answerOptionsRepository.findAll();
+    public List<AnswerOptionsDTO> getAnswerOptions() {
+        return answerOptionsService.getAnswerOptions();
     }
 
     @PostMapping(value="/answeroptions")
     public ResponseEntity<?> createAnswerOptions(@RequestBody AnswerOptionsDTO answerOptionsDTO){
-        Errors errors = new BeanPropertyBindingResult(answerOptionsDTO, "answerOptionsDTO");
-        validator.validate(answerOptionsDTO, errors);
-
-        if(errors.hasErrors()){
-            StringBuilder errorMessage = new StringBuilder();
-            errors.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()).append(" "));
-            return new ResponseEntity<>(new ErrorMsg(errorMessage.toString()), HttpStatus.FORBIDDEN);
-        }
-
-        SurveyQuestion surveyQuestion = surveyQuestionRepository.findById(answerOptionsDTO.getQuestionId()).orElse(null);
-        if(surveyQuestion == null) {
-            return new ResponseEntity<>(new ErrorMsg("Nije pronadjeno nijedno pitanje u anketi sa tim ID-em."), HttpStatus.FORBIDDEN);
-        }
-
-        AnswerOptions answerOptions = new AnswerOptions();
-        answerOptions.setSadrzaj(answerOptionsDTO.getSadrzaj());
-        answerOptions.setAnketaPitanje(surveyQuestion);
-
-        AnswerOptions savedAnswerOptions = answerOptionsRepository.save(answerOptions);
-        return new ResponseEntity<>(savedAnswerOptions, HttpStatus.CREATED);
+        return answerOptionsService.createAnswerOptions(answerOptionsDTO);
     }
 
     @GetMapping(value = "/answeroptions/id/{id}")
     public ResponseEntity<?> getAnswerOptionsByID(@PathVariable Long id) {
-        Optional<AnswerOptions> answerOptions = answerOptionsRepository.findById(id);
-        if (answerOptions.isPresent()) {
-            return new ResponseEntity<>(answerOptions.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(new ErrorMsg("Nije pronadjen ponudjeni odgovor na pitanju sa tim ID-em."), HttpStatus.NOT_FOUND);
-        }
+        return answerOptionsService.getAnswerOptionsByID(id);
     }
 
-    @GetMapping(value = "/answeroptions/question-id/{questionId}")
-    public ResponseEntity<?> getAnswerOptionsByQuestionID(@PathVariable Long questionId) {
-        Optional<SurveyQuestion> optionalSurveyQuestion = surveyQuestionRepository.findById(questionId);
-        SurveyQuestion surveyQuestion;
-        if (optionalSurveyQuestion.isPresent()) {
-            surveyQuestion = optionalSurveyQuestion.get();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-        List<AnswerOptions> answerOptions = answerOptionsRepository.findByAnketaPitanje(surveyQuestion);
-        if (answerOptions.isEmpty()) {
-            return new ResponseEntity<>(List.of(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(answerOptions, HttpStatus.OK);
-        }
-    }
+//    @GetMapping(value = "/answeroptions/question-id/{questionId}")
+//    public ResponseEntity<?> getAnswerOptionsByQuestionID(@PathVariable Long questionId) {
+//        return answerOptionsService.getAnswerOptionsByQuestionID(questionId);
+//    }
 
     @DeleteMapping(value = "/answeroptions/{id}")
     public ResponseEntity<?> deleteAnswerOptions(@PathVariable Long id) {
-        Optional<AnswerOptions> answerOptions = answerOptionsRepository.findById(id);
-        if (answerOptions.isPresent()) {
-            answerOptionsRepository.deleteById(id);
-            return new ResponseEntity<>(answerOptions.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(new ErrorMsg("Nije pronadjen ponudjeni odgovor na pitanju sa tim ID-em."), HttpStatus.NOT_FOUND);
-        }
+        return answerOptionsService.deleteAnswerOptions(id);
     }
 
     @PutMapping(value="/answeroptions/{id}")
     public ResponseEntity<?> updateAnswerOptions(@PathVariable Long id, @RequestBody AnswerOptionsDTO answerOptionsDTO){
-        Optional<AnswerOptions> optionalAnswerOptions = answerOptionsRepository.findById(id);
-        if (!optionalAnswerOptions.isPresent()) {
-            return new ResponseEntity<>(new ErrorMsg("Nije pronadjen nijedan ponudjen odgovor sa tim ID-em."), HttpStatus.NOT_FOUND);
-        }
-
-        Errors errors = new BeanPropertyBindingResult(answerOptionsDTO, "answerOptionsDTO");
-        validator.validate(answerOptionsDTO, errors);
-
-        if (errors.hasErrors()) {
-            StringBuilder errorMessage = new StringBuilder();
-            errors.getAllErrors().forEach(error -> errorMessage.append(error.getDefaultMessage()));
-            return new ResponseEntity<>(new ErrorMsg("validation", errorMessage.toString()), HttpStatus.FORBIDDEN);
-//            throw new RuntimeException(errorMessage.toString());
-        }
-
-        AnswerOptions existingAnswerOptions = optionalAnswerOptions.get();
-
-        SurveyQuestion surveyQuestion = surveyQuestionRepository.findById((answerOptionsDTO.getQuestionId())).orElse(null);
-
-        if(surveyQuestion == null) {
-            return new ResponseEntity<>(new ErrorMsg("Nije pronadjeno nijedno pitanje u anketi sa tim ID-em."), HttpStatus.FORBIDDEN);
-        }
-
-        existingAnswerOptions.setSadrzaj(answerOptionsDTO.getSadrzaj());
-        existingAnswerOptions.setAnketaPitanje(surveyQuestion);
-
-        AnswerOptions updatedAnswerOptions = answerOptionsRepository.save(existingAnswerOptions);
-
-        return new ResponseEntity<>(updatedAnswerOptions, HttpStatus.OK);
+        return answerOptionsService.updateAnswerOptions(id, answerOptionsDTO);
     }
 
-    @PatchMapping(value="/answeroptions/{id}/sadrzaj/{sadrzaj}")
-    public ResponseEntity<?> updateSadrzaj(@PathVariable Long id, @PathVariable String sadrzaj) {
-        Optional<AnswerOptions> optionalAnswerOptions = answerOptionsRepository.findById(id);
-        if (optionalAnswerOptions.isPresent()) {
-            AnswerOptions answerOptions = optionalAnswerOptions.get();
-            answerOptions.setSadrzaj(sadrzaj);
-            answerOptionsRepository.save(answerOptions);
-            return ResponseEntity.ok(answerOptions);
-        } else {
-            return new ResponseEntity<>(new ErrorMsg("Neispravni parametri!"), HttpStatus.NOT_FOUND);        }
+    @PatchMapping(value = "/answeroptions/{id}")
+    public ResponseEntity<?> updateAnswerOptionsPartial(@PathVariable("id") Long id, @RequestBody Map<String, Object> fields){
+        return answerOptionsService.updateAnswerOptionsPartial(id, fields);
     }
 
     @ExceptionHandler(RuntimeException.class)
