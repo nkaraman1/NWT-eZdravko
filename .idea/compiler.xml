@@ -13,6 +13,7 @@
         <module name="NewsService" />
         <module name="UserManagementService" />
         <module name="ConfigServer" />
+        <module name="APIGateway" />
         <module name="SurveyService" />
       </profile>
     </annotationProcessing>
@@ -23,6 +24,7 @@
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="APIGateway" options="-parameters" />
       <module name="ConfigClient" options="-parameters" />
       <module name="ConfigServer" options="-parameters" />
       <module name="ConfigService" options="-parameters" />
