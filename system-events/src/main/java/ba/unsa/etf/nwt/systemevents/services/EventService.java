@@ -30,6 +30,11 @@ public class EventService {
         }
     }
 
+    public ResponseEntity<?> deleteEvents() {
+        eventRepository.deleteAll();
+        return new ResponseEntity<>("Log deleted.", HttpStatus.OK);
+    }
+
     private Event convertToEntity(EventDTO eventDTO) {
         Event event = new Event();
         event.setAkcija(eventDTO.getAkcija());
