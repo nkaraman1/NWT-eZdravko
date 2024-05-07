@@ -1,8 +1,4 @@
-package ba.unsa.etf.nwt.systemevents.DTO;
-
-import ba.unsa.etf.nwt.systemevents.model.Event;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+package ba.unsa.etf.nwt.APIGateway.GatewayFilter;
 
 import java.time.LocalDateTime;
 
@@ -10,15 +6,14 @@ public class EventDTO {
     private LocalDateTime timestamp;
     private String imeServisa;
     private Long userID;
-    @Enumerated(EnumType.STRING)
-    private Event.TipAkcije akcija;
+    private String akcija;
     private String resurs;
     private Boolean uspjesnaAkcija;
 
     public EventDTO() {
     }
 
-    public EventDTO(String imeServisa, Long userID, Event.TipAkcije akcija, String resurs, Boolean uspjesnaAkcija) {
+    public EventDTO(String imeServisa, Long userID, String akcija, String resurs, Boolean uspjesnaAkcija) {
         this.timestamp = LocalDateTime.now();
         this.imeServisa = imeServisa;
         this.userID = userID;
@@ -51,11 +46,11 @@ public class EventDTO {
         this.userID = userID;
     }
 
-    public Event.TipAkcije getAkcija() {
+    public String getAkcija() {
         return akcija;
     }
 
-    public void setAkcija(Event.TipAkcije akcija) {
+    public void setAkcija(String akcija) {
         this.akcija = akcija;
     }
 
