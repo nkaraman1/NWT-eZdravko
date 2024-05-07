@@ -14,6 +14,7 @@
         <option value="$PROJECT_DIR$/ConfigServer/pom.xml" />
         <option value="$PROJECT_DIR$/EurekaServiceRegistry/pom.xml" />
         <option value="$PROJECT_DIR$/APIGateway/pom.xml" />
+        <option value="$PROJECT_DIR$/system-events/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
