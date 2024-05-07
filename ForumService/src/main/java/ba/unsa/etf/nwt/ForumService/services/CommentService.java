@@ -2,10 +2,15 @@ package ba.unsa.etf.nwt.ForumService.services;
 
 import ba.unsa.etf.nwt.ForumService.DTO.CommentDTO;
 import ba.unsa.etf.nwt.ForumService.exceptions.ErrorMsg;
+import ba.unsa.etf.nwt.ForumService.feign.NotificationInterface;
+import ba.unsa.etf.nwt.ForumService.feign.UserInterface;
 import ba.unsa.etf.nwt.ForumService.model.Comment;
 import ba.unsa.etf.nwt.ForumService.model.Question;
 import ba.unsa.etf.nwt.ForumService.repositories.CommentRepository;
 import ba.unsa.etf.nwt.ForumService.repositories.QuestionRepository;
+import ba.unsa.etf.nwt.UserManagementService.model.User;
+import ba.unsa.etf.nwt.UserManagementService.repositories.UserRepository;
+import ba.unsa.etf.nwt.NewsService.DTO.NotificationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,12 +29,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class CommentService {
     private final CommentRepository commentRepository;
     private final QuestionRepository questionRepository;
+    private final UserRepository userRepository;
     private final Validator validator;
 
     @Autowired
-    public CommentService(CommentRepository commentRepository, QuestionRepository questionRepository, Validator validator) {
+    private UserInterface userInterface;
+    @Autowired
+    private NotificationInterface notificationInterface;
+
+    @Autowired
+    public CommentService(CommentRepository commentRepository, QuestionRepository questionRepository, UserRepository userRepository, Validator validator) {
         this.commentRepository = commentRepository;
         this.questionRepository = questionRepository;
+        this.userRepository = userRepository;
         this.validator = validator;
     }
 
@@ -53,6 +65,16 @@ public class CommentService {
 
         Comment comment = convertToEntity(commentDTO);
         comment = commentRepository.save(comment);
+
+        Optional<User> optionalUser = userRepository.findByUID(comment.getUser_uid());
+        if(optionalUser.isEmpty()) {
+            return new ResponseEntity<>(new ErrorMsg("not found", "Nije pronadjen nijedan korisnik sa tim ID-em."), HttpStatus.NOT_FOUND);
+        }
+
+        User user = optionalUser.get();
+        NotificationDTO newNotification = new NotificationDTO("alert", "Uspješno dodan komentar!", comment.getUser_uid());
+        notificationInterface.createNotification(newNotification);
+        userInterface.getUserByID(user.getID());
         return new ResponseEntity<>(convertToDTO(comment), HttpStatus.CREATED);
     }
 
