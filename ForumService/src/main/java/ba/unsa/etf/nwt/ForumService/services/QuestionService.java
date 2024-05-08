@@ -9,7 +9,6 @@ import ba.unsa.etf.nwt.ForumService.model.Question;
 import ba.unsa.etf.nwt.ForumService.repositories.CommentRepository;
 import ba.unsa.etf.nwt.ForumService.repositories.QuestionRepository;
 import ba.unsa.etf.nwt.UserManagementService.model.User;
-import ba.unsa.etf.nwt.UserManagementService.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,18 +30,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class QuestionService {
     private final QuestionRepository questionRepository;
     private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
     private final Validator validator;
 
     @Autowired
     private UserInterface userInterface;
 
     @Autowired
-    public QuestionService(QuestionRepository questionRepository, Validator validator, CommentRepository commentRepository, UserRepository userRepository) {
+    public QuestionService(QuestionRepository questionRepository, Validator validator, CommentRepository commentRepository) {
         this.questionRepository = questionRepository;
         this.validator = validator;
         this.commentRepository = commentRepository;
-        this.userRepository = userRepository;
     }
 
     public List<QuestionDTO> getQuestions() {
@@ -87,14 +84,7 @@ public class QuestionService {
         Question question = convertToEntity(questionDTO);
         question = questionRepository.save(question);
 
-        Optional<User> optionalUser = userRepository.findByUID(question.getUser_uid());
-        if(optionalUser.isEmpty()) {
-            return new ResponseEntity<>(new ErrorMsg("not found", "Nije pronadjen nijedan korisnik sa tim ID-em."), HttpStatus.NOT_FOUND);
-        }
-
-        User user = optionalUser.get();
-
-        userInterface.getUserByID(user.getID());
+        userInterface.getUserByUID(question.getUser_uid());
         return new ResponseEntity<>(convertToDTO(question), HttpStatus.CREATED);
     }
 

@@ -10,7 +10,6 @@ import ba.unsa.etf.nwt.SurveyService.model.SurveyQuestion;
 import ba.unsa.etf.nwt.SurveyService.repositories.SurveyRepository;
 import ba.unsa.etf.nwt.UserManagementService.DTO.UserDTO;
 import ba.unsa.etf.nwt.UserManagementService.model.User;
-import ba.unsa.etf.nwt.UserManagementService.repositories.UserRepository;
 import com.netflix.discovery.converters.Auto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -34,8 +33,6 @@ public class SurveyService {
 
     private final SurveyRepository surveyRepository;
 
-    private final UserRepository userRepository;
-
     private final Validator validator;
 
     @Autowired
@@ -45,9 +42,8 @@ public class SurveyService {
     private UserInterface userInterface;
 
     @Autowired
-    public SurveyService(SurveyRepository surveyRepository, UserRepository userRepository, Validator validator) {
+    public SurveyService(SurveyRepository surveyRepository, Validator validator) {
         this.surveyRepository = surveyRepository;
-        this.userRepository = userRepository;
         this.validator = validator;
     }
 
@@ -164,16 +160,9 @@ public class SurveyService {
         updateFromDTO(survey, surveyDTO);
         survey = surveyRepository.save(survey);
 
-        Optional<User> optionalUser = userRepository.findByUID(survey.getUser_uid());
-        if(optionalUser.isEmpty()) {
-            return new ResponseEntity<>(new ErrorMsg("not found", "Nije pronadjen nijedan korisnik sa tim ID-em."), HttpStatus.NOT_FOUND);
-        }
-
-        User user = optionalUser.get();
-
         NotificationDTO newNotification = new NotificationDTO("alert", "Podaci ankete su promijenjeni!", survey.getUser_uid());
         notificationInterface.createNotification(newNotification);
-        userInterface.getUserByID(user.getID());
+        userInterface.getUserByUID(survey.getUser_uid());
         return new ResponseEntity<>(convertToDTO(survey), HttpStatus.OK);
     }
 
