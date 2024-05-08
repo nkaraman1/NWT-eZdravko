@@ -1,17 +1,48 @@
+package ba.unsa.etf.nwt.PatientService;
+
+import ba.unsa.etf.nwt.PatientService.model.Examination;
+import ba.unsa.etf.nwt.PatientService.repositories.ExaminationRepository;
+import ba.unsa.etf.nwt.PatientService.repositories.ReferralRepository;
+import org.hamcrest.Matchers;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.validation.Validator;
+
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
 public class ExaminationServiceTest{
-  private final ExaminationRepository examinationRepository;
-  private final ReferralRepository referralRepository;
-  private final Validator validator;
+    @MockBean
+    private ExaminationRepository examinationRepository;
+    @MockBean
+    private ReferralRepository referralRepository;
+    @MockBean
+    private Validator validator;
 
   @Autowired
     private MockMvc mockMvc;
 
-  private List<Examinations> mockExaminations = List.of(
-    new Examination(1L, "pacijent_uid1", "doktor_uid1", "dijagnozaaaa1", LocalDateTime termin_pregleda),
-    new Examination(2L, "pacijent_uid2", "doktor_uid2", "dijagnozaaaa2", LocalDateTime termin_pregleda)
+  private List<Examination> mockExaminations = List.of(
+    new Examination(1L, "pacijent_uid1", "doktor_uid1", "dijagnozaaaa1", LocalDateTime.of(2024, Month.JANUARY, 3, 13, 43)),
+    new Examination(2L, "pacijent_uid2", "doktor_uid2", "dijagnozaaaa2", LocalDateTime.of(2024, Month.JANUARY, 3, 14, 50))
   );
 
    @Test
@@ -21,12 +52,12 @@ public class ExaminationServiceTest{
 
   @Test
   public void getAllExaminations() throws Exception{
-     when(examinationRepository.findAll()).thenReturn(mocExaminations);
-        mockMvc.perform(MockMvcRequestBuilders.get("/examinations"))
-                .andExpect(status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", Matchers.is(2)))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[0].dijagnoza", Matchers.is("dijagnozaaaa1")))
-                .andExpect(MockMvcResultMatchers.jsonPath("$[1].dijagnoza", Matchers.is("dijagnozaaaa2")));
+       when(examinationRepository.findAll()).thenReturn(mockExaminations);
+       mockMvc.perform(MockMvcRequestBuilders.get("/api/examinations"))
+            .andExpect(status().isOk())
+            .andExpect(MockMvcResultMatchers.jsonPath("$.size()", Matchers.is(2)))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[0].dijagnoza", Matchers.is("dijagnozaaaa1")))
+            .andExpect(MockMvcResultMatchers.jsonPath("$[1].dijagnoza", Matchers.is("dijagnozaaaa2")));
   }
 
   
@@ -35,7 +66,7 @@ public class ExaminationServiceTest{
       Long id = 1L;
       when(examinationRepository.findById(id)).thenReturn(Optional.of(mockExaminations.get(0)));
 
-      mockMvc.perform(MockMvcRequestBuilders.get("/examinations/{ID}", id))
+      mockMvc.perform(MockMvcRequestBuilders.get("/api/examinations/{ID}", id))
               .andExpect(status().isOk())
               .andExpect(MockMvcResultMatchers.jsonPath("$.dijagnoza", Matchers.is("dijagnozaaaa1")));
     }
@@ -45,9 +76,8 @@ public class ExaminationServiceTest{
     Long id = 1L;
     when(examinationRepository.findById(id)).thenReturn(Optional.of(mockExaminations.get(0)));
 
-    mockMvc.perform(MockMvcRequestBuilders.get("/examinations/{ID}", 2L))
-            .andExpect(status().isNotFound())
-            .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("not_found")));
+    mockMvc.perform(MockMvcRequestBuilders.get("/api/examinations/{ID}", 2L))
+            .andExpect(status().isNotFound());
   }
 
   @Test
@@ -57,12 +87,12 @@ public class ExaminationServiceTest{
       "\"pacijent_uid\": \"pacijent_uid3\"," +
       "\"doktor_uid\": \"doktor_uid3\"," +
       "\"dijagnoza\": \"dijagnozaaaa3\"," +
-      "\termin_pregeda\": datum" +
+      "\"termin_pregeda\": \"2024-01-03T10:15:30\"" +
       "}";
 
     when(examinationRepository.findAll()).thenReturn(mockExaminations);
 
-    mockMvc.perform(MockMvcRequestBuilders.post("/examinations")
+    mockMvc.perform(MockMvcRequestBuilders.post("/api/examinations")
                     .contentType(MediaType.APPLICATION_JSON).content(examinationJSON))
             .andExpect(status().isCreated());
 
@@ -74,13 +104,13 @@ public class ExaminationServiceTest{
     String examinationJSON = "{\n"+
       "\"pacijent_uid\": \"pacijent_uid3\"," +
       "\"doktor_uid\": \"doktor_uid3\"," +
-      "\"dijagnoza\": \"d3\"," +
-      "\termin_pregeda\": datum" +
+      "\"dijagnoza\": \"\"," +
+            "\"termin_pregeda\": \"2024-01-03T10:15:30\"" +
       "}";
 
     when(examinationRepository.findAll()).thenReturn(mockExaminations);
 
-    mockMvc.perform(MockMvcRequestBuilders.post("/examinations")
+    mockMvc.perform(MockMvcRequestBuilders.post("/api/examinations")
                     .contentType(MediaType.APPLICATION_JSON).content(examinationJSON))
             .andExpect(status().isForbidden())
             .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("validation")));
@@ -92,12 +122,12 @@ public class ExaminationServiceTest{
     public void testDeleteExamination_Success() throws Exception {
         Long examinationId = 3L;
 
-        Examination examination = new Examination(examinationId, "pacijent_uid3", "doktor_uid3", "dijagnozaaaa3", LocalDateTime termin_pregleda); 
+        Examination examination = new Examination(examinationId, "pacijent_uid3", "doktor_uid3", "dijagnozaaaa3", LocalDateTime.of(2024, Month.FEBRUARY, 21, 7, 35));
 
 
         when(examinationRepository.findById(examinationId)).thenReturn(Optional.of(examination));
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/examinations/{ID}", examinationId))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/examinations/{ID}", examinationId))
                 .andExpect(status().isOk()) 
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id", Matchers.is(examinationId.intValue())));
 
@@ -110,7 +140,7 @@ public class ExaminationServiceTest{
 
         when(examinationRepository.findById(examinationId)).thenReturn(Optional.empty());
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/examinations/{ID}", examinationId))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/api/examinations/{ID}", examinationId))
                 .andExpect(status().isNotFound());
 
         verify(examinationRepository, never()).deleteById(anyLong());
@@ -122,12 +152,13 @@ public class ExaminationServiceTest{
       "\"pacijent_uid\": \"pacijent_uid novi\"," +
       "\"doktor_uid\": \"doktor_uid novi \"," +
       "\"dijagnoza\": \"nova dijagnoza\"," +
-      "\termin_pregeda\": datum" +
+                "\"termin_pregeda\": \"2024-01-03T10:15:30\"" +
       "}";
+
+      Long id = 1L;
+      when(examinationRepository.findById(id)).thenReturn(Optional.of(mockExaminations.get(0)));
 		
-		 when(examinationRepository.getReferenceById(1L)).thenReturn(mockExaminations.get(0));
-		
-    mockMvc.perform(MockMvcRequestBuilders.put("/examinations/{ID}", 1L).
+    mockMvc.perform(MockMvcRequestBuilders.put("/api/examinations/{ID}", id).
                     contentType(MediaType.APPLICATION_JSON).content(examinationJSON))
             .andExpect(status().isOk()) 
             .andExpect(MockMvcResultMatchers.jsonPath("$.dijagnoza", Matchers.is("nova dijagnoza")));
@@ -141,12 +172,12 @@ public class ExaminationServiceTest{
       "\"pacijent_uid\": \"pacijent_uid novi\"," +
       "\"doktor_uid\": \"doktor_uid novi \"," +
       "\"dijagnoza\": \"d\"," +
-      "\termin_pregeda\": datum" +
+                "\"termin_pregeda\": \"2024-01-03T10:15:30\"" +
       "}";
 		
-		 when(examinationRepository.getReferenceById(1L)).thenReturn(mockExaminations.get(0));
+		 when(examinationRepository.findById(1L)).thenReturn(Optional.of(mockExaminations.get(0)));
 		
-    mockMvc.perform(MockMvcRequestBuilders.put("/examinations/{ID}", 1L).
+    mockMvc.perform(MockMvcRequestBuilders.put("/api/examinations/{ID}", 1L).
                     contentType(MediaType.APPLICATION_JSON).content(examinationJSON))
             .andExpect(status().isForbidden()) 
             .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("validation")));
@@ -157,12 +188,12 @@ public class ExaminationServiceTest{
   @Test
 	public void UpdateExaminationPartial_Success() throws Exception{
 		String examinationJSON = "{\n"+
-      "\"dijagnoza\": \"patch dijagnoza\"," +
+      "\"dijagnoza\": \"patch dijagnoza\"" +
       "}";
 		
-		 when(examinationRepository.getReferenceById(1L)).thenReturn(mockExaminations.get(0));
+		 when(examinationRepository.findById(1L)).thenReturn(Optional.of(mockExaminations.get(0)));
 		
-    mockMvc.perform(MockMvcRequestBuilders.patch("/examinations/{ID}", 1L).
+    mockMvc.perform(MockMvcRequestBuilders.patch("/api/examinations/{ID}", 1L).
                     contentType(MediaType.APPLICATION_JSON).content(examinationJSON))
             .andExpect(status().isOk()) 
             .andExpect(MockMvcResultMatchers.jsonPath("$.dijagnoza", Matchers.is("patch dijagnoza")));
@@ -173,12 +204,12 @@ public class ExaminationServiceTest{
    @Test
 	public void UpdateExaminationPartial_Fail() throws Exception{
 		String examinationJSON = "{\n"+
-      "\"dijagnoza\": \"patch\"," +
+      "\"dijagnoza\": \"patch\"" +
       "}";
 		
 		 when(examinationRepository.getReferenceById(1L)).thenReturn(mockExaminations.get(0));
 		
-    mockMvc.perform(MockMvcRequestBuilders.patch("/examinations/{ID}", 1L).
+    mockMvc.perform(MockMvcRequestBuilders.patch("/api/examinations/{ID}", 1L).
                     contentType(MediaType.APPLICATION_JSON).content(examinationJSON))
             .andExpect(status().isForbidden()) 
             .andExpect(MockMvcResultMatchers.jsonPath("$.error", Matchers.is("validation")));

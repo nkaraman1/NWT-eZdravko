@@ -23,12 +23,12 @@ public class ExaminationController {
         this.examinationService = examinationService;
     }
 
-    @GetMapping(value="/")
+    @GetMapping()
     public List<ExaminationDTO> getExaminations() {
         return examinationService.getExaminations();
     }
 
-    @PostMapping(value="/")
+    @PostMapping()
     public ResponseEntity<?> addExamination(@RequestBody ExaminationDTO examinationDTO){
         return examinationService.addExamination(examinationDTO);
     }
