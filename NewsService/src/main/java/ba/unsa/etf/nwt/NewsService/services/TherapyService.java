@@ -1,7 +1,10 @@
 package ba.unsa.etf.nwt.NewsService.services;
 
 import ba.unsa.etf.nwt.NewsService.DTO.NewsDTO;
+import ba.unsa.etf.nwt.NewsService.DTO.NotificationDTO;
 import ba.unsa.etf.nwt.NewsService.DTO.TherapyDTO;
+import ba.unsa.etf.nwt.NewsService.feign.NotificationInterface;
+import ba.unsa.etf.nwt.NewsService.feign.UserInterface;
 import ba.unsa.etf.nwt.NewsService.model.ErrorMsg;
 import ba.unsa.etf.nwt.NewsService.model.News;
 import ba.unsa.etf.nwt.NewsService.model.Therapy;
@@ -29,6 +32,11 @@ public class TherapyService {
     private final Validator validator;
 
     @Autowired
+    private NotificationInterface notificationInterface;
+    @Autowired
+    private UserInterface userInterface;
+
+    @Autowired
     public TherapyService(TherapyRepository therapyRepository, Validator validator) {
         this.therapyRepository = therapyRepository;
         this.validator = validator;
@@ -54,6 +62,9 @@ public class TherapyService {
 
         Therapy therapy = convertToEntity(therapyDTO);
         therapy = therapyRepository.save(therapy);
+        NotificationDTO newNotification = new NotificationDTO("therapy", "Vaša terapija je spremna: " + therapy.getLijek() + therapy.getKolicina(), therapy.getDoktor_uid());
+        notificationInterface.createNotification(newNotification);
+        userInterface.getUserByUID(therapy.getDoktor_uid());
         return new ResponseEntity<>(convertToDTO(therapy), HttpStatus.CREATED);
     }
 
@@ -105,6 +116,9 @@ public class TherapyService {
         assert therapy != null;
         updateFromDTO(therapy, therapyDTO);
         therapy = therapyRepository.save(therapy);
+        NotificationDTO newNotification = new NotificationDTO("therapy", "Vaša terapija je izmijenjena!", therapy.getDoktor_uid());
+        notificationInterface.createNotification(newNotification);
+        userInterface.getUserByUID(therapy.getDoktor_uid());
 
         return new ResponseEntity<>(convertToDTO(therapy), HttpStatus.OK);
     }
@@ -131,7 +145,9 @@ public class TherapyService {
             return new ResponseEntity<>(new ErrorMsg("validation", errorMessage.toString()), HttpStatus.FORBIDDEN);
         }
         Therapy therapy = therapyRepository.save(optionalTherapy.get());
-
+        NotificationDTO newNotification = new NotificationDTO("therapy", "Vaša terapija je izmijenjena!", therapy.getDoktor_uid());
+        notificationInterface.createNotification(newNotification);
+        userInterface.getUserByUID(therapy.getDoktor_uid());
         return new ResponseEntity<>(convertToDTO(therapy), HttpStatus.OK);
     }
 

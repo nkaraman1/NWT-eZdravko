@@ -1,5 +1,7 @@
 package ba.unsa.etf.nwt.SurveyService.services;
 
+import ba.unsa.etf.nwt.NewsService.DTO.NotificationDTO;
+import ba.unsa.etf.nwt.SurveyService.feign.NotificationInterface;
 import ba.unsa.etf.nwt.SurveyService.DTO.SurveyAnswerDTO;
 import ba.unsa.etf.nwt.SurveyService.DTO.SurveyQuestionDTO;
 import ba.unsa.etf.nwt.SurveyService.model.*;
@@ -24,6 +26,9 @@ public class SurveyAnswerService {
     private final AnswerOptionsRepository answerOptionsRepository;
 
     private final Validator validator;
+
+    @Autowired
+    private NotificationInterface notificationInterface;
 
     @Autowired
     public SurveyAnswerService(SurveyAnswerRepository surveyAnswerRepository, AnswerOptionsRepository answerOptionsRepository, Validator validator){
@@ -57,6 +62,8 @@ public class SurveyAnswerService {
 
         SurveyAnswer surveyAnswer = convertToEntity(surveyAnswerDTO);
         surveyAnswer = surveyAnswerRepository.save(surveyAnswer);
+        NotificationDTO newNotification = new NotificationDTO("survey", "Anketa popunjena!", "anonymous");
+        notificationInterface.createNotification(newNotification);
 
         return new ResponseEntity<>(convertToDTO(surveyAnswer), HttpStatus.CREATED);
     }
@@ -136,6 +143,8 @@ public class SurveyAnswerService {
         assert surveyAnswer != null;
         updateFromDTO(surveyAnswer, surveyAnswerDTO);
         surveyAnswer = surveyAnswerRepository.save(surveyAnswer);
+        NotificationDTO newNotification = new NotificationDTO("survey", "Odgovor na anketu promijenjen!", "anonymous");
+        notificationInterface.createNotification(newNotification);
         return new ResponseEntity<>(convertToDTO(surveyAnswer), HttpStatus.OK);
     }
 

@@ -1,6 +1,9 @@
 package ba.unsa.etf.nwt.NewsService.services;
 
 import ba.unsa.etf.nwt.NewsService.DTO.NewsDTO;
+import ba.unsa.etf.nwt.NewsService.DTO.NotificationDTO;
+import ba.unsa.etf.nwt.NewsService.feign.NotificationInterface;
+import ba.unsa.etf.nwt.NewsService.feign.UserInterface;
 import ba.unsa.etf.nwt.NewsService.model.ErrorMsg;
 import ba.unsa.etf.nwt.NewsService.model.News;
 import ba.unsa.etf.nwt.NewsService.repositories.NewsRepository;
@@ -25,6 +28,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class NewsService {
     private final NewsRepository newsRepository;
     private final Validator validator;
+
+    @Autowired
+    private NotificationInterface notificationInterface;
+    @Autowired
+    private UserInterface userInterface;
 
     @Autowired
     public NewsService(NewsRepository newsRepository, Validator validator) {
@@ -52,6 +60,9 @@ public class NewsService {
 
         News news = convertToEntity(newsDTO);
         news = newsRepository.save(news);
+        NotificationDTO newNotification = new NotificationDTO("news", "Pročitajte novu vijest: " + news.getNaslov(), news.getUser_uid());
+        notificationInterface.createNotification(newNotification);
+        userInterface.getUserByUID(news.getUser_uid());
         return new ResponseEntity<>(convertToDTO(news), HttpStatus.CREATED);
     }
 

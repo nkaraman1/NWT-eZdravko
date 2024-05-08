@@ -68,6 +68,9 @@ public class SurveyService {
 
         Survey survey = convertToEntity(surveyDTO);
         survey = surveyRepository.save(survey);
+        NotificationDTO newNotification = new NotificationDTO("survey", "Nova anketa:" + survey.getNaslov(), survey.getUser_uid());
+        notificationInterface.createNotification(newNotification);
+        userInterface.getUserByUID(survey.getUser_uid());
         return new ResponseEntity<>(convertToDTO(survey), HttpStatus.CREATED);
     }
 
@@ -160,7 +163,7 @@ public class SurveyService {
         updateFromDTO(survey, surveyDTO);
         survey = surveyRepository.save(survey);
 
-        NotificationDTO newNotification = new NotificationDTO("alert", "Podaci ankete su promijenjeni!", survey.getUser_uid());
+        NotificationDTO newNotification = new NotificationDTO("survey", "Podaci ankete su promijenjeni!", survey.getUser_uid());
         notificationInterface.createNotification(newNotification);
         userInterface.getUserByUID(survey.getUser_uid());
         return new ResponseEntity<>(convertToDTO(survey), HttpStatus.OK);
@@ -188,9 +191,9 @@ public class SurveyService {
             return new ResponseEntity<>(new ErrorMsg("validation", errorMessage.toString()), HttpStatus.FORBIDDEN);
         }
         Survey survey = surveyRepository.save(optionalSurvey.get());
-
-//        NotificationDTO newNotification = new NotificationDTO("alert", "Podaci ankete su promijenjeni!", survey.getUser_uid());
-//        notificationInterface.createNotification(newNotification);
+        NotificationDTO newNotification = new NotificationDTO("survey", "Podaci ankete su promijenjeni!", survey.getUser_uid());
+        notificationInterface.createNotification(newNotification);
+        userInterface.getUserByUID(survey.getUser_uid());
 
         return new ResponseEntity<>(convertToDTO(survey), HttpStatus.OK);
     }
