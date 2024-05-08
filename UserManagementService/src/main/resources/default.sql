@@ -7,9 +7,9 @@ INSERT INTO role (id, naziv_role, potreban_kod, kod) VALUES (3, "Apotekar", 1, "
 INSERT INTO role (id, naziv_role, potreban_kod, kod) VALUES (4, "Pacijent", 0, null);
 
 INSERT INTO korisnici (id, uid, adresa_stanovanja, broj_knjizice, broj_telefona, datum_rodjenja, email, ime, password, prezime, slika, spol, role_id)
-VALUES                (1, 1, "Adresa", "12345", "062123456", '2001-01-10', "esmajic2@etf.unsa.ba", "Elvedin", "password123", "Smajić",
+VALUES                (1, "UID-1", "Adresa", "12345", "062123456", '2001-01-10', "esmajic2@etf.unsa.ba", "Elvedin", "password123", "Smajić",
 "img_path", 0, 1);
 
 INSERT INTO korisnici (id, uid, adresa_stanovanja, broj_knjizice, broj_telefona, datum_rodjenja, email, ime, password, prezime, slika, spol, role_id)
-VALUES                (2, 2, "Adresa", "12345", "061235771", '1980-05-31', "nnekic1@etf.unsa.ba", "Neko", "password123", "Nekić",
+VALUES                (2, "UID-2", "Adresa", "12345", "061235771", '1980-05-31', "nnekic1@etf.unsa.ba", "Neko", "password123", "Nekić",
 "img_path", 1, 2);

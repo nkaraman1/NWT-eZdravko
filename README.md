@@ -8,10 +8,8 @@ Config repozitorij:
 <br/><br/>
 Portovi koji se koriste za servise:
 <list>
+  <li>API Gateway: 8080</li>
   <li>Config Server: 8888</li>
-  <li>Korisnici: 3000</li>
-  <li>Forum: 4000</li>
-  <li>Novosti: 5000</li>
-  <li>Anketa: 7000</li>  
-  <li>Pacijenti: 3456</li>  
+  <li>Eureka Server: 8761</li>
+  <li>Ostali servisi dobijaju random port od Eureke</li>
 </list>

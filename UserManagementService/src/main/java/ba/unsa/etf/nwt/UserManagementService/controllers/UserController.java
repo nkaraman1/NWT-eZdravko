@@ -9,6 +9,7 @@ import ba.unsa.etf.nwt.UserManagementService.repositories.RoleRepository;
 import ba.unsa.etf.nwt.UserManagementService.repositories.UserRepository;
 import ba.unsa.etf.nwt.UserManagementService.services.UserService;
 import jakarta.validation.Valid;
+import jakarta.ws.rs.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,11 @@ public class UserController {
         return userService.getUserByID(ID);
     }
 
+    @GetMapping(value="/users/uid/{UID}")
+    public ResponseEntity<?> getUserByUID(@PathVariable String UID) {
+        return userService.getUserByUID(UID);
+    }
+
     @GetMapping(value="/users/ime/{ime}/prezime/{prezime}")
     public ResponseEntity<?> getUserByImePrezime(@PathVariable String ime, @PathVariable String prezime) {
         return userService.getUserByImePrezime(ime, prezime);
@@ -59,7 +65,7 @@ public class UserController {
     }
 
     @PostMapping(value="/users/create")
-    public ResponseEntity<?> createUser(@RequestBody @Valid UserDTO userDTO) {
+    public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO) {
         return userService.createUser(userDTO);
     }
 
@@ -71,5 +77,15 @@ public class UserController {
     @DeleteMapping(value="/users/delete/{ID}")
     public ResponseEntity<?> deleteUser(@PathVariable Long ID) {
         return userService.deleteUser(ID);
+    }
+
+    @PatchMapping(value="/users/change/{ID}/password/{password}")
+    public ResponseEntity<?> changePassword(@PathVariable Long ID, @PathVariable String password) {
+        return userService.changeUserPassword(ID, password);
+    }
+
+    @PatchMapping(value="/users/change/{ID}/role/{roleID}")
+    public ResponseEntity<?> changeRole(@PathVariable Long ID, @PathVariable Long roleID) {
+        return userService.changeUserRole(ID, roleID);
     }
 }
