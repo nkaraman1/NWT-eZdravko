@@ -1,5 +1,11 @@
 package ba.unsa.etf.nwt.APIGateway.GatewayFilter;
 
+/*import ba.unsa.etf.nwt.systemevents.Event;
+import ba.unsa.etf.nwt.systemevents.EventRequest;
+import ba.unsa.etf.nwt.systemevents.EventResponse;
+import ba.unsa.etf.nwt.systemevents.EventServiceGrpc;*/
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
@@ -14,37 +20,72 @@ public class CustomGatewayFilterFactory extends AbstractGatewayFilterFactory<Cus
         super(Config.class);
     }
 
-    private static EventDTO makeEventDTO(String method, String servis, int responseCode, String resurs) {
-        EventDTO eventDTO = new EventDTO();
+    /*private static Event makeEvent(String method, String servis, int responseCode, String resurs) {
+        Event event = new Event();
 
         // Privremeno dok se ne nađe način da se uzme userID preko JWT ili nekako
-        eventDTO.setUserID(1L);
+        event.setUser_id(1L);
         //
 
-        eventDTO.setImeServisa(servis);
+        event.setIme_servisa(servis);
         if (responseCode >= 200 && responseCode <= 299)
-            eventDTO.setUspjesnaAkcija(true);
+            event.setUspjesna_akcija(true);
         else
-            eventDTO.setUspjesnaAkcija(false);
+            event.setUspjesna_akcija(false);
 
-        eventDTO.setResurs(resurs);
-        eventDTO.setTimestamp(LocalDateTime.now());
+        event.setResurs(resurs);
+        event.setTimestamp(LocalDateTime.now().toString());
 
         if (method.equals("GET")) {
-            eventDTO.setAkcija("GET");
+            event.setAkcija("GET");
         }
         else if (method.equals("POST")) {
-            eventDTO.setAkcija("CREATE");
+            event.setAkcija("CREATE");
         }
         else if (method.equals("PUT") || method.equals("PATCH")) {
-            eventDTO.setAkcija("UPDATE");
+            event.setAkcija("UPDATE");
         }
         else {
-            eventDTO.setAkcija("DELETE");
+            event.setAkcija("DELETE");
         }
 
-        return eventDTO;
+        return event;
     }
+     */
+
+    /*private static EventRequest makeEventRequest(String method, String servis, int responseCode, String resurs) {
+        EventRequest.Builder requestBuilder = EventRequest.newBuilder();
+        EventRequest request = requestBuilder.build();
+
+        // Privremeno dok se ne nađe način da se uzme userID preko JWT ili nekako
+        requestBuilder.setUserId(1L);
+        //
+
+        requestBuilder.setImeServisa(servis);
+        if (responseCode >= 200 && responseCode <= 299)
+            requestBuilder.setUspjesnaAkcija(true);
+        else
+            requestBuilder.setUspjesnaAkcija(false);
+
+        requestBuilder.setResurs(resurs);
+        requestBuilder.setTimestamp(LocalDateTime.now().toString());
+
+        if (method.equals("GET")) {
+            requestBuilder.setAkcija("GET");
+        }
+        else if (method.equals("POST")) {
+            requestBuilder.setAkcija("CREATE");
+        }
+        else if (method.equals("PUT") || method.equals("PATCH")) {
+            requestBuilder.setAkcija("UPDATE");
+        }
+        else {
+            requestBuilder.setAkcija("DELETE");
+        }
+
+        return request;
+    }*/
+
     @Override
     public GatewayFilter apply(Config config) {
 
@@ -71,12 +112,41 @@ public class CustomGatewayFilterFactory extends AbstractGatewayFilterFactory<Cus
                 System.out.println("Status: " + status);
                 System.out.println("Headers: " + headersResponse);
 
-                EventDTO eventDTO = makeEventDTO(method, service, status, path);
+                /*EventDTO eventDTO = makeEventDTO(method, service, status, path);
                 System.out.println("EventDTO:");
                 System.out.println(eventDTO);
+
+                sendEventDTO(eventDTO);*/
+
+                /*EventRequest request = makeEventRequest(method, service, status, path);
+                System.out.println("Event:");
+                System.out.println(request.getAkcija());
+                System.out.println(request.getTimestamp());
+                System.out.println(request.getImeServisa());
+                System.out.println(request.getUspjesnaAkcija());
+                sendRequest(request);*/
             }));
         };
     }
+
+    /*private void sendRequest(EventRequest eventRequest) {
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9000)
+                .usePlaintext()
+                .build();
+
+        // Create a gRPC stub
+        EventServiceGrpc.EventServiceBlockingStub stub = EventServiceGrpc.newBlockingStub(channel);
+
+        // Call the gRPC service method to send the EventDTO
+        EventResponse response = stub.send(eventRequest);
+
+        // Print response (if needed)
+        System.out.println("gRPC Response:");
+        System.out.println(response);
+
+        // Shutdown the channel
+        channel.shutdown();
+    }*/
 
     public static class Config {
         private String serviceName;

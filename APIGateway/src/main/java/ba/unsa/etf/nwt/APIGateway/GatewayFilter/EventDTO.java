@@ -3,7 +3,7 @@ package ba.unsa.etf.nwt.APIGateway.GatewayFilter;
 import java.time.LocalDateTime;
 
 public class EventDTO {
-    private LocalDateTime timestamp;
+    private String timestamp;
     private String imeServisa;
     private Long userID;
     private String akcija;
@@ -14,7 +14,7 @@ public class EventDTO {
     }
 
     public EventDTO(String imeServisa, Long userID, String akcija, String resurs, Boolean uspjesnaAkcija) {
-        this.timestamp = LocalDateTime.now();
+        this.timestamp = LocalDateTime.now().toString();
         this.imeServisa = imeServisa;
         this.userID = userID;
         this.akcija = akcija;
@@ -22,11 +22,11 @@ public class EventDTO {
         this.uspjesnaAkcija = uspjesnaAkcija;
     }
 
-    public LocalDateTime getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(LocalDateTime timestamp) {
+    public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
 
