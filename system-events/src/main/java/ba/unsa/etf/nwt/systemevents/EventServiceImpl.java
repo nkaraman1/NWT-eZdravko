@@ -1,10 +1,11 @@
 package ba.unsa.etf.nwt.systemevents;
 
 import io.grpc.stub.StreamObserver;
+import net.devh.boot.grpc.server.service.GrpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-@Service
+@GrpcService
 public class EventServiceImpl extends EventServiceGrpc.EventServiceImplBase {
     private EventRepository eventRepository;
     @Autowired
@@ -25,4 +26,5 @@ public class EventServiceImpl extends EventServiceGrpc.EventServiceImplBase {
         responseObserver.onNext(response);
         responseObserver.onCompleted();
     }
+
 }
