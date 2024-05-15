@@ -1,12 +1,16 @@
 package ba.unsa.etf.nwt.PatientService.services;
 
+import ba.unsa.etf.nwt.NewsService.DTO.NotificationDTO;
 import ba.unsa.etf.nwt.PatientService.DTO.ExaminationDTO;
+import ba.unsa.etf.nwt.PatientService.feign.NotificationInterface;
+import ba.unsa.etf.nwt.PatientService.feign.UserInterface;
 import ba.unsa.etf.nwt.PatientService.model.DiaryEntry;
 import ba.unsa.etf.nwt.PatientService.model.ErrorMsg;
 import ba.unsa.etf.nwt.PatientService.model.Examination;
 import ba.unsa.etf.nwt.PatientService.model.Referral;
 import ba.unsa.etf.nwt.PatientService.repositories.ExaminationRepository;
 import ba.unsa.etf.nwt.PatientService.repositories.ReferralRepository;
+import ba.unsa.etf.nwt.UserManagementService.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +31,13 @@ public class ExaminationService {
 
     private final ReferralRepository referralRepository;
     private final Validator validator;
+
+    @Autowired
+    private UserInterface userInterface;
+
+
+    @Autowired
+    private NotificationInterface notificationInterface;
 
     @Autowired
     public ExaminationService(ExaminationRepository examinationRepository, ReferralRepository referralRepository, Validator validator) {
@@ -53,8 +64,43 @@ public class ExaminationService {
             return new ResponseEntity<>(new ErrorMsg(errorMessage.toString()), HttpStatus.FORBIDDEN);
         }
 
+        try{
+            ResponseEntity<?> doktorResponse = userInterface.getUserByUID(examinationDTO.getDoktor_uid());
+            if (doktorResponse.getStatusCode() != HttpStatus.OK) {
+                return doktorResponse;
+            }
+
+            LinkedHashMap<String, Object> doktor = (LinkedHashMap<String, Object>) doktorResponse.getBody();
+            assert doktor != null;
+            if (!Objects.equals(((LinkedHashMap<String, Object>) doktor.get("rola")).get("nazivRole"), "Doktor")) {
+                return new ResponseEntity<>(new ErrorMsg("invalid argument", "DoktorUID ne pripada doktoru"), HttpStatus.FORBIDDEN);
+            }
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(new ErrorMsg("invalid argument", "Doktor UID nije validan"), HttpStatus.FORBIDDEN);
+        }
+
+
+        try {
+            ResponseEntity<?> pacijentResponse = userInterface.getUserByUID(examinationDTO.getPacijent_uid());
+            if (pacijentResponse.getStatusCode() != HttpStatus.OK) {
+                return pacijentResponse;
+            }
+
+            LinkedHashMap<String, Object> pacijent = (LinkedHashMap<String, Object>) pacijentResponse.getBody();
+            assert pacijent != null;
+            if (!Objects.equals(((LinkedHashMap<String, Object>) pacijent.get("rola")).get("nazivRole"), "Pacijent")) {
+                return new ResponseEntity<>(new ErrorMsg("invalid argument", "PacijentUID ne pripada pacijentu"), HttpStatus.FORBIDDEN);
+            }
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(new ErrorMsg("invalid argument", "Pacijent UID nije validan"), HttpStatus.FORBIDDEN);
+        }
+
         Examination examination = convertToEntity(examinationDTO);
         examination = examinationRepository.save(examination);
+        NotificationDTO newNotification = new NotificationDTO("alert", "Uspješno kreiran pregled!", examinationDTO.getDoktor_uid());
+        notificationInterface.createNotification(newNotification);
         return new ResponseEntity<>(examination, HttpStatus.CREATED);
     }
 

@@ -154,7 +154,6 @@ public class ExaminationServiceTest{
       "\"dijagnoza\": \"nova dijagnoza\"," +
                 "\"termin_pregeda\": \"2024-01-03T10:15:30\"" +
       "}";
-
       Long id = 1L;
       when(examinationRepository.findById(id)).thenReturn(Optional.of(mockExaminations.get(0)));
 		
