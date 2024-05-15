@@ -59,6 +59,13 @@ public class Examination {
         this.termin_pregleda = termin_pregleda;
     }
 
+     public Examination(String pacijent_uid, String doktor_uid, String dijagnoza, LocalDateTime termin_pregleda) {
+        this.pacijent_uid = pacijent_uid;
+        this.doktor_uid = doktor_uid;
+        this.dijagnoza = dijagnoza;
+        this.termin_pregleda = termin_pregleda;
+    }
+
     public Long getID() {
         return ID;
     }
