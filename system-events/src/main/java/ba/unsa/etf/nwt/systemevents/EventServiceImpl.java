@@ -8,12 +8,12 @@ import java.util.List;
 
 @Service
 public class EventServiceImpl extends EventServiceGrpc.EventServiceImplBase {
-    private final EventDAO eventDAO;
+    /*private final EventDAO eventDAO;
 
     @Autowired
     public EventServiceImpl(EventDAO eventDAO) {
         this.eventDAO = eventDAO;
-    }
+    }*/
 
     @Override
     public void send(EventRequest request, StreamObserver<EventResponse> responseObserver) {
@@ -23,9 +23,11 @@ public class EventServiceImpl extends EventServiceGrpc.EventServiceImplBase {
         //eventDAO.save(event);
         //System.out.println(eventDAO.getEvents());
 
+        EventCollector eventCollector = EventCollector.getInstance();
+        eventCollector.addEvent(event);
+
         System.out.println(event.toString());
         System.out.println(request.toString());
-        System.out.println("Testic");
         EventResponse response = EventResponse.newBuilder()
                 .setMessage("Uspjesno dodan event!")
                 .build();

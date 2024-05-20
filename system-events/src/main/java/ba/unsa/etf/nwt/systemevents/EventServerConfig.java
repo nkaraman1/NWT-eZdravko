@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PreDestroy;
 import java.io.IOException;
+import java.util.List;
 
 @Configuration
 public class EventServerConfig {
@@ -19,6 +20,7 @@ public class EventServerConfig {
     @PostConstruct
     public void startGrpcServer() throws IOException, InterruptedException {
         System.out.println("gRPC server started, listening on port 9000");
+
         server = ServerBuilder.forPort(9000)
                 .addService(eventService)
                 .build()
