@@ -4,6 +4,10 @@ import ba.unsa.etf.nwt.systemevents.Event;
 import ba.unsa.etf.nwt.systemevents.EventRequest;
 import ba.unsa.etf.nwt.systemevents.EventResponse;
 import ba.unsa.etf.nwt.systemevents.EventServiceGrpc;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -80,16 +84,31 @@ public class CustomGatewayFilterFactory extends AbstractGatewayFilterFactory<Cus
         System.out.println("Event:");
         System.out.println(eventRequest.toString());
 
-        /*EventServiceGrpc.EventServiceBlockingStub stub = EventServiceGrpc.newBlockingStub(channel);
+        //EventServiceGrpc.EventServiceBlockingStub stub = EventServiceGrpc.newBlockingStub(channel);
+        EventServiceGrpc.EventServiceFutureStub stub = EventServiceGrpc.newFutureStub(channel);
 
-        //EventResponse response = stub.send(eventRequest);
+        ListenableFuture<EventResponse> futureResponse = stub.send(eventRequest);
 
-        // Print response (if needed)
-        System.out.println("gRPC Response:");
-        //System.out.println(response);
+        Futures.addCallback(futureResponse, new FutureCallback<EventResponse>() {
+            @Override
+            public void onSuccess(EventResponse response) {
+                // Print response (if needed)
+                System.out.println("gRPC Response:");
+                System.out.println(response);
 
-        // Shutdown the channel
-        channel.shutdown();*/
+                // Shutdown the channel
+                channel.shutdown();
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                // Handle failure
+                throwable.printStackTrace();
+
+                // Shutdown the channel
+                channel.shutdown();
+            }
+        }, MoreExecutors.directExecutor());
     }
 
     public static class Config {

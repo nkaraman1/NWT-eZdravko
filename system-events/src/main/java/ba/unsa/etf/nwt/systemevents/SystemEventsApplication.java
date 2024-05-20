@@ -10,21 +10,8 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class SystemEventsApplication {
-	@Autowired
-	private EventServiceImpl eventService;
-
-	private Server grpcServer;
-
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(SystemEventsApplication.class, args);
 	}
-	@PostConstruct
-	public void startGrpcServer() throws Exception {
-		grpcServer = ServerBuilder.forPort(9000)
-				.addService(eventService)
-				.build();
-		grpcServer.start();
-		System.out.println("gRPC server started, listening on port 9000");
-		grpcServer.awaitTermination();
-	}
+
 }
