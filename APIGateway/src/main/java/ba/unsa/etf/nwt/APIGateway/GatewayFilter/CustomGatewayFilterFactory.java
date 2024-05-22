@@ -1,5 +1,15 @@
 package ba.unsa.etf.nwt.APIGateway.GatewayFilter;
 
+import ba.unsa.etf.nwt.systemevents.Event;
+import ba.unsa.etf.nwt.systemevents.EventRequest;
+import ba.unsa.etf.nwt.systemevents.EventResponse;
+import ba.unsa.etf.nwt.systemevents.EventServiceGrpc;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;
@@ -14,37 +24,38 @@ public class CustomGatewayFilterFactory extends AbstractGatewayFilterFactory<Cus
         super(Config.class);
     }
 
-    private static EventDTO makeEventDTO(String method, String servis, int responseCode, String resurs) {
-        EventDTO eventDTO = new EventDTO();
+    private static EventRequest makeEventRequest(String method, String servis, int responseCode, String resurs) {
+        EventRequest.Builder requestBuilder = EventRequest.newBuilder();
 
         // Privremeno dok se ne nađe način da se uzme userID preko JWT ili nekako
-        eventDTO.setUserID(1L);
-        //
+        requestBuilder.setUserId(1L);
+        requestBuilder.setImeServisa(servis);
 
-        eventDTO.setImeServisa(servis);
         if (responseCode >= 200 && responseCode <= 299)
-            eventDTO.setUspjesnaAkcija(true);
+            requestBuilder.setUspjesnaAkcija(true);
         else
-            eventDTO.setUspjesnaAkcija(false);
+            requestBuilder.setUspjesnaAkcija(false);
 
-        eventDTO.setResurs(resurs);
-        eventDTO.setTimestamp(LocalDateTime.now());
+        requestBuilder.setResurs(resurs);
+        requestBuilder.setTimestamp(LocalDateTime.now().toString());
 
         if (method.equals("GET")) {
-            eventDTO.setAkcija("GET");
+            requestBuilder.setAkcija("GET");
         }
         else if (method.equals("POST")) {
-            eventDTO.setAkcija("CREATE");
+            requestBuilder.setAkcija("CREATE");
         }
         else if (method.equals("PUT") || method.equals("PATCH")) {
-            eventDTO.setAkcija("UPDATE");
+            requestBuilder.setAkcija("UPDATE");
         }
         else {
-            eventDTO.setAkcija("DELETE");
+            requestBuilder.setAkcija("DELETE");
         }
 
-        return eventDTO;
+        EventRequest request = requestBuilder.build();
+        return request;
     }
+
     @Override
     public GatewayFilter apply(Config config) {
 
@@ -54,28 +65,50 @@ public class CustomGatewayFilterFactory extends AbstractGatewayFilterFactory<Cus
             String headers = exchange.getRequest().getHeaders().toString();
             String service = config.getServiceName();
 
-            // Log the information
-            System.out.println("HTTP REQUEST:");
-            System.out.println("Method: " + method);
-            System.out.println("Path: " + path);
-            System.out.println("Headers: " + headers);
-            System.out.println("Service: " + service);
-
             return chain.filter(exchange).then(Mono.fromRunnable(() -> {
                 // Extracting response status and headers
                 int status = exchange.getResponse().getStatusCode().value();
                 HttpHeaders headersResponse = exchange.getResponse().getHeaders();
 
-                // Log the outgoing response information
-                System.out.println("HTTP RESPONSE:");
-                System.out.println("Status: " + status);
-                System.out.println("Headers: " + headersResponse);
-
-                EventDTO eventDTO = makeEventDTO(method, service, status, path);
-                System.out.println("EventDTO:");
-                System.out.println(eventDTO);
+                EventRequest request = makeEventRequest(method, service, status, path);
+                sendRequest(request);
             }));
         };
+    }
+
+    private void sendRequest(EventRequest eventRequest) {
+        ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9000)
+                .usePlaintext()
+                .build();
+
+        System.out.println("Event:");
+        System.out.println(eventRequest.toString());
+
+        //EventServiceGrpc.EventServiceBlockingStub stub = EventServiceGrpc.newBlockingStub(channel);
+        EventServiceGrpc.EventServiceFutureStub stub = EventServiceGrpc.newFutureStub(channel);
+
+        ListenableFuture<EventResponse> futureResponse = stub.send(eventRequest);
+
+        Futures.addCallback(futureResponse, new FutureCallback<EventResponse>() {
+            @Override
+            public void onSuccess(EventResponse response) {
+                // Print response (if needed)
+                System.out.println("gRPC Response:");
+                System.out.println(response);
+
+                // Shutdown the channel
+                channel.shutdown();
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                // Handle failure
+                throwable.printStackTrace();
+
+                // Shutdown the channel
+                channel.shutdown();
+            }
+        }, MoreExecutors.directExecutor());
     }
 
     public static class Config {
