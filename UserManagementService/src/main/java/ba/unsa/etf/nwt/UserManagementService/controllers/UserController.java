@@ -13,6 +13,9 @@ import jakarta.ws.rs.Path;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -23,6 +26,9 @@ import java.util.regex.Pattern;
 @RestController
 public class UserController {
     private final UserService userService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @Autowired
     public UserController(UserService userService) {
@@ -69,6 +75,21 @@ public class UserController {
         return userService.createUser(userDTO);
     }
 
+    @PostMapping("/token")
+    public String getToken(@RequestBody UserLogin authRequest) {
+        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
+        if (authenticate.isAuthenticated()) {
+            return userService.generateToken(authRequest.getEmail());
+        } else {
+            throw new RuntimeException("invalid access");
+        }
+    }
+
+    @GetMapping("/validate")
+    public String validateToken(@RequestParam("token") String token) {
+        userService.validateToken(token);
+        return "Token is valid";
+    }
     @PutMapping(value="/users/change/{ID}")
     public ResponseEntity<?> changeUserData(@PathVariable Long ID, @RequestBody UserDTO userDTO) {
         return userService.changeUserData(ID, userDTO);
