@@ -109,7 +109,7 @@ public class UserService {
                 Role selected = rola.get();
 
                 if (!selected.isPotrebanKod() || selected.getKod().equals(userDTO.getRola_kod())) {
-                    List<User> possibleMatches = userRepository.findByEmail(userDTO.getEmail());
+                    Optional<User> possibleMatches = userRepository.findByEmail(userDTO.getEmail());
                     if (possibleMatches.isEmpty()) {
                         User user = convertToEntity(userDTO);
                         user.setRola(selected);

@@ -211,7 +211,7 @@ public class UserServiceTest {
                 "}";
 
         when(roleRepository.findById(1L)).thenReturn(Optional.of(new Role(1L, "Rola", false, null)));
-        when(userRepository.findByEmail("ime@domain.com")).thenReturn(List.of(mockUseri.get(0)));
+        when(userRepository.findByEmail("ime@domain.com")).thenReturn(Optional.ofNullable(mockUseri.get(0)));
         when(userRepository.findAll()).thenReturn(mockUseri);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/users/create")

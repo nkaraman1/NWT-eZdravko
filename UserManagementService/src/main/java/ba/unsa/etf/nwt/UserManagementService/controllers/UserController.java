@@ -75,7 +75,7 @@ public class UserController {
         return userService.createUser(userDTO);
     }
 
-    @PostMapping("/token")
+    @PostMapping(value="/users/token")
     public String getToken(@RequestBody UserLogin authRequest) {
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword()));
         if (authenticate.isAuthenticated()) {
@@ -85,7 +85,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/validate")
+    @GetMapping(value="/users/validate")
     public String validateToken(@RequestParam("token") String token) {
         userService.validateToken(token);
         return "Token is valid";
