@@ -18,26 +18,16 @@
         <module name="SurveyService" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="ConfigClient" target="17" />
-      <module name="ConfigService" target="17" />
-      <module name="SystemEventsInterface" target="17" />
-      <module name="SystemEventsServer" target="17" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="APIGateway" options="-parameters" />
-      <module name="ConfigClient" options="-parameters" />
       <module name="ConfigServer" options="-parameters" />
-      <module name="ConfigService" options="-parameters" />
       <module name="EurekaServiceRegistry" options="-parameters" />
       <module name="ForumService" options="-parameters" />
       <module name="NewsService" options="-parameters" />
       <module name="PatientService" options="-parameters" />
       <module name="SurveyService" options="-parameters" />
-      <module name="SystemEventsInterface" options="-parameters" />
-      <module name="SystemEventsServer" options="-parameters" />
       <module name="UserManagementService" options="-parameters" />
       <module name="system-events" options="-parameters" />
     </option>

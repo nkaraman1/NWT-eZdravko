@@ -8,12 +8,6 @@ import java.util.List;
 
 @Service
 public class EventServiceImpl extends EventServiceGrpc.EventServiceImplBase {
-    /*private final EventDAO eventDAO;
-
-    @Autowired
-    public EventServiceImpl(EventDAO eventDAO) {
-        this.eventDAO = eventDAO;
-    }*/
 
     @Override
     public void send(EventRequest request, StreamObserver<EventResponse> responseObserver) {
@@ -22,6 +16,7 @@ public class EventServiceImpl extends EventServiceGrpc.EventServiceImplBase {
 
         //eventDAO.save(event);
         //System.out.println(eventDAO.getEvents());
+        //eventRepository.save(event);
 
         EventCollector eventCollector = EventCollector.getInstance();
         eventCollector.addEvent(event);
@@ -35,5 +30,4 @@ public class EventServiceImpl extends EventServiceGrpc.EventServiceImplBase {
         responseObserver.onCompleted();
 
     }
-
 }
