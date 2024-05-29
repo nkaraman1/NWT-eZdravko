@@ -14,10 +14,10 @@ public class RabbitMQSender {
     @Autowired
     private AmqpTemplate rabbitTemplate;
 
-    @Value("${NewsService.rabbitmq.exchange}")
+    @Value("${zdravko.rabbitmq.exchange}")
     private String exchange;
 
-    @Value("${NewsService.rabbitmq.routingkey}")
+    @Value("${zdravko.rabbitmq.routingkey}")
     private String routingkey;
 
     public void send(Notification company) {
