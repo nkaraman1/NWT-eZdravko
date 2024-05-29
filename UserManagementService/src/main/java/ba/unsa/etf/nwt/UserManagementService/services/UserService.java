@@ -1,6 +1,7 @@
 package ba.unsa.etf.nwt.UserManagementService.services;
 
 import ba.unsa.etf.nwt.NewsService.DTO.NotificationDTO;
+import ba.unsa.etf.nwt.NewsService.model.Notification;
 import ba.unsa.etf.nwt.UserManagementService.DTO.UserDTO;
 import ba.unsa.etf.nwt.UserManagementService.controllers.UserController;
 import ba.unsa.etf.nwt.UserManagementService.exceptions.ErrorMsg;
@@ -14,6 +15,7 @@ import ba.unsa.etf.nwt.UserManagementService.model.UserLogin;
 import ba.unsa.etf.nwt.UserManagementService.repositories.RoleRepository;
 import ba.unsa.etf.nwt.UserManagementService.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +48,11 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    @RabbitListener(queues = "${zdravko.rabbitmq.queue}")
+    public void recievedMessage(Notification notification) {
+        System.out.println("Recieved Message From RabbitMQ: " + notification);
     }
 
     public ResponseEntity<?> getUserByID(Long ID) {
