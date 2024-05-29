@@ -7,6 +7,7 @@ import ba.unsa.etf.nwt.NewsService.model.ErrorMsg;
 import ba.unsa.etf.nwt.NewsService.model.News;
 import ba.unsa.etf.nwt.NewsService.model.Notification;
 import ba.unsa.etf.nwt.NewsService.repositories.NotificationsRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
 public class NotificationService {
+
+
+    @Autowired
+    RabbitMQSender rabbitMQSender;
     private final NotificationsRepository notificationsRepository;
     private final Validator validator;
 
@@ -54,6 +59,8 @@ public class NotificationService {
 
         Notification notification = convertToEntity(notificationDTO);
         notification = notificationsRepository.save(notification);
+        //dodati ovdje da ide asinhrona komunikacija sa Users da se utvrdi validnost
+        rabbitMQSender.send(notification);
         return new ResponseEntity<>(convertToDTO(notification), HttpStatus.CREATED);
     }
 
