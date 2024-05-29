@@ -98,6 +98,16 @@
             <artifactId>UserManagementService</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.security</groupId>
+					<artifactId>spring-security-test</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-security</artifactId>
+				</exclusion>
+			</exclusions>
         </dependency>
 
     </dependencies>
