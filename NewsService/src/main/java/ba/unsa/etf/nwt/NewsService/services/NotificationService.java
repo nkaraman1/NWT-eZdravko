@@ -1,10 +1,7 @@
 package ba.unsa.etf.nwt.NewsService.services;
 
-import ba.unsa.etf.nwt.NewsService.DTO.NewsDTO;
 import ba.unsa.etf.nwt.NewsService.DTO.NotificationDTO;
-import ba.unsa.etf.nwt.NewsService.controllers.NotificationController;
 import ba.unsa.etf.nwt.NewsService.model.ErrorMsg;
-import ba.unsa.etf.nwt.NewsService.model.News;
 import ba.unsa.etf.nwt.NewsService.model.Notification;
 import ba.unsa.etf.nwt.NewsService.repositories.NotificationsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
