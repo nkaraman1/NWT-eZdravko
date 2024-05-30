@@ -59,7 +59,7 @@ public class UserService {
     public void recievedMessage(String notification) {
         System.out.println("Recieved Message From RabbitMQ: " + notification);
         //ovo brise navodnike koji budu iz nekog razloga u sadrzaju poruke
-        notification = notification.substring(1, notification.length() - 1);
+        //notification = notification.substring(1, notification.length() - 1);
         Long notificationID = Long.valueOf(notification.split(",")[0]);
         String UID = notification.split(",")[1];
         System.out.println("Notification ID:" + notificationID.toString() + ", UID: " + UID);
@@ -67,6 +67,9 @@ public class UserService {
         if(response.getStatusCode() != HttpStatus.OK){
             notificationInterface.deleteNotification(notificationID);
             System.out.println("Sent DELETE order for notification with ID " + notificationID.toString());
+        }
+        else{
+            System.out.println("UID is valid");
         }
     }
 
