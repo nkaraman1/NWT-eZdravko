@@ -10,7 +10,6 @@ import org.springframework.context.annotation.ComponentScan;
 @EnableFeignClients
 @ComponentScan(basePackages = {"ba.unsa.etf.nwt.ForumService"})
 public class ForumServiceApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(ForumServiceApplication.class, args);
 	}

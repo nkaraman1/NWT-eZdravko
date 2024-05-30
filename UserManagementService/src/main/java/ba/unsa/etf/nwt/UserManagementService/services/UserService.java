@@ -19,6 +19,7 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -35,6 +36,10 @@ public class UserService {
     private final RoleErrorHandler roleErrorHandler;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private JwtService jwtService;
     private final Validator validator;
     @Autowired
     private NotificationInterface notificationInterface;
@@ -121,10 +126,11 @@ public class UserService {
                 Role selected = rola.get();
 
                 if (!selected.isPotrebanKod() || selected.getKod().equals(userDTO.getRola_kod())) {
-                    List<User> possibleMatches = userRepository.findByEmail(userDTO.getEmail());
+                    Optional<User> possibleMatches = userRepository.findByEmail(userDTO.getEmail());
                     if (possibleMatches.isEmpty()) {
                         User user = convertToEntity(userDTO);
                         user.setRola(selected);
+                        user.setPassword(passwordEncoder.encode(user.getPassword()));
                         userRepository.save(user);
                         return new ResponseEntity<>(user, HttpStatus.OK);
                     }
@@ -144,6 +150,14 @@ public class UserService {
         catch (Exception e) {
             return new ResponseEntity<>(new ErrorMsg(e.getMessage()), HttpStatus.FORBIDDEN);
         }
+    }
+
+    public String generateToken(String username) {
+        return jwtService.generateToken(username);
+    }
+
+    public void validateToken(String token) {
+        jwtService.validateToken(token);
     }
 
     public ResponseEntity<?> changeUserData(Long ID, UserDTO userDTO) {
