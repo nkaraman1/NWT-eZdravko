@@ -51,8 +51,16 @@ public class UserService {
     }
 
     @RabbitListener(queues = "${zdravko.rabbitmq.queue}")
-    public void recievedMessage(Notification notification) {
+    public void recievedMessage(String notification) {
         System.out.println("Recieved Message From RabbitMQ: " + notification);
+        notification = notification.substring(1, notification.length() - 1);
+        Long notificationID = Long.valueOf(notification.split(",")[0]);
+        String UID = notification.split(",")[1];
+        System.out.println("Notification ID:" + notificationID.toString() + ", UID: " + UID);
+        ResponseEntity<?> response = getUserByUID(UID);
+        if(response.getStatusCode() != HttpStatus.OK){
+            notificationInterface.deleteNotification(notificationID);
+        }
     }
 
     public ResponseEntity<?> getUserByID(Long ID) {

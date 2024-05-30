@@ -59,8 +59,8 @@ public class NotificationService {
 
         Notification notification = convertToEntity(notificationDTO);
         notification = notificationsRepository.save(notification);
-        //dodati ovdje da ide asinhrona komunikacija sa Users da se utvrdi validnost
-        rabbitMQSender.send(notification);
+        //asinhrona komunikacija - salje se poruka koju slusa UsersManagement
+        rabbitMQSender.send(notification.getID().toString() + "," +notification.getUser_uid());
         return new ResponseEntity<>(convertToDTO(notification), HttpStatus.CREATED);
     }
 

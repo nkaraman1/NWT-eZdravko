@@ -20,7 +20,7 @@ public class RabbitMQSender {
     @Value("${zdravko.rabbitmq.routingkey}")
     private String routingkey;
 
-    public void send(Notification company) {
+    public void send(String company) {
         rabbitTemplate.convertAndSend(exchange, routingkey, company);
         System.out.println("Send msg = " + company);
 
