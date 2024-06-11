@@ -1,6 +1,6 @@
 package ba.unsa.etf.nwt.UserManagementService.services;
 
-import ba.unsa.etf.nwt.NewsService.DTO.NotificationDTO;
+import ba.unsa.etf.nwt.UserManagementService.DTO.NotificationDTO;
 import ba.unsa.etf.nwt.UserManagementService.DTO.UserDTO;
 import ba.unsa.etf.nwt.UserManagementService.controllers.UserController;
 import ba.unsa.etf.nwt.UserManagementService.exceptions.ErrorMsg;

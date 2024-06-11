@@ -18,6 +18,9 @@
         <module name="SurveyService" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="parent-project" target="1.5" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
@@ -28,8 +31,8 @@
       <module name="NewsService" options="-parameters" />
       <module name="PatientService" options="-parameters" />
       <module name="SurveyService" options="-parameters" />
-      <module name="UserManagementService" options="" />
-      <module name="system-events" options="" />
+      <module name="UserManagementService" options="-parameters" />
+      <module name="system-events" options="-parameters" />
     </option>
   </component>
 </project>
