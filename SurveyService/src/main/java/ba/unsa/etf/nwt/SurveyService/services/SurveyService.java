@@ -1,6 +1,6 @@
 package ba.unsa.etf.nwt.SurveyService.services;
 
-import ba.unsa.etf.nwt.NewsService.DTO.NotificationDTO;
+import ba.unsa.etf.nwt.SurveyService.DTO.NotificationDTO;
 import ba.unsa.etf.nwt.SurveyService.DTO.SurveyDTO;
 import ba.unsa.etf.nwt.SurveyService.feign.NotificationInterface;
 import ba.unsa.etf.nwt.SurveyService.feign.UserInterface;
@@ -8,8 +8,8 @@ import ba.unsa.etf.nwt.SurveyService.model.ErrorMsg;
 import ba.unsa.etf.nwt.SurveyService.model.Survey;
 import ba.unsa.etf.nwt.SurveyService.model.SurveyQuestion;
 import ba.unsa.etf.nwt.SurveyService.repositories.SurveyRepository;
-import ba.unsa.etf.nwt.UserManagementService.DTO.UserDTO;
-import ba.unsa.etf.nwt.UserManagementService.model.User;
+//import ba.unsa.etf.nwt.UserManagementService.DTO.UserDTO;
+//import ba.unsa.etf.nwt.UserManagementService.model.User;
 import com.netflix.discovery.converters.Auto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

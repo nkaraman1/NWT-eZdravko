@@ -1,6 +1,6 @@
 package ba.unsa.etf.nwt.SurveyService.services;
 
-import ba.unsa.etf.nwt.NewsService.DTO.NotificationDTO;
+import ba.unsa.etf.nwt.SurveyService.DTO.NotificationDTO;
 import ba.unsa.etf.nwt.SurveyService.feign.NotificationInterface;
 import ba.unsa.etf.nwt.SurveyService.DTO.SurveyAnswerDTO;
 import ba.unsa.etf.nwt.SurveyService.DTO.SurveyQuestionDTO;

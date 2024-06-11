@@ -1,6 +1,6 @@
 package ba.unsa.etf.nwt.PatientService.services;
 
-import ba.unsa.etf.nwt.NewsService.DTO.NotificationDTO;
+import ba.unsa.etf.nwt.PatientService.DTO.NotificationDTO;
 import ba.unsa.etf.nwt.PatientService.DTO.ExaminationDTO;
 import ba.unsa.etf.nwt.PatientService.feign.NotificationInterface;
 import ba.unsa.etf.nwt.PatientService.feign.UserInterface;
@@ -10,7 +10,6 @@ import ba.unsa.etf.nwt.PatientService.model.Examination;
 import ba.unsa.etf.nwt.PatientService.model.Referral;
 import ba.unsa.etf.nwt.PatientService.repositories.ExaminationRepository;
 import ba.unsa.etf.nwt.PatientService.repositories.ReferralRepository;
-import ba.unsa.etf.nwt.UserManagementService.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

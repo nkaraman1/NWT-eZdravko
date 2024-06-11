@@ -1,6 +1,6 @@
 package ba.unsa.etf.nwt.SurveyService.feign;
 
-import ba.unsa.etf.nwt.UserManagementService.DTO.UserDTO;
+import ba.unsa.etf.nwt.SurveyService.DTO.UserDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
