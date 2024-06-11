@@ -18,17 +18,20 @@
         <module name="SurveyService" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="parent-project" target="1.5" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="APIGateway" options="-parameters" />
       <module name="ConfigServer" options="-parameters" />
       <module name="EurekaServiceRegistry" options="-parameters" />
-      <module name="ForumService" options="-parameters" />
-      <module name="NewsService" options="-parameters" />
-      <module name="PatientService" options="-parameters" />
-      <module name="SurveyService" options="-parameters" />
-      <module name="UserManagementService" options="-parameters" />
+      <module name="ForumService" options="" />
+      <module name="NewsService" options="" />
+      <module name="PatientService" options="" />
+      <module name="SurveyService" options="" />
+      <module name="UserManagementService" options="" />
       <module name="system-events" options="-parameters" />
     </option>
   </component>
