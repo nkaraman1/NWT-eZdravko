@@ -1,7 +1,6 @@
 package ba.unsa.etf.nwt.UserManagementService.services;
 
-import ba.unsa.etf.nwt.NewsService.DTO.NotificationDTO;
-import ba.unsa.etf.nwt.NewsService.repositories.NotificationsRepository;
+import ba.unsa.etf.nwt.UserManagementService.DTO.NotificationDTO;
 import ba.unsa.etf.nwt.UserManagementService.feign.NotificationInterface;
 import ba.unsa.etf.nwt.UserManagementService.model.Role;
 import ba.unsa.etf.nwt.UserManagementService.model.User;
