@@ -34,6 +34,11 @@ public class DiaryEntryController {
         return diaryEntryService.getDiaryEntries();
     }
 
+    @GetMapping(value="/uid/{uid}")
+    public List<DiaryEntry> getDiaryEntriesByUID(@PathVariable String uid) {
+        return diaryEntryService.getDiaryEntryByUID(uid);
+    }
+
     @GetMapping(value = "/{id}")
     public ResponseEntity<?> getDiaryEntry(@PathVariable("id") Long id){
         return diaryEntryService.getDiaryEntry(id);
