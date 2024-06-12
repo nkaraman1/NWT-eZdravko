@@ -49,6 +49,11 @@ public class NotificationController {
         return notificationService.getNotificationByID(id);
     }
 
+    @GetMapping(value = "/notifications/uid/{uid}")
+    public ResponseEntity<?> getNotificationByUID(@PathVariable String uid) {
+        return notificationService.getNotificationByUID(uid);
+    }
+
     @DeleteMapping(value="/notifications/{id}")
     public ResponseEntity<?> deleteNotification(@PathVariable Long id) {
         return notificationService.deleteNotification(id);

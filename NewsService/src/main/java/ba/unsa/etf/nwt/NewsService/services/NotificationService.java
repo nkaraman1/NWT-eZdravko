@@ -1,10 +1,7 @@
 package ba.unsa.etf.nwt.NewsService.services;
 
-import ba.unsa.etf.nwt.NewsService.DTO.NewsDTO;
 import ba.unsa.etf.nwt.NewsService.DTO.NotificationDTO;
-import ba.unsa.etf.nwt.NewsService.controllers.NotificationController;
 import ba.unsa.etf.nwt.NewsService.model.ErrorMsg;
-import ba.unsa.etf.nwt.NewsService.model.News;
 import ba.unsa.etf.nwt.NewsService.model.Notification;
 import ba.unsa.etf.nwt.NewsService.repositories.NotificationsRepository;
 import org.springframework.http.HttpStatus;
@@ -66,6 +63,16 @@ public class NotificationService {
         assert notification != null;
         NotificationDTO notificationDTO = convertToDTO(notification);
         return new ResponseEntity<>(notificationDTO, HttpStatus.OK);
+    }
+
+    public ResponseEntity<?> getNotificationByUID(String user_uid) {
+        List<Notification> notifications = notificationsRepository.findByUid(user_uid);
+        if (notifications.isEmpty()) {
+            return new ResponseEntity<>(List.of(), HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>(notifications, HttpStatus.OK);
+        }
     }
 
     private ResponseEntity<?> getNotificationByIDNotDTO(Long id) {
@@ -139,7 +146,7 @@ public class NotificationService {
     private Notification updateFromDTO(Notification notification, NotificationDTO notificationDTO) {
         notification.setTip_notifikacije(notificationDTO.getTip_notifikacije());
         notification.setSadrzaj(notificationDTO.getSadrzaj());
-        notification.setUser_uid(notificationDTO.getUser_uid());
+        notification.setUid(notificationDTO.getUid());
         return notification;
     }
 
@@ -152,7 +159,7 @@ public class NotificationService {
         NotificationDTO notificationDTO = new NotificationDTO(
                 notification.getTip_notifikacije(),
                 notification.getSadrzaj(),
-                notification.getUser_uid()
+                notification.getUid()
         );
 
         return notificationDTO;

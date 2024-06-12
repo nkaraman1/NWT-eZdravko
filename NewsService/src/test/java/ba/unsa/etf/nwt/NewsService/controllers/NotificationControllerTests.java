@@ -79,7 +79,7 @@ public class NotificationControllerTests {
         NotificationDTO notificationDTO = new NotificationDTO();
         notificationDTO.setTip_notifikacije("Type");
         notificationDTO.setSadrzaj("Content");
-        notificationDTO.setUser_uid("UserUID");
+        notificationDTO.setUid("UserUID");
 
         // Perform POST request to create a new notification
         mockMvc.perform(post("/notifications")
@@ -177,7 +177,7 @@ public class NotificationControllerTests {
         NotificationDTO updatedNotificationDTO = new NotificationDTO();
         updatedNotificationDTO.setTip_notifikacije("Updated Type");
         updatedNotificationDTO.setSadrzaj("Updated Content");
-        updatedNotificationDTO.setUser_uid("Updated UserUID");
+        updatedNotificationDTO.setUid("Updated UserUID");
 
         mockMvc.perform(MockMvcRequestBuilders.put("/notifications/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -197,7 +197,7 @@ public class NotificationControllerTests {
         NotificationDTO updatedNotificationDTO = new NotificationDTO();
         updatedNotificationDTO.setTip_notifikacije("Updated Type");
         updatedNotificationDTO.setSadrzaj("Updated Content");
-        updatedNotificationDTO.setUser_uid("Updated UserUID");
+        updatedNotificationDTO.setUid("Updated UserUID");
 
         // Perform PUT request to update the notification
         mockMvc.perform(MockMvcRequestBuilders.put("/notifications/1")
@@ -233,7 +233,7 @@ public class NotificationControllerTests {
         NotificationDTO updatedNotificationDTO = new NotificationDTO();
         updatedNotificationDTO.setTip_notifikacije("Updated Type");
         updatedNotificationDTO.setSadrzaj("Updated Content");
-        updatedNotificationDTO.setUser_uid("Updated UserUID");
+        updatedNotificationDTO.setUid("Updated UserUID");
 
         mockMvc.perform(MockMvcRequestBuilders.put("/notifications/1")
                         .contentType(MediaType.APPLICATION_JSON)
