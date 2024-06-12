@@ -45,6 +45,11 @@ public class UserController {
         return userService.getUserByID(ID);
     }
 
+    @GetMapping(value="/users/email/{email}")
+    public ResponseEntity<?> getUserByMail(@PathVariable String email) {
+        return userService.getUserByEmail(email);
+    }
+
     @GetMapping(value="/users/uid/{UID}")
     public ResponseEntity<?> getUserByUID(@PathVariable String UID) {
         return userService.getUserByUID(UID);

@@ -26,7 +26,8 @@ public class AuthConfig {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/users/create", "/users/token", "/users/validate", "/users", "/users/change", "/swagger-ui/**",
-                                "/swagger-ui.html", "/v3/api-docs/**", "/users/change/**").permitAll()
+                                "/swagger-ui.html", "/v3/api-docs/**", "/users/change/**", "/users/login", "users/search", "users/email/**",
+                                "/roles").permitAll()
                         .anyRequest().authenticated()
                 );
         return http.build();

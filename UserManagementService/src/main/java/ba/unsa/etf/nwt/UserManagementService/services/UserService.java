@@ -73,6 +73,16 @@ public class UserService {
         }
     }
 
+    public ResponseEntity<?> getUserByEmail(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isPresent()) {
+            return new ResponseEntity<>(user.get(), HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>("Nema usera sa tim mailom!", HttpStatus.FORBIDDEN);
+        }
+    }
+
     public ResponseEntity<?> getUserByRola(String nazivRole) {
         Optional<Role> rola = roleRepository.findBynazivRole(nazivRole);
         if (rola.isPresent()) {
