@@ -32,6 +32,7 @@ public class NewsController {
         this.newsService = newsService;
     }
 
+    @CrossOrigin    //ovo je da se moze preko fronta pristupit
     @GetMapping(value="/news")
     public List<NewsDTO> getNews() {
         return newsService.getNews();

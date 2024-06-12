@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  configserverservice:
+    image: config-service
+    container_name: configserverservice
+    ports:
+      - "8888:8888"
+    networks:
+      - my-network
+
+  eurekaserviceregistry:
+    image: eureka-service
+    container_name: eurekaserviceregistry
+    ports:
+      - "8761:8761"
+    networks:
+      - my-network
+
+  newsservice:
+    image: news-service
+    container_name: newsservice
+    networks:
+      - my-network
+    depends_on:
+      - configserverservice
+      - eurekaserviceregistry
+
+  usermanagementservice:
+    image: user-service
+    container_name: usermanagementservice
+    networks:
+      - my-network
+    depends_on:
+      - configserverservice
+      - eurekaserviceregistry
+
+  forumservice:
+    image: forum-service
+    container_name: forumservice
+    networks:
+      - my-network
+    depends_on:
+      - configserverservice
+      - eurekaserviceregistry
+
+  patientservice:
+    image: patient-service
+    container_name: patientservice
+    networks:
+      - my-network
+    depends_on:
+      - configserverservice
+      - eurekaserviceregistry
+
+  surveyservice:
+    image: survey-service
+    container_name: surveyservice
+    networks:
+      - my-network
+    depends_on:
+      - configserverservice
+      - eurekaserviceregistry
+
+networks:
+  my-network:
+    driver: bridge

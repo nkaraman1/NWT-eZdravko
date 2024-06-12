@@ -1,7 +1,6 @@
 package ba.unsa.etf.nwt.UserManagementService.services;
 
-import ba.unsa.etf.nwt.NewsService.DTO.NotificationDTO;
-import ba.unsa.etf.nwt.NewsService.model.Notification;
+import ba.unsa.etf.nwt.UserManagementService.DTO.NotificationDTO;
 import ba.unsa.etf.nwt.UserManagementService.DTO.UserDTO;
 import ba.unsa.etf.nwt.UserManagementService.controllers.UserController;
 import ba.unsa.etf.nwt.UserManagementService.exceptions.ErrorMsg;
@@ -15,7 +14,6 @@ import ba.unsa.etf.nwt.UserManagementService.model.UserLogin;
 import ba.unsa.etf.nwt.UserManagementService.repositories.RoleRepository;
 import ba.unsa.etf.nwt.UserManagementService.repositories.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,24 +53,6 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    @RabbitListener(queues = "${zdravko.rabbitmq.queue}")
-    public void recievedMessage(String notification) {
-        System.out.println("Recieved Message From RabbitMQ: " + notification);
-        //ovo brise navodnike koji budu iz nekog razloga u sadrzaju poruke
-        //notification = notification.substring(1, notification.length() - 1);
-        Long notificationID = Long.valueOf(notification.split(",")[0]);
-        String UID = notification.split(",")[1];
-        System.out.println("Notification ID:" + notificationID.toString() + ", UID: " + UID);
-        ResponseEntity<?> response = getUserByUID(UID);
-        if(response.getStatusCode() != HttpStatus.OK){
-            notificationInterface.deleteNotification(notificationID);
-            System.out.println("Sent DELETE order for notification with ID " + notificationID.toString());
-        }
-        else{
-            System.out.println("UID is valid");
-        }
-    }
-
     public ResponseEntity<?> getUserByID(Long ID) {
         Optional<User> user = userRepository.findById(ID);
         if (user.isPresent()) {
@@ -90,6 +70,16 @@ public class UserService {
         }
         else {
             return new ResponseEntity<>(user, HttpStatus.OK);
+        }
+    }
+
+    public ResponseEntity<?> getUserByEmail(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isPresent()) {
+            return new ResponseEntity<>(user.get(), HttpStatus.OK);
+        }
+        else {
+            return new ResponseEntity<>("Nema usera sa tim mailom!", HttpStatus.FORBIDDEN);
         }
     }
 

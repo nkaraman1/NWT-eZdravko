@@ -15,20 +15,20 @@ public class Notification {
     @Column
     private String sadrzaj;
     @Column
-    private String user_uid;
+    private String uid;
 
-    public Notification(Long ID, String tip_notifikacije, String sadrzaj, String user_uid) {
+    public Notification(Long ID, String tip_notifikacije, String sadrzaj, String uid) {
         this.ID = ID;
         this.tip_notifikacije = tip_notifikacije;
         this.sadrzaj = sadrzaj;
-        this.user_uid = user_uid;
+        this.uid = uid;
     }
 
     public Notification() {
         this.ID = null;
         this.tip_notifikacije = null;
         this.sadrzaj = null;
-        this.user_uid = null;
+        this.uid = null;
     }
 
     public Long getID() {
@@ -55,11 +55,11 @@ public class Notification {
         this.sadrzaj = sadrzaj;
     }
 
-    public String getUser_uid() {
-        return user_uid;
+    public String getUid() {
+        return uid;
     }
 
-    public void setUser_uid(String user_uid) {
-        this.user_uid = user_uid;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 }

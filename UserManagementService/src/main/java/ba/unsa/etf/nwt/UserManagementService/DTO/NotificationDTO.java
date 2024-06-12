@@ -1,4 +1,4 @@
-package ba.unsa.etf.nwt.NewsService.DTO;
+package ba.unsa.etf.nwt.UserManagementService.DTO;
 
 import jakarta.validation.constraints.NotBlank;
 
@@ -8,12 +8,12 @@ public class NotificationDTO {
     @NotBlank(message = "Sadržaj notifikacije je obavezan.")
     private String sadrzaj;
     @NotBlank(message = "UID korisnika je obavezan.")
-    private String uid;
+    private String user_uid;
 
-    public NotificationDTO(String tip_notifikacije, String sadrzaj, String uid) {
+    public NotificationDTO(String tip_notifikacije, String sadrzaj, String user_uid) {
         this.tip_notifikacije = tip_notifikacije;
         this.sadrzaj = sadrzaj;
-        this.uid = uid;
+        this.user_uid = user_uid;
     }
 
     public NotificationDTO() {
@@ -35,11 +35,11 @@ public class NotificationDTO {
         this.sadrzaj = sadrzaj;
     }
 
-    public String getUid() {
-        return uid;
+    public String getUser_uid() {
+        return user_uid;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setUser_uid(String user_uid) {
+        this.user_uid = user_uid;
     }
 }

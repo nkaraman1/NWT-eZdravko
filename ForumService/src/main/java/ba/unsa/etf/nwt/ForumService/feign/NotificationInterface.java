@@ -1,6 +1,6 @@
 package ba.unsa.etf.nwt.ForumService.feign;
 
-import ba.unsa.etf.nwt.NewsService.DTO.NotificationDTO;
+import ba.unsa.etf.nwt.ForumService.DTO.NotificationDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

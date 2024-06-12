@@ -8,7 +8,7 @@ import ba.unsa.etf.nwt.ForumService.model.ErrorMsg;
 import ba.unsa.etf.nwt.ForumService.model.Question;
 import ba.unsa.etf.nwt.ForumService.repositories.CommentRepository;
 import ba.unsa.etf.nwt.ForumService.repositories.QuestionRepository;
-import ba.unsa.etf.nwt.UserManagementService.model.User;
+import ba.unsa.etf.nwt.ForumService.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
