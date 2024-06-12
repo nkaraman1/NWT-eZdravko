@@ -26,8 +26,22 @@ public class QuestionDTO {
         this.anonimnost = anonimnost;
     }
 
+    public QuestionDTO(String naslov, String sadrzaj, Integer anonimnost) {
+        this.naslov = naslov;
+        this.sadrzaj = sadrzaj;
+        this.anonimnost = anonimnost;
+    }
+
     public QuestionDTO() {
 
+    }
+
+    public Long getID() {
+        return ID;
+    }
+
+    public void setID(Long ID) {
+        this.ID = ID;
     }
 
     public String getUserUid() {
