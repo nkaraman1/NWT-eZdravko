@@ -20,11 +20,9 @@ import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 @Service
 public class TherapyService {
@@ -77,6 +75,16 @@ public class TherapyService {
         assert therapy != null;
         TherapyDTO therapyDTO = convertToDTO(therapy);
         return new ResponseEntity<>(therapyDTO, HttpStatus.OK);
+    }
+
+    public List<Therapy> getTherapyByUID(String uid) {
+        List<Therapy> therapies = therapyRepository.findAll();
+        if (therapies.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return therapies.stream()
+                .filter(entry -> entry.getPacijent_uid().equals(uid))
+                .collect(Collectors.toList());
     }
 
     private ResponseEntity<?> getTherapyByIDNotDTO(Long id) {

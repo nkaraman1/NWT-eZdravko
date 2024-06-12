@@ -14,11 +14,9 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 @Service
 public class DiaryEntryService {
@@ -66,6 +64,17 @@ public class DiaryEntryService {
         DiaryEntryDTO diaryEntryDTO = convertToDTO(diaryEntry);
         return new ResponseEntity<>(diaryEntryDTO, HttpStatus.OK);
 
+    }
+
+    public List<DiaryEntry> getDiaryEntryByUID(String uid) {
+        List<DiaryEntry> diaryEntries = diaryEntryRepository.findAll();
+        if (diaryEntries.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return diaryEntries.stream()
+                .filter(entry -> entry.getUser_uid().equals(uid))
+                .sorted(Comparator.comparingLong(DiaryEntry::getID).reversed())
+                .collect(Collectors.toList());
     }
 
     private ResponseEntity<?> getDiaryEntryNotDTO(Long id){

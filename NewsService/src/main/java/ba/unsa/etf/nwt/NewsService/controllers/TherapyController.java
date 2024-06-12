@@ -46,6 +46,11 @@ public class TherapyController {
         return therapyService.getTherapyByID(id);
     }
 
+    @GetMapping(value = "/therapy/uid/{uid}")
+    public List<Therapy> getTherapyByID(@PathVariable String uid) {
+        return therapyService.getTherapyByUID(uid);
+    }
+
     @DeleteMapping(value = "/therapy/{id}")
     public ResponseEntity<?> deleteTherapy(@PathVariable Long id) {
         return therapyService.deleteTherapy(id);
