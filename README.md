@@ -26,6 +26,11 @@ Link na video demo aplikacije:
   <li><href="https://drive.google.com/file/d/1yOvxXTG6KyRY1ECFddUtv0c1H5KVa9yR/view?usp=drive_link">https://drive.google.com/drive/folders/1mQiZQKUGzz-805-S6APEvWZ7KhQVEK9N?usp=sharing</href></li>
 </list>
 <br/><br/>
+Link na video uputstva za pokretanje:
+<list>
+  <li><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">https://drive.google.com/file/d/1nC-2i0-jWm8b7oSlvNNeSSNffaFpU6Gr/view?usp=drive_link</a></li>
+</list>
+<br/><br/>
 Članovi tima:
 <list>
   <li>Dženana Terzić, 2194/18921</li>
