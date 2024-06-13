@@ -12,7 +12,8 @@ public class RouteValidator {
             "/users/create",
             "/users/token",
             "/users/validate",
-            "/users"
+            "/users",
+            "/news"
     );
 
     public Predicate<ServerHttpRequest> isSecured =
