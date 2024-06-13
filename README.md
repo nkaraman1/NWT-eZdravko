@@ -20,10 +20,12 @@ Portovi koji se koriste za servise:
   <li>System-events: 9000</li>
   <li>Ostali servisi dobijaju random port od Eureke</li>
 </list>
+<br/><br/>
 Link na video demo aplikacije:
 <list>
-  <li><href="[https://github.com/e-Smajic/nwt-config](https://drive.google.com/drive/folders/1mQiZQKUGzz-805-S6APEvWZ7KhQVEK9N?usp=sharing)">Video</href></li>
+  <li><href="https://drive.google.com/drive/folders/1mQiZQKUGzz-805-S6APEvWZ7KhQVEK9N?usp=sharing">Video</href></li>
 </list>
+<br/><br/>
 Članovi tima:
 <list>
   <li>Dženana Terzić, 2194/18921</li>
